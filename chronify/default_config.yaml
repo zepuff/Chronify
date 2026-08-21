@@ -1,0 +1,136 @@
+# Work Tracker configuration
+
+# Seconds between active-window checks
+poll_interval: 5
+
+# Shorter segments are not stored
+min_segment_seconds: 8
+
+# Seconds without input before time counts as idle
+idle_threshold_seconds: 1500
+
+# Count meetings as active even without keyboard or mouse input.
+# Only real calls are counted — a messenger or a video left in the foreground
+# no longer keeps you "active" while you are away from the desk.
+treat_media_as_active: true
+
+# Apps that count as an ongoing call. Matched against "app name — window title".
+call_apps:
+  - "zoom"
+  - "meet"
+  - "google meet"
+  - "teams"
+
+# Apps that only count as a call when the window title says so
+# (Slack huddles, Discord voice channels...).
+call_apps_conditional:
+  - "slack"
+
+# Window-title markers that turn a conditional app into an active call
+call_title_markers:
+  - "call"
+  - "meeting"
+  - "voice"
+
+# Sound played with timed reminders. Any file from /System/Library/Sounds
+# (Glass, Ping, Submarine, Hero, Funk). Leave empty for silent reminders.
+alert_sound: "Glass"
+
+# Status generator: "ollama", "apfel" or "none"
+ai_backend: "apfel"
+
+# Language the daily status is written in, whatever language your notes use.
+# Examples: "English", "Ukrainian", "Polish".
+status_language: "English"
+
+ollama_host: "http://localhost:11434"
+ollama_model: "qwen2.5:3b"
+
+# apfel uses the same port as Ollama; run only one of them
+apfel_host: "http://localhost:11434"
+
+# Pushes hours and status text to PeopleForce.
+# Fill these in through the setup wizard — values entered there are stored
+# in ~/.work_tracker/profile.json and override what is here.
+peopleforce:
+  api_key: ""
+  employee_id: 
+  project_id:
+  start_hour: 9
+  base_url: "https://app.peopleforce.io/api/public/v3"
+
+  # Take invoice hours from PeopleForce instead of the local tracker
+  use_for_invoice_hours: true
+
+  # Push the real time ranges the tracker recorded (09:00-10:37, 10:38-12:57...)
+  # instead of one lump entry per project starting at start_hour.
+  push_real_intervals: true
+
+  # Two stretches of the same project closer than this are treated as one
+  # entry; a longer gap (lunch, a meeting) splits them.
+  interval_merge_gap_minutes: 15
+
+  # Stretches shorter than this are absorbed into the neighbouring one,
+  # so a 40-second glance at another project does not create its own entry.
+  min_interval_minutes: 5
+
+# Invoice generation. Also filled in by the setup wizard.
+invoice:
+  hourly_rate: 0
+  client_code: ""
+  client_name: ""
+  supplier_name: ""
+  supplier_full_name: ""
+  template_path: "Invoice_Template_TOKENS.docx"
+  output_dir: "~/Documents/Invoices"
+
+  # Any image format; replaces the signature in the template
+  signature_image_path: ""
+
+  # Empty values stay as visible {{TOKENS}} in the finished document
+  requisites:
+    tax_number: ""
+    iban: ""
+    address: ""
+    swift_code: ""
+    acquirer_name: ""
+    acquirer_address: ""
+    vat_number: ""
+    nip: ""
+    krs: ""
+
+# Groups activity into tasks. Patterns match "app name — window title";
+# the first match wins. Capture groups are available as {1}, {2}.
+rules:
+  - pattern: "(?i)(TASK-\\d+|[A-Z]+-\\d+)"
+    task: "Ticket {1}"
+
+  - pattern: "(?i)feature/([a-zA-Z0-9_-]+)"
+    task: "Feature: {1}"
+
+  - pattern: "(?i)bugfix/([a-zA-Z0-9_-]+)"
+    task: "Bugfix: {1}"
+
+  - pattern: "(?i)jira|atlassian"
+    task: "Jira"
+
+  - pattern: "(?i)notion\\.so"
+    task: "Notion / Notes"
+
+  - pattern: "(?i)slack"
+    task: "Meetings & Chat"
+
+  - pattern: "(?i)zoom|google meet|meet\\.google"
+    task: "Meetings"
+
+  - pattern: "(?i)stackoverflow|docs\\.python|developer\\.apple|readthedocs"
+    task: "Research"
+
+  - pattern: "(?i)github\\.com|gitlab\\.com"
+    task: "Code Review / Git"
+
+# Never recorded
+ignore_apps:
+  - "loginwindow"
+  - "Dock"
+  - "Spotlight"

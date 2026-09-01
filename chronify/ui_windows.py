@@ -38,13 +38,19 @@ from chronify import alerts
 WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 
+def notify(text, title="", sound=False):
+    stamp = {"stamp": time.time()}
+    for kwargs in (dict(data=stamp, sound=sound), dict(data=stamp), {}):
+        try:
+            rumps.notification("Work Tracker", title, text, **kwargs)
+            return True
+        except Exception:
+            continue
+    return False
+
+
 def _notify(text):
-    try:
-        rumps.notification(
-            "Work Tracker", "", text, data={"stamp": time.time()}, sound=False
-        )
-    except Exception:
-        pass
+    notify(text)
 
 
 DATE_PICKER_STYLE_STEPPER = 0
@@ -81,7 +87,7 @@ def screen_frame_at_mouse():
         return None
 
 
-def _top_right_origin(width, height, margin, fallback):
+def top_right_origin(width, height, margin, fallback):
     frame = screen_frame_at_mouse()
     if frame is None and NSScreen.mainScreen():
         frame = NSScreen.mainScreen().visibleFrame()
@@ -118,7 +124,7 @@ def make_window_always_on_top(window):
         pass
 
 
-def _make_button(title, frame, target, method):
+def make_button(title, frame, target, method):
     button = NSButton.alloc().initWithFrame_(frame)
     button.setTitle_(title)
     button.setBezelStyle_(1)
@@ -127,7 +133,7 @@ def _make_button(title, frame, target, method):
     return button
 
 
-def _make_panel(origin, width, height, title):
+def make_panel(origin, width, height, title):
     panel = NSPanel.alloc().initWithContentRect_styleMask_backing_defer_(
         NSMakeRect(origin[0], origin[1], width, height),
         PANEL_STYLE, NSBackingStoreBuffered, False,
@@ -192,8 +198,8 @@ class AlertEditorController(NSObject):
             self.app.rebuild_alerts_menu()
             return
 
-        origin = _top_right_origin(self.WIDTH, self.HEIGHT, 20, (900, 500))
-        self.window = _make_panel(
+        origin = top_right_origin(self.WIDTH, self.HEIGHT, 20, (900, 500))
+        self.window = make_panel(
             origin, self.WIDTH, self.HEIGHT,
             "Edit reminder" if alert else "New reminder",
         )
@@ -239,14 +245,14 @@ class AlertEditorController(NSObject):
         content.addSubview_(self.one_shot_box)
 
         content.addSubview_(
-            _make_button("Save", NSMakeRect(16, 14, 110, 30), self, self.saveClicked_)
+            make_button("Save", NSMakeRect(16, 14, 110, 30), self, self.saveClicked_)
         )
         if alert:
             content.addSubview_(
-                _make_button("Delete", NSMakeRect(134, 14, 100, 30), self, self.deleteClicked_)
+                make_button("Delete", NSMakeRect(134, 14, 100, 30), self, self.deleteClicked_)
             )
         content.addSubview_(
-            _make_button(
+            make_button(
                 "Cancel", NSMakeRect(self.WIDTH - 110, 14, 94, 30), self, self.cancelClicked_
             )
         )
@@ -311,9 +317,9 @@ class QuickInputController(NSObject):
 
     def show(self):
         width, height = self.WIDTH, self.HEIGHT
-        origin = _top_right_origin(width, height, 10, (1000, 700))
+        origin = top_right_origin(width, height, 10, (1000, 700))
 
-        self.window = _make_panel(origin, width, height, self.title_text)
+        self.window = make_panel(origin, width, height, self.title_text)
         self.window.setFrameOrigin_(origin)
 
         content = self.window.contentView()
@@ -336,12 +342,12 @@ class QuickInputController(NSObject):
         content.addSubview_(scroll_view)
 
         content.addSubview_(
-            _make_button(
+            make_button(
                 "Cancel", NSMakeRect(width - 215, 12, 95, 32), self, self.cancelClicked_
             )
         )
         content.addSubview_(
-            _make_button(
+            make_button(
                 "Save", NSMakeRect(width - 110, 12, 95, 32), self, self.saveClicked_
             )
         )

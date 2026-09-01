@@ -33,6 +33,26 @@ def get_frontmost_app_name() -> str:
     return (app.localizedName() if app else None) or "Unknown"
 
 
+def has_window_title_access() -> bool:
+    preflight = getattr(Quartz, "CGPreflightScreenCaptureAccess", None)
+    if preflight is None:
+        return True
+    try:
+        return bool(preflight())
+    except Exception:
+        return True
+
+
+def request_window_title_access() -> bool:
+    request = getattr(Quartz, "CGRequestScreenCaptureAccess", None)
+    if request is None:
+        return True
+    try:
+        return bool(request())
+    except Exception:
+        return False
+
+
 def get_frontmost_window_title() -> str:
     window_list = Quartz.CGWindowListCopyWindowInfo(
         Quartz.kCGWindowListOptionOnScreenOnly, Quartz.kCGNullWindowID

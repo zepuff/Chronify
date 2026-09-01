@@ -22,3 +22,4 @@ Invoices/
 # Editors
 .idea/
 .vscode/
+.pytest_cache/

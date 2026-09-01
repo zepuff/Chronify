@@ -68,7 +68,7 @@ Already have an old invoice? Point the app at it and it will read your IBAN, SWI
 
 Developers, designers, anyone on **macOS** who writes a status every day and counts hours — especially on contract or freelance.
 
-Initial setup takes about 10 minutes and happens inside the app: a wizard walks you through projects, PeopleForce and invoice details, one field per window. After that it runs on its own.
+Setup is one panel: name a project and tracking starts. PeopleForce credentials and invoice details are asked for the first time you actually use those features, never up front.
 
 The PeopleForce integration and invoice generation are optional. Without them this is still a full time tracker with daily statuses.
 
@@ -147,34 +147,36 @@ chronify
 On first launch the system will ask for permissions. Both are needed:
 
 - **Screen Recording** — without it window titles are invisible and all activity is logged as a bare app name, with no breakdown into tasks. Granted in *System Settings → Privacy & Security → Screen Recording*. The app has to be restarted after the change.
+
+  macOS attaches this permission to the exact executable, and `brew upgrade` installs a new one, so an upgrade can quietly revoke it. The app checks at launch and warns you; **⚙️ Settings → Screen Recording** shows the current state at any time and can reopen the system prompt.
 - **Notifications** — otherwise timed reminders never fire.
 
 ---
 
 ## First launch
 
-Two wizards open by themselves.
+Nothing opens by itself. The menu bar shows ⏱ ⚠️ no project until you add one.
 
-**Projects.** How many you have, and for each one: a name, a numeric PeopleForce id (leave empty if you don't push anywhere) and an hourly rate (empty falls back to the general one). At least one project is required: without it there is nowhere to log hours, and tracking stays paused.
+**Projects.** 🏷 Active project → + Add a project. A name is required; the PeopleForce id and the hourly rate can stay empty. At least one project is needed, otherwise there is nowhere to log hours and tracking stays paused.
 
-**⚙️ Setup wizard.** Four sections, each can be skipped:
+**⚙️ Settings.** Four sections, each opened on its own and marked ✅ ⚠️ — depending on how complete it is. A section you never use can stay empty:
 
 | Section | What it covers |
 |---|---|
 | PeopleForce | Company API key (PeopleForce only issues company-wide keys), employee id, hour the workday starts |
 | Daily status | The language the AI writes in — your own notes can be in any language |
 | Invoicing | Rate, your name for the document and for the file name, client name and code |
-| Payment details | Tax number, IBAN, SWIFT, addresses, VAT, NIP, KRS |
+| Payment details | Tax number, IBAN, SWIFT, addresses and the client's registration numbers |
 
 Everything you enter is stored in `~/.work_tracker/profile.json`, **outside the project folder**, so your API key and payment details never end up in git. Values from there override `config.yaml`.
 
-Both wizards can be reopened at any time from the menu.
+Every section can be reopened at any time from ⚙️ Settings.
 
 ---
 
 ## Configuration
 
-Personal data goes through the wizard. `~/.work_tracker/config.yaml` is for fine-tuning the tracking itself — the file is created on first launch from a bundled default, is thoroughly commented, and is not overwritten by upgrades. The main keys:
+Personal data goes through ⚙️ Settings. `~/.work_tracker/config.yaml` is for fine-tuning the tracking itself — the file is created on first launch from a bundled default, is thoroughly commented, and is not overwritten by upgrades. The main keys:
 
 | Key | What it does |
 |---|---|
@@ -205,7 +207,25 @@ No restart is needed after editing rules — use the **🔄 Reload rules** menu 
 
 `Invoice_Template_TOKENS.docx` ships with the app — an ordinary Word document where every value is marked with a `{{TOKEN}}`. If you have your own template, put it in `~/.work_tracker/` and set the file name (or a full path) in `invoice.template_path`.
 
-The bundled template is written for a contractor billing a Polish company: it has fields for `NIP` and `KRS`, the currency is fixed to USD and the payment terms say full post-payment. If that doesn't match your situation, edit the document directly — only the `{{TOKENS}}` are substituted, everything else is plain text you can change.
+The bundled template is one example layout: the currency is fixed to USD, the payment terms say full post-payment, and it carries a few jurisdiction-specific registration fields. If that doesn't match your situation, edit the document directly — only the `{{TOKENS}}` are substituted, everything else is plain text you can change.
+
+Chronify ships with a working invoice template, so there is nothing to set up before the first invoice — fill in **⚙️ Settings → Payment details** and create one.
+
+**⚙️ Settings → 🧾 Edit the invoice template…** opens that template in a window with two buttons. It is plain text: change the wording, the widths, the borders, whatever you like. Adding a line such as
+
+    *REGON*: #d.acquirer_regon \
+
+gives you a new **Acquirer REGON** field in Payment details, named after itself. Save checks the template compiles first and shows the error rather than closing.
+
+**⚙️ Settings → 📝 Edit it in Word instead…** opens the same blank as a `.docx` for anyone who would rather not touch markup. Change only the fields that do not match your own paperwork — a label your country words differently, a registration number you have and the form does not. Anything in `{{DOUBLE BRACES}}` is filled in when an invoice is created; add one of your own the same way, for example `{{REGON}}`, and it appears in Payment details too.
+
+**⋯ Start from my own invoice** is the long way round, for a layout too different to reach by editing. It converts an invoice you have sent into a Typst skeleton, measures the original down to column widths and border weights, and puts it all on the clipboard with instructions to hand to an AI assistant. Your own details never leave the Mac — only the layout does.
+
+The app computes these itself and they are never asked for: `invoice_number` `invoice_date` `period_start` `period_end` `month_name` `year` `total_hours` `rate` `total_amount` `currency`, plus one `rows` entry per project with `dates` `project` `hours` `rate` `amount`.
+
+Typst is what turns the template into a PDF: `brew install typst`. It replaces the old LibreOffice step. Templates in `.docx` keep working — the app picks the backend from the file extension.
+
+**🧾 Invoice → 📥 Import details from an existing invoice…** reads values — IBAN, tax number, addresses — out of an invoice you have already sent, so you don't retype them. The same import is one click away inside **⚙️ Settings → Payment details**.
 
 The table row containing `{{ROW_PROJECT}}` is a row template: it is duplicated once per project in the invoice. Empty fields deliberately stay as visible `{{TOKENS}}`, so you can see at once what's missing.
 
@@ -221,7 +241,7 @@ Everything is in `~/.work_tracker/`:
 |---|---|
 | `config.yaml` | tracking settings (rules, intervals, AI backend) |
 | `tracker.db` | SQLite with activity segments and the status archive |
-| `profile.json` | everything from the setup wizard: API key, payment details, rate |
+| `profile.json` | everything from ⚙️ Settings: API key, payment details, rate |
 | `projects.json` | projects |
 | `tasks.json` | completed tasks |
 | `blockers.json` | blockers |
@@ -263,7 +283,7 @@ The modules live in the `chronify/` package; the entry point is the `chronify` c
 ## If something doesn't work
 
 **Only app names are recorded, no tasks.**
-Screen Recording permission hasn't been granted — see the permissions section above.
+Screen Recording permission hasn't been granted, or an upgrade dropped it. Check **⚙️ Settings → Screen Recording**; a — instead of ✅ means macOS is hiding window titles.
 
 **Nothing is recorded at all.**
 Look at the menu bar icon: `⏸` means tracking is paused, `⚠️ no project` means there is no project to log to.
@@ -275,13 +295,13 @@ The AI backend is unavailable. Check that Ollama is running (`ollama list`) and 
 LibreOffice is missing: `brew install --cask libreoffice`. The `.docx` is created either way, and the PDF can be generated later via **🧾 Invoice → Refresh PDF**.
 
 **The invoice still shows `{{TOKENS}}`.**
-The corresponding field is empty. Fill it in through the **⚙️ Setup wizard** and create the invoice again — after every run the app lists exactly which values are missing.
+The corresponding field is empty. Fill it in through **⚙️ Settings** and create the invoice again — after every run the app lists exactly which values are missing.
 
 **PeopleForce returns an error.**
 Usually a missing project id, or a key taken from the wrong place. You need a Company API key from *Settings → API keys*. Project ids are set per project: **🏷 Active project → ✏️ Edit a project**.
 
 **PeopleForce says the hours don't fit in the day.**
-The total, counted from your workday start hour, runs past midnight. Lower that hour in the setup wizard, or push part of the time manually.
+The total, counted from your workday start hour, runs past midnight. Lower that hour in ⚙️ Settings → PeopleForce, or push part of the time manually.
 
 **The app didn't start after a reboot.**
 Check `brew services list` — Chronify should be `started`. Logs: `cat $(brew --prefix)/var/log/chronify.log`

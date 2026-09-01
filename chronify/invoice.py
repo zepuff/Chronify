@@ -21,10 +21,14 @@ import io
 import os
 import shutil
 import subprocess
+import xml.etree.ElementTree as ET
 import zipfile
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional, TypedDict
+
+import jinja2
+from docxtpl import DocxTemplate
 
 from chronify import config as config_module
 from chronify import db
@@ -35,11 +39,6 @@ STATE_PATH = Path(os.path.expanduser("~/.work_tracker/invoice_reminder_state.txt
 
 
 def _resolve_template(raw: str) -> Path:
-    """Own template first, bundled one as the fallback.
-
-    A relative path is looked up in ~/.work_tracker/ first, so a user template
-    survives upgrades; the shipped one is used when nothing else matches.
-    """
     candidate = Path(os.path.expanduser(str(raw)))
     if candidate.is_absolute():
         return candidate
@@ -49,17 +48,12 @@ def _resolve_template(raw: str) -> Path:
             return path
     return config_module.TEMPLATES_DIR / candidate
 
-_REQUISITE_TOKENS = {
-    "tax_number": "TAX_NUMBER",
-    "iban": "IBAN",
-    "address": "ADDRESS",
-    "swift_code": "SWIFT_CODE",
-    "acquirer_name": "ACQUIRER_NAME",
-    "acquirer_address": "ACQUIRER_ADDRESS",
-    "vat_number": "VAT_NUMBER",
-    "nip": "NIP",
-    "krs": "KRS",
-}
+COMPUTED_TOKENS = frozenset({
+    "INVOICE_NUMBER", "INVOICE_DATE", "PERIOD_START", "PERIOD_END",
+    "TOTAL_HOURS", "RATE", "TOTAL_AMOUNT", "MONTH_NAME", "YEAR", "CURRENCY",
+    "SUPPLIER_FULL_NAME",
+    "ROW_DATES", "ROW_PROJECT", "ROW_HOURS", "ROW_RATE", "ROW_AMOUNT",
+})
 
 
 def last_working_day_of_month(year: int, month: int) -> date:
@@ -180,6 +174,7 @@ def build_invoice_context(year: int, month: int, hours: float, config: dict) -> 
         "RATE": _format_number(rate),
         "TOTAL_AMOUNT": _format_number(round(hours * rate, 2)),
         "MONTH_NAME": calendar.month_name[month],
+        "CURRENCY": invoice_cfg.get("currency", "USD") or "USD",
         "YEAR": str(year),
         "SUPPLIER_FULL_NAME": invoice_cfg.get(
             "supplier_full_name",
@@ -188,10 +183,10 @@ def build_invoice_context(year: int, month: int, hours: float, config: dict) -> 
     }
 
     requisites = invoice_cfg.get("requisites", {}) or {}
-    for key, token in _REQUISITE_TOKENS.items():
-        value = (requisites.get(key) or "").strip()
+    for key, raw in requisites.items():
+        value = str(raw or "").strip()
         if value:
-            context[token] = value
+            context[key.upper()] = value
 
     return context
 
@@ -205,105 +200,106 @@ def build_invoice_filename(year: int, month: int, config: dict) -> str:
 
 _ROW_TOKEN = "{{ROW_PROJECT}}"
 
-_TOKEN_RE = re.compile(r"\{\{[A-Z_]+\}\}")
-_PARAGRAPH_RE = re.compile(r"<w:p[ >].*?</w:p>", re.S)
-_RUN_RE = re.compile(r"<w:r(?:\s[^>]*)?>.*?</w:r>", re.S)
-_WT_RE = re.compile(r"<w:t(?:\s[^>]*)?>(.*?)</w:t>", re.S)
+
+_TOKEN_RE = re.compile(r"\{\{[A-Z_][A-Z0-9_]*\}\}")
+_TR_RE = re.compile(r"<w:tr[ >]|</w:tr>")
 
 
-def _run_text(run_xml: str) -> str:
-    return "".join(_WT_RE.findall(run_xml))
+class TemplateSyntaxError(ValueError):
+    pass
 
 
-def _merge_runs_in_paragraph(paragraph_xml: str) -> str:
-    runs = list(_RUN_RE.finditer(paragraph_xml))
-    if len(runs) < 2:
-        return paragraph_xml
-
-    texts = [_run_text(run.group(0)) for run in runs]
-    combined = "".join(texts)
-    if "{{" not in combined:
-        return paragraph_xml
-
-    owner = []
-    for index, text in enumerate(texts):
-        owner.extend([index] * len(text))
-
-    merges = []
-    for match in _TOKEN_RE.finditer(combined):
-        first = owner[match.start()]
-        last = owner[match.end() - 1]
-        if last > first:
-            merges.append((first, last))
-
-    if not merges:
-        return paragraph_xml
-
-    spans = []
-    for first, last in sorted(merges):
-        if spans and first <= spans[-1][1]:
-            spans[-1] = (spans[-1][0], max(spans[-1][1], last))
+def _row_span(xml: str, needle: str):
+    stack, spans = [], []
+    for match in _TR_RE.finditer(xml):
+        if match.group(0).startswith("</"):
+            if stack:
+                spans.append((stack.pop(), match.end()))
         else:
-            spans.append((first, last))
+            stack.append(match.start())
 
-    result = paragraph_xml
-    for first, last in reversed(spans):
-        head = runs[first].group(0)
-        if not _WT_RE.search(head):
-            continue
-
-        merged_text = "".join(texts[first:last + 1])
-
-        state = {"used": False}
-
-        def _rewrite(_match, _text=merged_text, _state=state):
-            if _state["used"]:
-                return ""
-            _state["used"] = True
-            return f'<w:t xml:space="preserve">{_text}</w:t>'
-
-        new_head = _WT_RE.sub(_rewrite, head)
-
-        start = runs[first].start()
-        end = runs[last].end()
-        result = result[:start] + new_head + result[end:]
-
-    return result
+    hits = [(end - start, start, end)
+            for start, end in spans if needle in xml[start:end]]
+    if not hits:
+        return None
+    _, start, end = min(hits)
+    return start, end
 
 
-def normalise_tokens(document_xml: str) -> str:
-    return _PARAGRAPH_RE.sub(
-        lambda m: _merge_runs_in_paragraph(m.group(0)), document_xml
-    )
+def _rows_to_jinja(xml: str) -> tuple:
+    span = _row_span(xml, _ROW_TOKEN)
+    if span is None:
+        return xml, False
+
+    start, end = span
+    row = xml[start:end]
+    row = re.sub(r"\{\{(ROW_[A-Z0-9_]*)\}\}", r"{{ _row.\1 }}", row)
+
+    return (
+        xml[:start]
+        + "{% for _row in _rows %}" + row + "{% endfor %}"
+        + xml[end:]
+    ), True
 
 
-def _expand_project_rows(document_xml: str, rows: list) -> tuple:
-    template_row = None
-    for candidate in re.finditer(r"<w:tr[ >](?:(?!</w:tr>).)*?</w:tr>", document_xml, re.S):
-        if _ROW_TOKEN in candidate.group(0):
-            template_row = candidate
-            break
+class _Template(DocxTemplate):
 
-    if template_row is None:
-        return document_xml, False
+    def __init__(self, template_path, rows=()):
+        super().__init__(str(template_path))
+        self._rows = list(rows or [])
+        self.tokens = set()
+        self.row_token_found = False
 
-    original = template_row.group(0)
-    if not rows:
-        return document_xml.replace(original, "", 1), True
+    def patch_xml(self, src_xml: str) -> str:
+        xml = super().patch_xml(src_xml)
+        self.tokens.update(t[2:-2] for t in _TOKEN_RE.findall(xml))
+        xml, found = _rows_to_jinja(xml)
+        self.row_token_found = self.row_token_found or found
+        return xml
 
-    built = []
-    for row in rows:
-        chunk = original
-        for token, value in row.items():
-            chunk = chunk.replace("{{" + token + "}}", str(value))
-        built.append(chunk)
 
-    return document_xml.replace(original, "".join(built), 1), True
+def _build_context(tokens, mapping: dict, rows: list) -> tuple:
+    context = {"_rows": list(rows or [])}
+    missing = []
+
+    for name in sorted(tokens):
+        value = mapping.get(name)
+        if value is None or not str(value).strip():
+            context[name] = "{{" + name + "}}"
+            missing.append("{{" + name + "}}")
+        else:
+            context[name] = str(value)
+
+    return context, missing
+
+
+def _assert_well_formed(docx_path: Path) -> None:
+    with zipfile.ZipFile(docx_path) as zin:
+        parts = [n for n in zin.namelist()
+                 if n.endswith(".xml") or n.endswith(".rels")]
+        for name in parts:
+            try:
+                ET.fromstring(zin.read(name))
+            except ET.ParseError as e:
+                raise RuntimeError(
+                    f"The finished document came out corrupted ({name}: {e}). "
+                    f"It has not been saved. The likeliest cause is a "
+                    f"construct in the template the substitution cannot read."
+                )
 
 
 _DOCPR_RE = re.compile(r"<wp:docPr\b[^>]*>", re.S)
 _BLIP_RE = re.compile(r'<a:blip[^>]*r:embed="([^"]+)"')
 _REL_RE = re.compile(r'<Relationship\b[^>]*Id="([^"]+)"[^>]*Target="([^"]+)"')
+
+_IMAGE_FORMATS = {
+    ".png": ("PNG", "RGBA"),
+    ".jpg": ("JPEG", "RGB"),
+    ".jpeg": ("JPEG", "RGB"),
+    ".gif": ("GIF", "P"),
+    ".bmp": ("BMP", "RGB"),
+    ".tiff": ("TIFF", "RGB"),
+}
 
 
 def _media_files(contents: dict) -> list:
@@ -354,7 +350,7 @@ def _signature_target(contents: dict, preferred_name: str = "") -> Optional[str]
     )
 
 
-def _apply_signature_image(contents: dict, signature_path: str,
+def _apply_signature_image(docx_path: Path, signature_path: Optional[str],
                            preferred_name: str = "") -> None:
     if not signature_path:
         return
@@ -366,15 +362,52 @@ def _apply_signature_image(contents: dict, signature_path: str,
             f"Check invoice.signature_image_path in config.yaml."
         )
 
+    with zipfile.ZipFile(docx_path, "r") as zin:
+        contents = {name: zin.read(name) for name in zin.namelist()}
+
     target = _signature_target(contents, preferred_name)
     if target is None:
         return
 
     from PIL import Image
 
+    fmt, mode = _IMAGE_FORMATS.get(Path(target).suffix.lower(), ("PNG", "RGBA"))
     buffer = io.BytesIO()
-    Image.open(path).convert("RGBA").save(buffer, format="PNG")
+    Image.open(path).convert(mode).save(buffer, format=fmt)
     contents[target] = buffer.getvalue()
+
+    with zipfile.ZipFile(docx_path, "w", zipfile.ZIP_DEFLATED) as zout:
+        for name, data in contents.items():
+            zout.writestr(name, data)
+
+
+_W_NS = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+
+
+def _renumber_bookmarks(doc) -> None:
+    import itertools
+
+    counter = itertools.count(9000)
+    seen_names, pending = {}, {}
+
+    for element in doc.docx.element.iter():
+        if element.tag == _W_NS + "bookmarkStart":
+            old_id = element.get(_W_NS + "id")
+            new_id = str(next(counter))
+            pending.setdefault(old_id, []).append(new_id)
+            element.set(_W_NS + "id", new_id)
+
+            name = element.get(_W_NS + "name")
+            if name:
+                seen = seen_names.get(name, 0)
+                if seen:
+                    element.set(_W_NS + "name", f"{name}_{seen}")
+                seen_names[name] = seen + 1
+
+        elif element.tag == _W_NS + "bookmarkEnd":
+            waiting = pending.get(element.get(_W_NS + "id"))
+            if waiting:
+                element.set(_W_NS + "id", waiting.pop(0))
 
 
 def fill_invoice_docx(
@@ -385,27 +418,69 @@ def fill_invoice_docx(
     rows: Optional[list] = None,
     signature_image_name: str = "",
 ) -> dict:
-    with zipfile.ZipFile(template_path, "r") as zin:
-        contents = {name: zin.read(name) for name in zin.namelist()}
+    doc = _Template(template_path, rows)
 
-    document_xml = contents["word/document.xml"].decode("utf-8")
-    document_xml = normalise_tokens(document_xml)
-    document_xml, row_token_found = _expand_project_rows(document_xml, rows or [])
+    try:
+        tokens = doc.get_undeclared_template_variables() | doc.tokens
+    except jinja2.TemplateError as e:
+        raise TemplateSyntaxError(_syntax_hint(e))
 
-    for token, value in mapping.items():
-        document_xml = document_xml.replace("{{" + token + "}}", str(value))
+    tokens.discard("_rows")
+    context, missing = _build_context(tokens, mapping, rows)
 
-    leftover = sorted(set(_TOKEN_RE.findall(document_xml)))
-    contents["word/document.xml"] = document_xml.encode("utf-8")
+    if doc.row_token_found:
+        missing = [name for name in missing if not name.startswith("{{ROW_")]
 
-    _apply_signature_image(contents, signature_path, signature_image_name)
+    try:
+        doc.render(context, autoescape=True)
+    except jinja2.TemplateError as e:
+        raise TemplateSyntaxError(_syntax_hint(e))
+
+    _renumber_bookmarks(doc)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as zout:
-        for name, data in contents.items():
-            zout.writestr(name, data)
+    doc.save(str(output_path))
 
-    return {"missing_tokens": leftover, "row_token_found": row_token_found}
+    _apply_signature_image(output_path, signature_path, signature_image_name)
+    _assert_well_formed(output_path)
+
+    return {"missing_tokens": missing, "row_token_found": doc.row_token_found}
+
+
+def _syntax_hint(error: Exception) -> str:
+    return (
+        f"The invoice template could not be parsed: {error}. "
+        f"This is usually a stray pair of braces in the text: double "
+        f"{{{{ }}}} are reserved for the fields Chronify fills in."
+    )
+
+
+def read_template_tokens(template_path: Path) -> list:
+    doc = _Template(template_path)
+    try:
+        declared = doc.get_undeclared_template_variables()
+    except jinja2.TemplateError as e:
+        raise TemplateSyntaxError(_syntax_hint(e))
+    return sorted((declared | doc.tokens) - {"_rows"})
+
+
+def row_template_state(template_path: Path) -> str:
+    doc = _Template(template_path)
+    try:
+        doc.get_undeclared_template_variables()
+    except jinja2.TemplateError as e:
+        raise TemplateSyntaxError(_syntax_hint(e))
+
+    if doc.row_token_found:
+        return "table"
+    if "ROW_PROJECT" in doc.tokens:
+        return "flattened"
+    return "absent"
+
+
+def party_tokens(template_path: Path) -> list:
+    return [t for t in read_template_tokens(template_path)
+            if t not in COMPUTED_TOKENS]
 
 
 def convert_docx_to_pdf(docx_path: Path) -> Optional[Path]:
@@ -436,10 +511,31 @@ def get_invoice_docx_path(year: int, month: int, config: dict) -> Path:
 
 
 class InvoiceResult(TypedDict):
-    docx: Path
+    docx: Optional[Path]
     pdf: Optional[Path]
     missing_tokens: list
     row_token_found: bool
+
+
+def _build_mapping_and_rows(year, month, hours, config, breakdown):
+    mapping = build_invoice_context(year, month, hours, config)
+    rows, rows_total = [], 0.0
+
+    if breakdown:
+        rows, rows_total = build_project_rows(
+            breakdown, config, mapping["PERIOD_START"] + " — " + mapping["PERIOD_END"]
+        )
+        if rows:
+            mapping["TOTAL_AMOUNT"] = _format_number(rows_total)
+            mapping["TOTAL_HOURS"] = _format_number(
+                sum(float(i.get("hours") or 0) for i in breakdown)
+            )
+
+    return mapping, rows
+
+
+def get_invoice_pdf_path(year: int, month: int, config: dict) -> Path:
+    return get_invoice_docx_path(year, month, config).with_suffix(".pdf")
 
 
 def create_invoice(
@@ -461,18 +557,7 @@ def create_invoice(
         )
 
     docx_path = get_invoice_docx_path(year, month, config)
-    mapping = build_invoice_context(year, month, hours, config)
-
-    rows, rows_total = [], 0.0
-    if breakdown:
-        rows, rows_total = build_project_rows(
-            breakdown, config, mapping["PERIOD_START"] + " — " + mapping["PERIOD_END"]
-        )
-        if rows:
-            mapping["TOTAL_AMOUNT"] = _format_number(rows_total)
-            mapping["TOTAL_HOURS"] = _format_number(
-                sum(float(i.get("hours") or 0) for i in breakdown)
-            )
+    mapping, rows = _build_mapping_and_rows(year, month, hours, config, breakdown)
 
     report = fill_invoice_docx(
         template_path, docx_path, mapping,

@@ -32,6 +32,7 @@ from chronify import notes
 from chronify import peopleforce
 from chronify import projects
 from chronify import settings
+from chronify.main_setup import SetupMixin
 from chronify.config import (
     DEBUG, ProfileWriteError, load_config, read_profile, save_profile_value,
 )
@@ -91,77 +92,6 @@ LIST_MENUS = {
         "resolvable": True,
     },
 }
-
-SETUP_SECTIONS = [
-    {
-        "key": "peopleforce",
-        "title": "PeopleForce",
-        "why": "Lets the app push tracked hours and the daily status "
-               "straight into PeopleForce.",
-        "fields": [
-            (["peopleforce", "api_key"], "Company API key",
-             "PeopleForce only issues company-wide keys, not personal ones. "
-             "Find it in Settings → API keys.", "text"),
-            (["peopleforce", "employee_id"], "Employee id",
-             "The number in your PeopleForce profile URL:\n"
-             "https://YOUR_COMPANY.peopleforce.io/people/THIS_NUMBER", "int"),
-            (["peopleforce", "start_hour"], "Working day starts at",
-             "Hour a timesheet entry starts from, e.g. 9.", "int"),
-        ],
-    },
-    {
-        "key": "status",
-        "title": "Daily status",
-        "why": "Controls the language the AI writes your daily status in, "
-               "whatever language your own notes use.",
-        "fields": [
-            (["status_language"], "Status language",
-             "The language of the generated status, e.g. English, Ukrainian, "
-             "Polish. Your notes can be in any language.", "text"),
-        ],
-    },
-    {
-        "key": "invoice",
-        "title": "Invoicing",
-        "why": "Lets the app fill your .docx template and produce a PDF "
-               "in one click at the end of the month.",
-        "fields": [
-            (["invoice", "hourly_rate"], "Hourly rate",
-             "A number, e.g. 25 or 32.5.", "float"),
-            (["invoice", "supplier_full_name"], "Your full name",
-             "As it should appear inside the document, e.g. 'PE JANE DOE'.", "text"),
-            (["invoice", "supplier_name"], "Your name for the file name",
-             "No spaces, e.g. 'JANE_DOE'.", "text"),
-            (["invoice", "client_name"], "Client name",
-             "Used in the invoice file name.", "text"),
-            (["invoice", "client_code"], "Client code",
-             "Short code used in the invoice number, e.g. AMNVB.", "text"),
-        ],
-    },
-    {
-        "key": "requisites",
-        "title": "Payment details",
-        "why": "These are substituted into the {{...}} tokens in your invoice "
-               "template. Anything left empty stays as a visible token.",
-        "fields": [
-            (["invoice", "requisites", "tax_number"], "Tax number", "", "text"),
-            (["invoice", "requisites", "iban"], "IBAN", "", "text"),
-            (["invoice", "requisites", "swift_code"], "SWIFT / BIC", "", "text"),
-            (["invoice", "requisites", "address"], "Your address", "", "text"),
-            (["invoice", "requisites", "acquirer_name"], "Client legal name", "", "text"),
-            (["invoice", "requisites", "acquirer_address"], "Client address", "", "text"),
-            (["invoice", "requisites", "vat_number"], "Client VAT number", "", "text"),
-            (["invoice", "requisites", "nip"], "Client NIP", "", "text"),
-            (["invoice", "requisites", "krs"], "Client KRS", "", "text"),
-        ],
-    },
-]
-
-PF_NOT_CONFIGURED = (
-    "Fill in the peopleforce section of config.yaml: api_key and "
-    "employee_id (get the key from PeopleForce → Settings → API keys)."
-)
-
 
 def _format_stats_text(totals: dict) -> str:
     if not totals:
@@ -230,7 +160,7 @@ def _run_async(worker) -> None:
     threading.Thread(target=worker, daemon=True).start()
 
 
-class WorkTrackerApp(rumps.App):
+class WorkTrackerApp(SetupMixin, rumps.App):
     def __init__(self):
         super().__init__("⏱", quit_button=None)
 
@@ -300,6 +230,7 @@ class WorkTrackerApp(rumps.App):
         self.plan_menu = rumps.MenuItem("📋 Today's plan")
         self.pin_menu = rumps.MenuItem("📌 Show in the menu bar")
         self.infra_menu = rumps.MenuItem("🚦 Infrastructure status")
+        self.settings_menu = rumps.MenuItem("⚙️ Settings")
 
         self.calendar_menu = rumps.MenuItem("📅 Hours calendar")
         self.calendar_menu.add(rumps.MenuItem(
@@ -339,8 +270,7 @@ class WorkTrackerApp(rumps.App):
             self.peopleforce_menu,
             self.notes_menu,
             None,
-            rumps.MenuItem("⚙️ Setup wizard", callback=self.run_setup),
-            rumps.MenuItem("🏷 Set up projects", callback=self.setup_projects),
+            self.settings_menu,
             "🔄 Reload rules",
             "📁 Open saved data folder",
             None,
@@ -355,6 +285,7 @@ class WorkTrackerApp(rumps.App):
         self.rebuild_plan_menu()
         self.rebuild_infra_menu()
         self.rebuild_peopleforce_menu()
+        self.rebuild_settings_menu()
 
         self.tracker = ActivityTracker(
             poll_interval=config.get("poll_interval", 5),
@@ -660,136 +591,6 @@ class WorkTrackerApp(rumps.App):
 
         return _callback
 
-    @staticmethod
-    def _current_value(config, path_keys):
-        node = config
-        for key in path_keys:
-            if not isinstance(node, dict):
-                return ""
-            node = node.get(key)
-        return "" if node is None else node
-
-    @staticmethod
-    def _coerce(raw, kind):
-        if kind == "int":
-            return int(raw)
-        if kind == "float":
-            return float(raw.replace(",", "."))
-        return raw
-
-    def _run_section(self, section):
-        config = load_config()
-        saved = 0
-
-        for path_keys, label, hint, kind in section["fields"]:
-            current = self._current_value(config, path_keys)
-            message = hint or f"Used for {section['title'].lower()}."
-            if current:
-                message += "\n\nLeave as is to keep the current value."
-
-            raw = self._ask_text(
-                label, message, default=current, ok="Save", cancel="Skip this one"
-            )
-            if raw is None or raw == str(current or ""):
-                continue
-            if not raw:
-                continue
-
-            try:
-                save_profile_value(path_keys, self._coerce(raw, kind))
-                saved += 1
-            except ProfileWriteError as e:
-                rumps.alert(title=f"{label}: could not be saved", message=str(e))
-            except ValueError:
-                rumps.alert(
-                    title=f"{label}: wrong format",
-                    message="Expected a number. The field was left unchanged.",
-                )
-
-        return saved
-
-    def run_setup(self, _sender=None):
-        total = 0
-        for section in SETUP_SECTIONS:
-            answer = rumps.alert(
-                title=f"Set up {section['title']}?",
-                message=f"{section['why']}\n\n"
-                        f"{len(section['fields'])} fields, one window each. "
-                        f"You can skip any of them.",
-                ok="Set it up",
-                cancel="Not now",
-            )
-            if answer:
-                total += self._run_section(section)
-
-        load_config(force=True)
-        self.rebuild_peopleforce_menu()
-
-        rumps.alert(
-            title="Setup finished",
-            message=f"Saved {total} fields.\n\n"
-                    f"They are stored in ~/.work_tracker/profile.json, outside the "
-                    f"project folder — so your API key and payment details never "
-                    f"end up in git. Run this again any time from the menu.",
-        )
-
-    def check_first_run(self, _sender=None):
-        self._first_run_timer.stop()
-        if projects.is_configured():
-            return
-        self.setup_projects(first_run=True)
-
-    def setup_projects(self, _sender=None, first_run=False):
-        window = rumps.Window(
-            title="How many projects do you work on?",
-            message="Every tracked hour belongs to a project, so at least one is "
-                    "required.\nEnter how many projects you are working on "
-                    "right now — you can add more later.",
-            default_text="1",
-            dimensions=(80, 24),
-            ok="Continue",
-            cancel="Cancel",
-        )
-        make_window_always_on_top(window)
-        response = window.run()
-
-        if response.clicked:
-            try:
-                count = max(1, min(10, int(response.text.strip())))
-            except ValueError:
-                count = 1
-
-            for index in range(1, count + 1):
-                if not self._ask_for_project(index, count):
-                    break
-
-        self.rebuild_project_menu()
-        self.refresh_title()
-
-        if not projects.is_configured():
-            rumps.alert(
-                title="Tracking is paused",
-                message="No project was created, so there is nowhere to record "
-                        "hours and tracking is off.\n\nAdd a project from the "
-                        "🏷 Active project menu whenever you are ready.",
-            )
-            return
-
-        self._adopt_unassigned()
-
-        if first_run and len(projects.all_projects()) > 1:
-            self._ask_scoping_mode()
-
-        if first_run:
-            names = ", ".join(p["name"] for p in projects.all_projects())
-            rumps.alert(
-                title="Projects are set up",
-                message=f"{names}\n\nThe active project is shown in the menu bar, "
-                        f"so you can always see where your hours are going. "
-                        f"Switch it before you start working on another one.",
-            )
-            self.run_setup()
-
     def _ask_scoping_mode(self):
         separate = rumps.alert(
             title="Keep projects separate?",
@@ -859,48 +660,6 @@ class WorkTrackerApp(rumps.App):
         response = window.run()
         return response.text.strip() if response.clicked else None
 
-    def _ask_for_project(self, index, count):
-        title = "New project" if count == "?" else f"Project {index} of {count}"
-        name = self._ask_text(
-            title,
-            "What is this project called?\nThis name is only shown inside the app.",
-            ok="Next", cancel="Stop here",
-        )
-        if name is None:
-            return False
-        if not name:
-            return True
-
-        raw_id = self._ask_text(
-            f"PeopleForce id for {name}",
-            "Paste the numeric project id from PeopleForce.\n"
-            "Leave it empty if you never push this project anywhere.",
-            ok="Save", cancel="Leave empty",
-        )
-
-        peopleforce_id = None
-        if raw_id:
-            try:
-                peopleforce_id = int(raw_id)
-            except ValueError:
-                peopleforce_id = raw_id
-
-        raw_rate = self._ask_text(
-            f"Hourly rate for {name}",
-            "Used on the invoice for this project. Leave empty to use the "
-            "default rate from the setup wizard.",
-            ok="Save", cancel="Use default",
-        )
-        rate = None
-        if raw_rate:
-            try:
-                rate = float(raw_rate.replace(",", "."))
-            except ValueError:
-                rate = None
-
-        projects.add_project(name, peopleforce_id, rate)
-        return True
-
     def rebuild_project_menu(self, _sender=None):
         self._clear_menu(self.project_menu)
         active_id = projects.get_active_id()
@@ -909,7 +668,7 @@ class WorkTrackerApp(rumps.App):
         if not items:
             self.project_menu.add(
                 rumps.MenuItem("⚠️ No project — tracking is paused",
-                               callback=self.setup_projects)
+                               callback=self.add_project)
             )
             self._add_separator(self.project_menu)
             self.project_menu.add(
@@ -1057,58 +816,7 @@ class WorkTrackerApp(rumps.App):
 
     def _make_edit_project_callback(self, project_id):
         def _callback(_sender):
-            project = projects.get_project(project_id)
-            if project is None:
-                self.rebuild_project_menu()
-                return
-
-            name = self._ask_text(
-                f"Rename {project['name']}",
-                "Clear the field and save to delete this project.",
-                default=project["name"], ok="Save", cancel="Cancel",
-            )
-            if name is None:
-                return
-
-            if not name:
-                self._delete_project(project)
-                return
-
-            raw_id = self._ask_text(
-                f"PeopleForce id for {name}",
-                "Numeric project id from PeopleForce. Leave empty if this "
-                "project is never pushed.",
-                default=project.get("peopleforce_id") or "",
-                ok="Save", cancel="Keep current",
-            )
-
-            peopleforce_id = project.get("peopleforce_id")
-            if raw_id is not None:
-                if raw_id:
-                    try:
-                        peopleforce_id = int(raw_id)
-                    except ValueError:
-                        peopleforce_id = raw_id
-                else:
-                    peopleforce_id = None
-
-            raw_rate = self._ask_text(
-                f"Hourly rate for {name}",
-                "Leave empty to use the default rate from the setup wizard.",
-                default=project.get("rate") or "",
-                ok="Save", cancel="Keep current",
-            )
-            rate = project.get("rate")
-            if raw_rate is not None:
-                try:
-                    rate = float(raw_rate.replace(",", ".")) if raw_rate else None
-                except ValueError:
-                    pass
-
-            projects.update_project(project_id, name, peopleforce_id, rate)
-            self.rebuild_project_menu()
-            self.refresh_title()
-            _notify(f"Project saved: {name}")
+            self.edit_project(project_id)
 
         return _callback
 
@@ -1144,14 +852,6 @@ class WorkTrackerApp(rumps.App):
             _notify(f"Deleted {project['name']} — {detached} segments are now unassigned")
         else:
             _notify(f"Deleted {project['name']}")
-
-    def add_project(self, _sender):
-        before = len(projects.all_projects())
-        if self._ask_for_project(before + 1, "?"):
-            self.rebuild_project_menu()
-            self.refresh_title()
-            if before == 0:
-                self._adopt_unassigned()
 
     def rebuild_alerts_menu(self, _sender=None):
         self._clear_menu(self.alerts_menu)
@@ -1591,6 +1291,7 @@ class WorkTrackerApp(rumps.App):
 
     def _refresh_invoice_pdf(self, year, month):
         config = load_config()
+
         docx_path = invoice.get_invoice_docx_path(year, month, config)
 
         if not docx_path.exists():
@@ -1618,8 +1319,28 @@ class WorkTrackerApp(rumps.App):
 
         _run_async(worker)
 
+        def worker():
+            pdf_path = invoice.convert_docx_to_pdf(docx_path)
+            if pdf_path:
+                AppHelper.callAfter(_notify, f"PDF refreshed: {pdf_path.name}")
+                AppHelper.callAfter(subprocess.run, ["open", str(pdf_path)])
+            else:
+                AppHelper.callAfter(
+                    rumps.alert,
+                    "Could not create the PDF",
+                    "LibreOffice was not found. Install it for free: "
+                    "brew install --cask libreoffice",
+                )
+
+        _run_async(worker)
+
     def _prompt_and_create_invoice(self, year, month):
         config = load_config()
+        if not self.section_is_ready("invoice"):
+            self.require_section(
+                "invoice", lambda: self._prompt_and_create_invoice(year, month)
+            )
+            return
         pf_cfg = config.get("peopleforce", {}) or {}
         use_pf = (
             bool(pf_cfg.get("use_for_invoice_hours")) and peopleforce.is_configured(config)
@@ -1807,16 +1528,19 @@ class WorkTrackerApp(rumps.App):
         _run_async(worker)
 
     def _show_invoice_result(self, month_label, result):
-        docx_path, pdf_path = result["docx"], result["pdf"]
+        docx_path, pdf_path = result.get("docx"), result.get("pdf")
+        made = [p.name for p in (docx_path, pdf_path) if p]
 
-        if pdf_path:
-            files_line = f"Created:\n  {docx_path.name}\n  {pdf_path.name}"
+        if made:
+            files_line = "Created:\n  " + "\n  ".join(made)
         else:
-            files_line = (
-                f"Created: {docx_path.name}\n\n"
-                f"No PDF was generated because LibreOffice was not found. "
-                f"Install it for free (`brew install --cask libreoffice`) and "
-                f"next time the PDF will appear alongside automatically."
+            files_line = "Nothing was created."
+
+        if docx_path and not pdf_path:
+            files_line += (
+                "\n\nNo PDF was generated because LibreOffice was not found. "
+                "Install it for free (`brew install --cask libreoffice`) and "
+                "next time the PDF will appear alongside automatically."
             )
 
         if pdf_path:
@@ -1826,17 +1550,18 @@ class WorkTrackerApp(rumps.App):
 
         missing = result.get("missing_tokens") or []
         if missing:
+            empty = ", ".join(t.strip("{}") for t in missing[:12])
             notes_lines.append(
-                "Still showing as {{...}} because the field is empty:\n  "
-                + ", ".join(t.strip("{}") for t in missing[:12])
-                + "\nFill them in via ⚙️ Setup wizard and create the invoice again."
+                ("Left blank because the field is empty:\n  " if docx_path is None
+                 else "Still showing as {{...}} because the field is empty:\n  ")
+                + empty
+                + "\nFill them in via ⚙️ Settings and create the invoice again."
             )
 
         if not result.get("row_token_found", True):
             notes_lines.append(
-                "⚠️ The template has no {{ROW_PROJECT}} row, so the "
-                "per-project breakdown could not be added. Only the totals are "
-                "in the document."
+                "⚠️ The template has no per-project row, so the breakdown "
+                "could not be added. Only the totals are in the document."
             )
 
         body = files_line
@@ -1854,14 +1579,11 @@ class WorkTrackerApp(rumps.App):
         today = date.today()
         invoice.mark_reminder_shown(today)
 
-        rumps.notification(
-            "Work Tracker",
-            "Today is the last working day of the month 🧾",
-            "Time to raise the invoice — I will ask for the hours now.",
-            data={"stamp": time.time()},
+        _notify(
+            "Raise it from 🧾 Invoice whenever you are ready.",
             sound=True,
+            title="Today is the last working day of the month 🧾",
         )
-        self._prompt_and_create_invoice(today.year, today.month)
 
     def _show_combined_calendar(self, year, month):
         names = {p["id"]: p["name"] for p in projects.all_projects()}
@@ -2044,11 +1766,7 @@ class WorkTrackerApp(rumps.App):
         config = load_config()
 
         if enabled and not peopleforce.is_configured(config):
-            rumps.alert(
-                title="PeopleForce is not configured",
-                message="Fill in peopleforce.api_key and employee_id in config.yaml "
-                        "first, otherwise auto-push has nothing to work with.",
-            )
+            self.require_section("peopleforce", lambda: self.toggle_auto_push(sender))
             return
 
         settings.set_auto_push_enabled(enabled)
@@ -2170,9 +1888,8 @@ class WorkTrackerApp(rumps.App):
     def push_peopleforce_month(self, _sender):
         config = load_config()
         if not peopleforce.is_configured(config):
-            rumps.alert(
-                title="PeopleForce is not configured",
-                message="Fill in peopleforce.api_key and employee_id in config.yaml.",
+            self.require_section(
+                "peopleforce", lambda: self.push_peopleforce_month(_sender)
             )
             return
 
@@ -2295,7 +2012,9 @@ class WorkTrackerApp(rumps.App):
         config = load_config()
 
         if not peopleforce.is_configured(config):
-            rumps.alert(title="PeopleForce is not configured", message=PF_NOT_CONFIGURED)
+            self.require_section(
+                "peopleforce", lambda: self._push_to_peopleforce(target_date)
+            )
             return
 
         scoped = settings.is_project_scoped()
@@ -2688,7 +2407,7 @@ class WorkTrackerApp(rumps.App):
                 message=(
                     f"{db.format_duration(overflow)} would fall past midnight "
                     f"and be cut off.\n\nLower 'Working day starts at' in the "
-                    f"⚙️ Setup wizard, or push part of the time by hand.\n\n"
+                    f"⚙️ Settings, or push part of the time by hand.\n\n"
                     f"Pushing anyway loses that time in PeopleForce."
                 ),
                 ok="Push anyway (time will be cut)",

@@ -16,4 +16,4 @@
 
 """Chronify — a macOS menu bar work tracker with local AI daily statuses."""
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

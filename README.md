@@ -211,20 +211,13 @@ The bundled template is one example layout: the currency is fixed to USD, the pa
 
 Chronify ships with a working invoice template, so there is nothing to set up before the first invoice — fill in **⚙️ Settings → Payment details** and create one.
 
-**⚙️ Settings → 🧾 Edit the invoice template…** opens that template in a window with two buttons. It is plain text: change the wording, the widths, the borders, whatever you like. Adding a line such as
+**⚙️ Settings → 📝 Edit the invoice template…** copies the bundled template to `~/.work_tracker/my_invoice_template.docx` and opens it in Microsoft Word. Change only the parts that don't match your own paperwork — a label your country words differently, a registration number you have and the form does not. Anything in `{{DOUBLE BRACES}}` is filled in when an invoice is created; add one of your own the same way, for example `{{REGON}}`, and it appears in Payment details too.
 
-    *REGON*: #d.acquirer_regon \
+> **Edit the template in Word or LibreOffice — not in Pages or TextEdit.** Neither of those supports the nested table the invoice rows live in. They save the file with that table replaced by plain text, and every invoice made from it then comes out without a table. Chronify checks for this when you connect a template and refuses one whose table is gone.
 
-gives you a new **Acquirer REGON** field in Payment details, named after itself. Save checks the template compiles first and shows the error rather than closing.
+The app computes these itself and never asks for them: `{{INVOICE_NUMBER}}` `{{INVOICE_DATE}}` `{{PERIOD_START}}` `{{PERIOD_END}}` `{{MONTH_NAME}}` `{{YEAR}}` `{{TOTAL_HOURS}}` `{{RATE}}` `{{TOTAL_AMOUNT}}` `{{CURRENCY}}` `{{SUPPLIER_FULL_NAME}}`, plus the `{{ROW_*}}` fields of the project row.
 
-**⚙️ Settings → 📝 Edit it in Word instead…** opens the same blank as a `.docx` for anyone who would rather not touch markup. Change only the fields that do not match your own paperwork — a label your country words differently, a registration number you have and the form does not. Anything in `{{DOUBLE BRACES}}` is filled in when an invoice is created; add one of your own the same way, for example `{{REGON}}`, and it appears in Payment details too.
-
-**⋯ Start from my own invoice** is the long way round, for a layout too different to reach by editing. It converts an invoice you have sent into a Typst skeleton, measures the original down to column widths and border weights, and puts it all on the clipboard with instructions to hand to an AI assistant. Your own details never leave the Mac — only the layout does.
-
-The app computes these itself and they are never asked for: `invoice_number` `invoice_date` `period_start` `period_end` `month_name` `year` `total_hours` `rate` `total_amount` `currency`, plus one `rows` entry per project with `dates` `project` `hours` `rate` `amount`.
-
-Typst is what turns the template into a PDF: `brew install typst`. It replaces the old LibreOffice step. Templates in `.docx` keep working — the app picks the backend from the file extension.
-
+The PDF beside the `.docx` is produced by LibreOffice: `brew install --cask libreoffice`. Without it the `.docx` is still created, and the PDF can be added later through **🧾 Invoice → Refresh PDF**.
 **🧾 Invoice → 📥 Import details from an existing invoice…** reads values — IBAN, tax number, addresses — out of an invoice you have already sent, so you don't retype them. The same import is one click away inside **⚙️ Settings → Payment details**.
 
 The table row containing `{{ROW_PROJECT}}` is a row template: it is duplicated once per project in the invoice. Empty fields deliberately stay as visible `{{TOKENS}}`, so you can see at once what's missing.
@@ -270,13 +263,38 @@ A backup is a copy of that one folder. Invoices are stored separately, in the fo
 | `alerts.py` | timed reminders |
 | `settings.py` | small persisted settings |
 | `summarizer.py` | assembling the status text, requests to the AI |
+| `main_setup.py` | the Settings panels and the first-run wizard |
+| `forms.py` | the field definitions each Settings panel is built from |
 | `invoice.py` | filling the template, conversion to PDF |
+| `docx_layout.py` | measuring an existing invoice so its details can be read |
 | `invoice_import.py` | reading payment details out of an existing invoice |
 | `peopleforce.py` | the PeopleForce API |
 | `ui_windows.py` | native input windows |
 | `config.py` | reading `config.yaml` and `profile.json`, shared constants |
 
 The modules live in the `chronify/` package; the entry point is the `chronify` command (`chronify.main:main`).
+
+---
+
+## Development
+
+```bash
+git clone https://github.com/zepuff/Chronify.git
+cd Chronify
+python3 -m venv venv && source venv/bin/activate
+pip install -e .
+pip install pytest
+python3 -m pytest tests -q
+```
+
+The tests run anywhere — they need neither macOS nor a display. `test_invoice.py` fills real `.docx` files and checks the result is still a valid document; `test_setup_wiring.py` reads the Settings code as a syntax tree and catches the mistakes PyObjC only reports at runtime: a selector with the wrong number of arguments, a `self.` attribute nothing defines, a mixin that lost its place in the MRO.
+
+Two scripts help with the parts tests can't reach:
+
+| Script | What it does |
+|---|---|
+| `scripts/check_template.py` | reports what an invoice template contains and fills a sample invoice from it |
+| `scripts/first_run_sandbox.sh` | runs the app against a throwaway `HOME`, so a first run can be tried without touching your data |
 
 ---
 
@@ -297,6 +315,9 @@ LibreOffice is missing: `brew install --cask libreoffice`. The `.docx` is create
 **The invoice still shows `{{TOKENS}}`.**
 The corresponding field is empty. Fill it in through **⚙️ Settings** and create the invoice again — after every run the app lists exactly which values are missing.
 
+**The invoice has no table: the rows come out as plain text.**
+The template lost it. Pages and TextEdit both drop the nested table the rows live in when they save a `.docx`. Delete `~/.work_tracker/my_invoice_template.docx` and remove `template_path` from `~/.work_tracker/profile.json` to go back to the bundled template, then edit it in Word or LibreOffice instead. `python3 scripts/check_template.py <file>` reports what a template still contains.
+
 **PeopleForce returns an error.**
 Usually a missing project id, or a key taken from the wrong place. You need a Company API key from *Settings → API keys*. Project ids are set per project: **🏷 Active project → ✏️ Edit a project**.
 
@@ -313,7 +334,7 @@ Check `brew services list` — Chronify should be `started`. Logs: `cat $(brew -
 - macOS only — tracking depends on Quartz and AppKit.
 - Status quality depends on the local model. `qwen2.5:3b` is fast, but small and occasionally muddles details. If the text looks odd, try a bigger model. apfel has a 4096-token context, so very long days get truncated.
 - Deleting a project doesn't move its hours anywhere — they stay in your statistics as time without a project and are never pushed.
-- There are no tests. Copy `~/.work_tracker/` before upgrading.
+- Copy `~/.work_tracker/` before upgrading. Nothing has ever eaten it, but it is the one folder that matters.
 
 ---
 

@@ -37,7 +37,7 @@ call_title_markers:
 alert_sound: "Glass"
 
 # Status generator: "ollama", "apfel" or "none"
-ai_backend: "apfel"
+ai_backend: "none"
 
 # Language the daily status is written in, whatever language your notes use.
 # Examples: "English", "Ukrainian", "Polish".

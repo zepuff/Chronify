@@ -166,7 +166,12 @@ def test_every_section_field_has_a_path_and_label():
         assert section["fields"], section["key"]
         for field in section["fields"]:
             assert field["path"] and field["label"]
-            assert field.get("kind", "text") in ("text", "secret", "int", "float")
+            kind = field.get("kind", "text")
+            assert kind in ("text", "secret", "int", "float", "choice")
+            if kind == "choice":
+                assert field["options"], field["label"]
+                for option in field["options"]:
+                    assert len(option) == 2, field["label"]
         for path in section["required"]:
             assert list(path) in [f["path"] for f in section["fields"]], (
                 f"{section['key']}: required path {path} is not one of its fields"

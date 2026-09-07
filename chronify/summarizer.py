@@ -15,6 +15,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import re
+import shutil
+import subprocess
 from datetime import date
 from typing import Optional
 
@@ -48,8 +50,9 @@ DEFAULT_STATUS_LANGUAGE = "English"
 def _language_instruction(config: dict) -> str:
     language = (config.get("status_language") or DEFAULT_STATUS_LANGUAGE).strip()
     return (
-        f"Write the status in {language.upper()}, regardless of what language "
-        f"the notes below are written in."
+        f"Write the status in {language.upper()}. The notes below may be in "
+        f"another language — translate them, do not copy them across as they "
+        f"are."
     )
 
 
@@ -89,9 +92,9 @@ def _call_ollama(host: str, model: str, prompt: str) -> str:
         )
     except requests.exceptions.ConnectionError:
         raise RuntimeError(
-            f"Cannot reach Ollama at {host}. Make sure Ollama is running "
-            f"(`ollama serve`, or just open Ollama.app) and that the model "
-            f"{model} is downloaded (`ollama pull {model}`)."
+            f"Cannot reach Ollama at {host}. Start it with "
+            f"`brew services start ollama` (or just open Ollama.app) and make "
+            f"sure the model {model} is downloaded (`ollama pull {model}`)."
         )
 
     if response.status_code == 404:
@@ -120,6 +123,41 @@ def _call_ollama(host: str, model: str, prompt: str) -> str:
     return _extract(response, ("message", "content"), "Ollama /api/chat")
 
 
+APFEL_BINARIES = ("apfel", "/opt/homebrew/bin/apfel", "/usr/local/bin/apfel")
+
+
+def _apfel_binary() -> Optional[str]:
+    for candidate in APFEL_BINARIES:
+        found = shutil.which(candidate)
+        if found:
+            return found
+    return None
+
+
+def _call_apfel_cli(binary: str, prompt: str) -> str:
+    result = subprocess.run(
+        [binary],
+        input=prompt,
+        capture_output=True, text=True, timeout=AI_TIMEOUT_SECONDS,
+    )
+
+    if result.returncode != 0:
+        detail = (result.stderr or result.stdout or "").strip()
+        raise RuntimeError(
+            f"apfel exited with code {result.returncode}. "
+            f"Run `apfel --model-info` to see whether Apple Intelligence is "
+            f"available on this Mac. It said: {detail[:200] or 'nothing'}"
+        )
+
+    text = (result.stdout or "").strip()
+    if not text:
+        raise RuntimeError(
+            "apfel returned nothing. Check `apfel --model-info`: Apple "
+            "Intelligence has to be switched on in System Settings."
+        )
+    return text
+
+
 def _call_apfel(host: str, prompt: str) -> str:
     try:
         response = requests.post(
@@ -133,9 +171,10 @@ def _call_apfel(host: str, prompt: str) -> str:
         )
     except requests.exceptions.ConnectionError:
         raise RuntimeError(
-            f"Cannot reach apfel at {host}. Make sure the server is running "
-            f"(`apfel --serve` in a separate terminal window) and that the port "
-            f"is not already taken by Ollama or something else "
+            f"apfel is neither installed nor listening at {host}. Install it "
+            f"with `brew install apfel` — Chronify then runs it directly and "
+            f"no server is needed. To keep using a server instead, start it "
+            f"with `brew services start apfel` and make sure the port is free "
             f"(`lsof -i :11434` shows what is using it)."
         )
 
@@ -167,6 +206,10 @@ def _run_ai(config: dict, prompt: str) -> Optional[str]:
             host = config.get("ollama_host", "http://localhost:11434").rstrip("/")
             return _call_ollama(host, config.get("ollama_model", "llama3.1"), prompt)
 
+        binary = _apfel_binary()
+        if binary:
+            return _call_apfel_cli(binary, prompt)
+
         host = config.get("apfel_host", "http://localhost:11434").rstrip("/")
         return _call_apfel(host, prompt)
     except Exception as e:
@@ -182,16 +225,39 @@ DONE_PROMPT = """You are writing the "What was done today" section of a work sta
 Here are the tasks the person RECORDED as done today ({count} of them):
 {tasks}
 
-Rewrite them as a short, businesslike list for a daily status update.
-HARD RULES:
-- DO NOT INVENT anything that is not in the recorded tasks. No new tasks,
-  no numbers, no service names, no outcomes.
-- DO NOT MENTION time, duration, hours or minutes. No "for 40 min", "2h".
-- DO NOT MENTION application or browser names (Chrome, Safari, VS Code,
+The notes are shorthand: written quickly, often in another language, with
+typos, abbreviations and missing words. Turn each one into a clean line for a
+daily status.
+
+WHAT TO DO:
+- Translate into the target language. Keep proper names, product names and
+  ticket ids exactly as written.
+- Fix spelling, grammar and word order.
+- Expand shorthand into a complete phrase, using only what the note already
+  says. "fixed tbl bug" becomes "Fixed the table bug".
+- Spell out abbreviations only when they are obvious: "doc" is documentation,
+  "AI" stays AI.
+- You may merge several notes into one line if they are about the same thing.
+
+WHAT NOT TO DO:
+- Do not add facts. No new tasks, numbers, service names, causes or outcomes
+  that the note does not contain.
+- Do not mention time, duration, hours or minutes.
+- Do not mention application or browser names (Chrome, Safari, VS Code,
   Terminal). Describe only the substance of the work.
 - Do not add judgements ("successfully", "great") and do not draw conclusions.
-- You may merge several small entries into one line if they are about the
-  same thing.
+
+EXAMPLES of the difference:
+  Note: "поправила баг з таблицею в інвойсах"
+  Good: "Fixed the table bug in invoices"
+  Bad:  "Fixed a critical table rendering bug in the invoice module, which
+         had been breaking exports for several users"   <- invented
+
+  Note: "оновила доку"
+  Good: "Updated the documentation"
+  Bad:  "Updated the API documentation and the README"   <- invented
+
+FORMAT:
 - At most {count} lines. Start every line with "• ".
 - No headings, no intro, no explanations. ONLY the list lines.
 """

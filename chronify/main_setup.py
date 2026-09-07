@@ -16,13 +16,14 @@
 
 import shutil
 import subprocess
+import threading
 from pathlib import Path
 
 import rumps
 from PyObjCTools import AppHelper
 
 from chronify import (
-    invoice, invoice_import, projects, tracker,
+    backends, invoice, invoice_import, projects, tracker,
 )
 from chronify.config import (
     BASE_DIR, ProfileWriteError, load_config, save_profile_value,
@@ -54,13 +55,24 @@ SETTINGS_SECTIONS = [
     {
         "key": "status",
         "title": "Daily status",
-        "intro": "The language the AI writes your daily status in, whatever "
-                 "language your own notes use.",
+        "intro": "Who writes your daily status, and in which language. "
+                 "Chronify installs the one you pick — nothing to set up by "
+                 "hand.",
         "required": [],
         "fields": [
+            {"path": ["ai_backend"], "label": "Written by",
+             "kind": "choice",
+             "options": [("No AI", "none"),
+                         ("Ollama", "ollama"),
+                         ("Apple Intelligence", "apfel")],
+             "hint": "Ollama understands Ukrainian and downloads a 2 GB "
+                     "model. Apple Intelligence uses the model already in "
+                     "macOS but cannot write Ukrainian. No AI leaves your "
+                     "notes exactly as you wrote them."},
             {"path": ["status_language"], "label": "Status language",
              "placeholder": "English",
-             "hint": "e.g. English, Ukrainian, Polish."},
+             "hint": "e.g. English, Ukrainian, Polish. Apple Intelligence "
+                     "cannot write Ukrainian; Ollama can."},
         ],
     },
     {
@@ -261,7 +273,11 @@ class SetupMixin:
             self.rebuild_peopleforce_menu()
             if written:
                 _notify_saved(section["title"], written)
-            if on_done:
+
+            chosen = values.get("ai_backend")
+            if chosen and not backends.is_ready(chosen):
+                AppHelper.callAfter(self.install_ai_backend, chosen)
+            elif on_done:
                 AppHelper.callAfter(on_done)
             return None
 
@@ -276,6 +292,42 @@ class SetupMixin:
             spec["on_extra"] = self.import_invoice_details
 
         self._present(spec)
+
+    def install_ai_backend(self, backend):
+        """Install the backend the person just picked, reporting as it goes.
+
+        Homebrew does the work in a worker thread; every command is echoed
+        into the notification trail so a failure halfway through leaves the
+        person knowing which one to finish by hand.
+        """
+        label = backends.BACKENDS.get(backend, {}).get("label", backend)
+
+        if not rumps.alert(
+            title=f"Set up {label}?",
+            message="Chronify will install it with Homebrew. Ollama also "
+                    "downloads a model of about 2 GB, which takes a few "
+                    "minutes.\n\nYou can keep working meanwhile.",
+            ok="Install", cancel="Not now",
+        ):
+            return
+
+        def worker():
+            lines = []
+            try:
+                backends.install(backend, lines.append)
+            except backends.InstallError as e:
+                AppHelper.callAfter(self._ai_backend_failed, label, str(e))
+                return
+            AppHelper.callAfter(self._ai_backend_ready, label)
+
+        threading.Thread(target=worker, daemon=True).start()
+        notify("Setting up " + label, "This runs in the background.")
+
+    def _ai_backend_ready(self, label):
+        notify(f"{label} is ready", "Daily statuses will be written with it.")
+
+    def _ai_backend_failed(self, label, detail):
+        rumps.alert(title=f"Could not set up {label}", message=detail)
 
     def require_section(self, key, then):
         if self.section_is_ready(key):

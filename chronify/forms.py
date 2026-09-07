@@ -16,8 +16,8 @@
 
 import objc
 from AppKit import (
-    NSApplication, NSBezelBorder, NSColor, NSFont, NSMakeRect, NSScrollView,
-    NSSecureTextField, NSTextField, NSTextView, NSView,
+    NSApplication, NSBezelBorder, NSColor, NSFont, NSMakeRect, NSPopUpButton,
+    NSScrollView, NSSecureTextField, NSTextField, NSTextView, NSView,
 )
 from Foundation import NSObject
 
@@ -52,7 +52,27 @@ def _static_label(text, frame, color=None):
     return field
 
 
+def _choice_for(spec, frame):
+    button = NSPopUpButton.alloc().initWithFrame_pullsDown_(frame, False)
+    titles = [title for title, _ in spec["options"]]
+    button.addItemsWithTitles_(titles)
+
+    current = str(spec.get("value") or "")
+    for title, value in spec["options"]:
+        if value == current:
+            button.selectItemWithTitle_(title)
+            break
+
+    button.setFont_(NSFont.systemFontOfSize_(12))
+    if spec.get("hint"):
+        button.setToolTip_(spec["hint"])
+    return button
+
+
 def _input_for(spec, frame):
+    if spec.get("kind") == "choice":
+        return _choice_for(spec, frame)
+
     cls = NSSecureTextField if spec.get("kind") == "secret" else NSTextField
     field = cls.alloc().initWithFrame_(frame)
     field.setStringValue_(str(spec.get("value") or ""))
@@ -94,6 +114,16 @@ def _build_rows(fields, inner_width):
         previous = field
 
     return body, height, controls
+
+
+def _read(spec, control) -> str:
+    if spec.get("kind") == "choice":
+        chosen = control.titleOfSelectedItem()
+        for title, value in spec["options"]:
+            if title == chosen:
+                return value
+        return ""
+    return control.stringValue().strip()
 
 
 def _problems(fields, values):
@@ -206,8 +236,9 @@ class FormController(NSObject):
         NSApplication.sharedApplication().activateIgnoringOtherApps_(True)
 
     def saveClicked_(self, sender):
+        by_key = {spec["key"]: spec for spec in self.fields}
         values = {
-            key: control.stringValue().strip()
+            key: _read(by_key.get(key, {}), control)
             for key, control in self.controls.items()
         }
 

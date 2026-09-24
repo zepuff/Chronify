@@ -36,8 +36,8 @@ dependencies = [
 signature = ["Pillow>=10.0.0"]
 
 [project.urls]
-Homepage = "https://github.com/zepuff/chronify"
-Issues = "https://github.com/zepuff/chronify/issues"
+Homepage = "https://github.com/zepuff/Chronify"
+Issues = "https://github.com/zepuff/Chronify/issues"
 
 [project.scripts]
 chronify = "chronify.main:main"

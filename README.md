@@ -158,7 +158,7 @@ Converting invoices to PDF needs LibreOffice, also optional: `brew install --cas
 If you're editing the code, install from a clone so your changes are picked up without reinstalling:
 
 ```bash
-git clone https://github.com/zepuff/chronify.git
+git clone https://github.com/zepuff/Chronify.git
 cd chronify
 python3 -m venv venv && source venv/bin/activate
 pip install -e .

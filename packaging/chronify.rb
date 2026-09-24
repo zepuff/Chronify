@@ -2,9 +2,9 @@ class Chronify < Formula
   include Language::Python::Virtualenv
 
   desc "Menu bar work tracker with local-AI daily statuses and invoicing"
-  homepage "https://github.com/zepuff/chronify"
-  url "https://github.com/zepuff/chronify/archive/refs/tags/v0.3.0.tar.gz"
-  sha256 "PUT-THE-CHECKSUM-OF-THE-v0.3.0-TARBALL-HERE"
+  homepage "https://github.com/zepuff/Chronify"
+  url "https://github.com/zepuff/Chronify/archive/refs/tags/v0.3.0.tar.gz"
+  sha256 "27a8a72da084f08a284fb589aeec3e97bcd2da9aef9d6712d98986343a838c57"
   license "GPL-3.0-or-later"
 
   depends_on "python@3.13"
@@ -253,7 +253,7 @@ class Chronify < Formula
         never touch it.
 
       #{h}THE GUIDE#{r}
-        #{b}https://zepuff.github.io/chronify/#{r}
+        #{b}https://zepuff.github.io/Chronify/#{r}
     EOS
   end
 

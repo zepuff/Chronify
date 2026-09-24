@@ -2,7 +2,7 @@
 
 Two repositories are involved:
 
-- `zepuff/chronify` holds the code, the site and this checklist
+- `zepuff/Chronify` holds the code, the site and this checklist
 - `zepuff/homebrew-chronify` holds the formula people install from
 
 The code is released first, then the formula is pointed at it.
@@ -41,7 +41,7 @@ The code is released first, then the formula is pointed at it.
 6. Take the checksum of that tarball:
 
    ```bash
-   curl -sL https://github.com/zepuff/chronify/archive/refs/tags/v0.3.0.tar.gz \
+   curl -sL https://github.com/zepuff/Chronify/archive/refs/tags/v0.3.0.tar.gz \
      | shasum -a 256
    ```
 
@@ -50,7 +50,7 @@ The code is released first, then the formula is pointed at it.
 7. In `Formula/chronify.rb`, two lines change per release:
 
    ```ruby
-   url "https://github.com/zepuff/chronify/archive/refs/tags/v0.3.0.tar.gz"
+   url "https://github.com/zepuff/Chronify/archive/refs/tags/v0.3.0.tar.gz"
    sha256 "<the checksum from step 6>"
    ```
 

@@ -59,7 +59,7 @@ def _credentials(config: dict) -> tuple:
     if not api_key or not employee_id:
         raise NotConfiguredError(
             "PeopleForce is not configured. Fill in your details through "
-            "'⚙️ Setup wizard'."
+            "'⚙️ Settings → PeopleForce'."
         )
     return api_key, employee_id, base_url
 

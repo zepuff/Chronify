@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chronify</title>
+<meta name="description" content="Трекер у рядку меню macOS: сам рахує години, пише daily status локальною моделлю, заповнює таймшити й інвойси.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="topbar">
+    <a class="brand" href="./">Chronify <span>⏱</span></a>
+    <nav class="topnav">
+      <a href="start.html">Швидкий старт</a>
+      <a href="https://github.com/zepuff/chronify">Код</a>
+      <span class="langs">
+        <a href="../">EN</a><i>/</i><a href="./" aria-current="true">UK</a>
+      </span>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <p class="eyebrow">рядок меню macOS</p>
+    <h1>Ваш робочий день записує себе сам.</h1>
+    <p class="lead">
+      Шоста вечора, хтось питає, що ви сьогодні зробили. Chronify уже знає. Він
+      веде журнал, пише статус і заповнює таймшит, який ви збиралися відкласти
+      до пʼятниці.
+    </p>
+
+    <div class="hero-actions">
+      <a class="button" href="start.html">Почати</a>
+      <a class="button ghost" href="https://github.com/zepuff/chronify">Подивитися код</a>
+      <span class="meta">macOS · GPL-3.0 · без акаунта</span>
+    </div>
+
+    <div class="screen">
+      <div class="menubar">
+        <span class="tracker">⏱ 3h 25m</span>
+        <span class="sys">100%</span>
+        <span class="sys">Ср 18:04</span>
+      </div>
+
+      <div class="menupane">
+        <div class="dropdown">
+          <ul>
+            <li>⏸ Pause tracking</li>
+            <li class="on">🏷 Project <span class="chev">›</span></li>
+            <li class="sep"></li>
+            <li>✨ Write today's status</li>
+            <li>✅ What I did today <span class="chev">›</span></li>
+            <li>🚧 What is blocking me <span class="chev">›</span></li>
+            <li>📋 Plan for today <span class="chev">›</span></li>
+            <li class="sep"></li>
+            <li>📊 Where today went</li>
+            <li>📅 Month calendar <span class="chev">›</span></li>
+            <li class="sep"></li>
+            <li>🧾 Invoice <span class="chev">›</span></li>
+            <li>📤 Send hours to PeopleForce <span class="chev">›</span></li>
+          </ul>
+        </div>
+
+        <div class="readout">
+          <h3>Сьогодні, поки що</h3>
+          <div class="tasks">
+            <div class="task"><span>Ticket TASK-482</span><span>1h 12m</span></div>
+            <div class="task"><span>Code Review / Git</span><span>48m</span></div>
+            <div class="task"><span>Meetings</span><span>55m</span></div>
+            <div class="task"><span>Research</span><span>30m</span></div>
+            <div class="task total"><span>Разом</span><span>3h 25m</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Він дивиться на вікно, а не на вас</h2>
+      <p class="prose">
+        Раз на пʼять секунд Chronify перевіряє, яке вікно активне, і за вашими
+        ж правилами перетворює його на назву задачі. Не «Chrome, 4 години», а
+        <code>Ticket ABC-123</code> і <code>Code Review / Git</code>.
+      </p>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <p class="item">⏸ Pause tracking</p>
+        <h3>Вимкнено означає вимкнено</h3>
+        <p>
+          Один клік, і не записується нічого. Саме для тих випадків, коли
+          робочий ноутбук використовується для справ, які нікого не стосуються.
+        </p>
+      </div>
+
+      <div class="feature">
+        <p class="item">idle_threshold_seconds</p>
+        <h3>Він питає про простій</h3>
+        <p>
+          Не було вас 25 хвилин, і коли повернетесь, він спитає, чи це була
+          робота. Читали документацію, зарахує. Обід, ні. Zoom, Meet і Teams
+          рахуються самі, бо дзвінок це робота, навіть коли руки лежать.
+        </p>
+      </div>
+
+      <div class="feature">
+        <p class="item">🏷 Project</p>
+        <h3>Кожна година має проєкт</h3>
+        <p>
+          Перемикаєте з рядка меню, і трекер іде за вами. Записали день не тому
+          проєкту? Перенесіть цей день або цілий діапазон дат у два кліки.
+        </p>
+      </div>
+
+      <div class="feature">
+        <p class="item">📋 Plan for today</p>
+        <h3>Один пункт дивиться на вас</h3>
+        <p>
+          Закріпіть невиконаний пункт, і він цілий день висітиме в рядку меню.
+          Те, що не встигли, саме переїде на завтра.
+        </p>
+      </div>
+
+      <div class="feature">
+        <p class="item">📅 Month calendar</p>
+        <h3>Місяць одним поглядом</h3>
+        <p>
+          Теплова карта місяця у браузері, кожен день розбитий по проєктах, а
+          те, що ви логували, за один клік.
+        </p>
+      </div>
+
+      <div class="feature">
+        <p class="item">⏰ Remind me at a time</p>
+        <h3>Будильники, які вміють мовчати</h3>
+        <p>
+          Нагадування в ті дні, які ви оберете. Якщо Mac був вимкнений і момент
+          минув більш ніж на дві години, воно не спрацює, щоб зранку не завалити
+          вас старими спливашками.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Статус пишеться сам</h2>
+      <p class="prose">
+        Протягом дня ви накидаєте нотатки як виходить: «пофіксив кнопку в
+        сафарі», «заапрувив пулріквест». Увечері один клік перетворює це на
+        текст, який можна вставити в Slack.
+      </p>
+      <p class="prose">
+        Через модель проходить лише перший розділ, і під жорсткими правилами:
+        нічого не вигадувати, не згадувати години, не називати програми.
+        Решта збирається з того, що ви написали.
+      </p>
+    </div>
+
+    <div class="stack" style="margin-top: 28px; max-width: 680px;">
+      <pre><code>What was done today:
+• Fixed the button rendering in Safari
+• Reviewed and approved the payments pull request
+
+What is planned next:
+• Finish the timesheet export
+
+Blockers: None
+
+Infrastructure status: 🟢 All systems stable</code></pre>
+    </div>
+
+    <div class="note">
+      <strong>Модель працює на вашому Mac.</strong> Ollama або Apple
+      Intelligence, що оберете в налаштуваннях, і Chronify поставить це сам.
+      Ніякого ключа OpenAI, ніякої хмари, ніякого акаунта. Ваші робочі нотатки
+      не залишають ноутбук.
+    </div>
+  </section>
+
+  <section>
+    <div class="split">
+      <div class="stack">
+        <h2>Таймшити без пʼятничного ритуалу</h2>
+        <p>
+          Години й текст статусу йдуть у PeopleForce за день, за вчора або за
+          весь місяць одразу. Увімкніть автопуш, і це відбуватиметься після
+          півночі, з догоном до тижня, якщо Mac був вимкнений.
+        </p>
+        <p>
+          Ви обираєте, що саме надсилати: справжні проміжки, які записав трекер,
+          чи один запис на проєкт. Дні, де запис уже є, ніколи не
+          перезаписуються без вашого підтвердження.
+        </p>
+      </div>
+
+      <div class="stack">
+        <h2>Інвойс за хвилину</h2>
+        <p>
+          В останній робочий день місяця він нагадає сам і запропонує розподіл
+          годин по проєктах. Підтверджуєте, і готовий <code>.docx</code> з
+          вашими реквізитами, підписом і сумою вже відкритий, а поруч PDF.
+        </p>
+        <p>
+          Уже надсилали інвойс раніше? Вкажіть на нього, і Chronify вичитає
+          IBAN, SWIFT, податковий номер і адреси прямо з документа, щоб ви
+          більше їх не вбивали.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Встановлення за дві хвилини</h2>
+      <p>Homebrew принесе з собою і Python, і все інше.</p>
+    </div>
+
+    <div class="stack" style="margin-top: 24px; max-width: 640px;">
+      <pre><code>brew tap zepuff/chronify
+brew trust zepuff/chronify
+brew install chronify
+chronify --background</code></pre>
+      <p class="meta">Далі дивіться у правий верхній кут екрана, там ⏱.</p>
+      <p><a href="start.html">Швидкий старт проведе через перші десять хвилин →</a></p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Chronify · GPL-3.0 · для тих, хто рахує години</span>
+    <nav>
+      <a href="start.html">Швидкий старт</a>
+      <a href="https://github.com/zepuff/chronify">Код</a>
+      <a href="../">In English</a>
+    </nav>
+  </footer>
+
+</div>
+
+</body>
+</html>

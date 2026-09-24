@@ -23,9 +23,9 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Iterator, Optional
 
-from chronify.config import MONTH_NAMES, WEEKDAY_NAMES
+from chronify.config import BASE_DIR, MONTH_NAMES, WEEKDAY_NAMES
 
-DB_PATH = Path(os.path.expanduser("~/.work_tracker/tracker.db"))
+DB_PATH = BASE_DIR / "tracker.db"
 
 
 @contextmanager

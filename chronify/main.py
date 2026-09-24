@@ -31,7 +31,9 @@ from chronify import invoice_import
 from chronify import notes
 from chronify import peopleforce
 from chronify import projects
+from chronify import menu_text
 from chronify import settings
+from chronify import shortcuts
 from chronify.main_setup import SetupMixin
 from chronify.config import (
     DEBUG, ProfileWriteError, load_config, read_profile, save_profile_value,
@@ -48,6 +50,7 @@ from chronify.ui_windows import (
     choose_docx_file,
     QuickInputController,
     make_window_always_on_top,
+    reveal_in_finder,
 )
 
 ARCHIVE_LOOKBACK_DAYS = 60
@@ -59,7 +62,10 @@ LIST_MENUS = {
         "empty": "(nothing logged today yet)",
         "kind": "task",
         "input_title": "Log a completed task",
-        "input_message": "Describe what you finished:",
+        "input_message": "What did you finish? Write it however it comes out, "
+                         "one thing per entry. The daily status is built "
+                         "from these lines, so 'fixed the button in safari' "
+                         "is enough.",
         "saved_note": "Logged ✅",
         "read": lambda: notes.read_tasks_for_date(date.today(), _scope()),
         "add": lambda text: notes.add_task(text, project=projects.get_active_id()),
@@ -71,7 +77,8 @@ LIST_MENUS = {
         "empty": "(no reminders)",
         "kind": "reminder",
         "input_title": "Note to self",
-        "input_message": "Context or an idea for the daily status:",
+        "input_message": "Something to remember or mention later. It has no date "
+                         "and stays here until you delete it.",
         "saved_note": "Reminder saved ✅",
         "read": lambda: notes.read_all_reminders(_scope()),
         "add": lambda text: notes.append_reminder(text, project=projects.get_active_id()),
@@ -83,7 +90,8 @@ LIST_MENUS = {
         "empty": "(no blockers — the status will say 'None')",
         "kind": "blocker",
         "input_title": "New blocker",
-        "input_message": "What is blocking the work?",
+        "input_message": "What is in the way? It goes into the daily status as "
+                         "its own section until you mark it resolved.",
         "saved_note": "Blocker logged 🚧",
         "read": lambda: notes.read_all_blockers(_scope()),
         "add": lambda text: notes.add_blocker(text, project=projects.get_active_id()),
@@ -184,12 +192,24 @@ class WorkTrackerApp(SetupMixin, rumps.App):
         self._generation_running = False
         self._generation_token = 0
 
-        self.day_view_menu = rumps.MenuItem("📆 Open a specific day")
-        self.pause_item = rumps.MenuItem(
-            "⏸ Pause (personal use)", callback=self.toggle_pause
-        )
+        self.day_view_menu = rumps.MenuItem(menu_text.DAY)
+        self.pause_item = rumps.MenuItem(menu_text.PAUSE, callback=self.toggle_pause)
 
-        self.invoice_menu = rumps.MenuItem("🧾 Invoice")
+        self.stats_item = rumps.MenuItem(
+            menu_text.STATS, callback=self.show_today_stats
+        )
+        self.status_item = rumps.MenuItem(
+            menu_text.STATUS, callback=self.generate_daily
+        )
+        self.reload_item = rumps.MenuItem(
+            menu_text.RELOAD, callback=self.reload_rules
+        )
+        self.data_folder_item = rumps.MenuItem(
+            menu_text.DATA_FOLDER, callback=self.open_data_folder
+        )
+        self.quit_item = rumps.MenuItem(menu_text.QUIT, callback=self.quit_app)
+
+        self.invoice_menu = rumps.MenuItem(menu_text.INVOICE)
         self.invoice_menu.add(rumps.MenuItem(
             "Create for this month",
             callback=self._make_month_callback(self._prompt_and_create_invoice, False),
@@ -213,26 +233,26 @@ class WorkTrackerApp(SetupMixin, rumps.App):
             callback=self._make_month_callback(self._refresh_invoice_pdf, True),
         ))
 
-        self.peopleforce_menu = rumps.MenuItem("📤 Push to PeopleForce")
+        self.peopleforce_menu = rumps.MenuItem(menu_text.PUSH)
         self.pf_days_menu = rumps.MenuItem("Days this month")
         self.pf_auto_item = rumps.MenuItem(
-            "Auto-push at 00:00", callback=self.toggle_auto_push
+            menu_text.AUTO_PUSH, callback=self.toggle_auto_push
         )
         self.pf_intervals_item = rumps.MenuItem(
-            "Push real time ranges", callback=self.toggle_real_intervals
+            menu_text.REAL_INTERVALS, callback=self.toggle_real_intervals
         )
 
-        self.project_menu = rumps.MenuItem("🏷 Active project")
-        self.tasks_menu = rumps.MenuItem("✅ Completed tasks")
-        self.reminders_menu = rumps.MenuItem("💭 Notes to self")
-        self.blockers_menu = rumps.MenuItem("🚧 Blockers")
-        self.alerts_menu = rumps.MenuItem("⏰ Timed reminders")
-        self.plan_menu = rumps.MenuItem("📋 Today's plan")
-        self.pin_menu = rumps.MenuItem("📌 Show in the menu bar")
-        self.infra_menu = rumps.MenuItem("🚦 Infrastructure status")
-        self.settings_menu = rumps.MenuItem("⚙️ Settings")
+        self.project_menu = rumps.MenuItem(menu_text.PROJECT)
+        self.tasks_menu = rumps.MenuItem(menu_text.TASKS)
+        self.reminders_menu = rumps.MenuItem(menu_text.NOTES)
+        self.blockers_menu = rumps.MenuItem(menu_text.BLOCKERS)
+        self.alerts_menu = rumps.MenuItem(menu_text.ALERTS)
+        self.plan_menu = rumps.MenuItem(menu_text.PLAN)
+        self.pin_menu = rumps.MenuItem(menu_text.PIN)
+        self.infra_menu = rumps.MenuItem(menu_text.INFRA)
+        self.settings_menu = rumps.MenuItem(menu_text.SETTINGS)
 
-        self.calendar_menu = rumps.MenuItem("📅 Hours calendar")
+        self.calendar_menu = rumps.MenuItem(menu_text.CALENDAR)
         self.calendar_menu.add(rumps.MenuItem(
             "This month",
             callback=self._make_month_callback(self._show_combined_calendar, False),
@@ -242,7 +262,7 @@ class WorkTrackerApp(SetupMixin, rumps.App):
             callback=self._make_month_callback(self._show_combined_calendar, True),
         ))
 
-        self.notes_menu = rumps.MenuItem("📝 Daily statuses")
+        self.notes_menu = rumps.MenuItem(menu_text.HISTORY)
         self.notes_menu.add(
             rumps.MenuItem("Open status history", callback=self.open_history)
         )
@@ -254,7 +274,7 @@ class WorkTrackerApp(SetupMixin, rumps.App):
             self.pause_item,
             self.project_menu,
             None,
-            "✨ Generate daily status",
+            self.status_item,
             self.tasks_menu,
             self.reminders_menu,
             self.blockers_menu,
@@ -262,7 +282,7 @@ class WorkTrackerApp(SetupMixin, rumps.App):
             self.alerts_menu,
             self.infra_menu,
             None,
-            "📊 Today's stats",
+            self.stats_item,
             self.day_view_menu,
             self.calendar_menu,
             None,
@@ -271,11 +291,21 @@ class WorkTrackerApp(SetupMixin, rumps.App):
             self.notes_menu,
             None,
             self.settings_menu,
-            "🔄 Reload rules",
-            "📁 Open saved data folder",
+            self.reload_item,
+            self.data_folder_item,
             None,
-            rumps.MenuItem("Quit", callback=self.quit_app),
+            self.quit_item,
         ]
+
+        menu_text.explain_all([
+            self.pause_item, self.project_menu, self.status_item,
+            self.tasks_menu, self.reminders_menu, self.blockers_menu,
+            self.plan_menu, self.alerts_menu, self.infra_menu,
+            self.stats_item, self.day_view_menu, self.calendar_menu,
+            self.invoice_menu, self.peopleforce_menu, self.notes_menu,
+            self.settings_menu, self.reload_item, self.data_folder_item,
+            self.quit_item, self.pin_menu,
+        ])
 
         self.rebuild_project_menu()
         self._rebuild_day_view_menu()
@@ -402,7 +432,7 @@ class WorkTrackerApp(SetupMixin, rumps.App):
         def warn():
             _notify(
                 f"{db.format_duration(orphan_seconds)} recorded with no project "
-                f"— pick one in 🏷 Active project so the hours can be pushed",
+                f"— pick one in 🏷 Project so the hours can be pushed",
                 title="⚠️ No active project",
             )
 
@@ -443,12 +473,13 @@ class WorkTrackerApp(SetupMixin, rumps.App):
     def toggle_pause(self, sender):
         if self.tracker.is_manually_paused():
             self.tracker.resume()
-            sender.title = "⏸ Pause (personal use)"
+            sender.title = menu_text.PAUSE
             _notify("Tracking resumed ▶️")
         else:
             self.tracker.pause()
-            sender.title = "▶️ Resume tracking"
+            sender.title = menu_text.RESUME
             _notify("Tracking paused ⏸ — use your laptop freely")
+        menu_text.explain(sender)
         self.refresh_title()
 
     def _rebuild_list_menu(self, key, _sender=None):
@@ -639,7 +670,7 @@ class WorkTrackerApp(SetupMixin, rumps.App):
             message=f"{orphans} recorded segments were tracked before projects "
                     f"existed.\n\nAssign all of them to {options[0]['name']}?\n"
                     f"You can move any single day later from "
-                    f"🏷 Active project → Move a day.\n\nProjects: {names}",
+                    f"🏷 Project → Move a day.\n\nProjects: {names}",
             ok=f"Assign to {options[0]['name']}",
             cancel="Leave them",
         )
@@ -685,9 +716,10 @@ class WorkTrackerApp(SetupMixin, rumps.App):
 
         self._add_separator(self.project_menu)
         scope_item = rumps.MenuItem(
-            "Separate tasks & notes per project", callback=self.toggle_scoping
+            menu_text.SCOPE, callback=self.toggle_scoping
         )
         scope_item.state = 1 if settings.is_project_scoped() else 0
+        menu_text.explain(scope_item)
         self.project_menu.add(scope_item)
 
         self._add_separator(self.project_menu)
@@ -1108,11 +1140,16 @@ class WorkTrackerApp(SetupMixin, rumps.App):
         window = rumps.Window(
             title=f"Segments on {target_date.isoformat()}",
             message=(
-                f"{len(segments)} segments, {db.format_duration(total)} in total.\n\n"
-                f"id | from-to | length | task | project\n\n"
-                f"• delete a line to remove that segment\n"
-                f"• change the project at the end of a line to move it\n"
-                f"Known projects: {', '.join(sorted(project_names.values()))}"
+                f"{len(segments)} segments, {db.format_duration(total)} in "
+                f"total. One line each, in the form\n"
+                f"   id | from-to | length | task | project\n"
+                f"for example   41 | 09:12-09:47 | 35m | Ticket TASK-482 | Website\n\n"
+                f"• delete a whole line and that stretch of time is erased\n"
+                f"• retype the project at the end of a line to move it there\n"
+                f"• the id, times and task name are read back as they are, so "
+                f"leave them alone\n"
+                f"Projects you can type: "
+                f"{', '.join(sorted(project_names.values()))}"
             ),
             default_text=listing,
             dimensions=(560, 320),
@@ -1206,10 +1243,9 @@ class WorkTrackerApp(SetupMixin, rumps.App):
             message=f"⏱ Tracked time:\n{stats_text}\n\n📝 Status:\n{status_text}",
         )
 
-    @rumps.clicked("📊 Today's stats")
     def show_today_stats(self, _sender):
         rumps.alert(
-            title="Today's stats",
+            title="Where today went",
             message=_format_stats_text(db.get_task_totals_for_date(date.today())),
         )
 
@@ -1245,9 +1281,11 @@ class WorkTrackerApp(SetupMixin, rumps.App):
 
         window = rumps.Window(
             title="Check the details before saving",
-            message=f"{summary}\n\nEdit anything that is wrong and fill in what is "
-                    f"missing. Keep the 'Label: value' format, one per line. "
-                    f"Clear a value to leave that field untouched.",
+            message=f"{summary}\n\nOne field per line, in the form "
+                    f"'Label: value', for example 'IBAN: UA12 3456 7890'. "
+                    f"Correct anything that came out wrong and type in what "
+                    f"is missing. A line left with nothing after the colon "
+                    f"keeps whatever you already had saved.",
             default_text=invoice_import.rows_to_text(rows),
             dimensions=(460, 300),
             ok="Save to profile",
@@ -1303,21 +1341,6 @@ class WorkTrackerApp(SetupMixin, rumps.App):
             return
 
         _notify("Refreshing the PDF...")
-
-        def worker():
-            pdf_path = invoice.convert_docx_to_pdf(docx_path)
-            if pdf_path:
-                AppHelper.callAfter(_notify, f"PDF refreshed: {pdf_path.name}")
-                AppHelper.callAfter(subprocess.run, ["open", str(pdf_path)])
-            else:
-                AppHelper.callAfter(
-                    rumps.alert,
-                    "Could not create the PDF",
-                    "LibreOffice was not found. Install it for free: "
-                    "brew install --cask libreoffice",
-                )
-
-        _run_async(worker)
 
         def worker():
             pdf_path = invoice.convert_docx_to_pdf(docx_path)
@@ -1450,10 +1473,13 @@ class WorkTrackerApp(SetupMixin, rumps.App):
 
         message = (
             f"Suggested split ({source_note}), about "
-            f"{round(estimate, 2)} {currency} in total.\n"
-            f"Edit the hours if needed — keep the line numbers, they decide "
-            f"which project a line belongs to. Delete a line to leave that "
-            f"project off the invoice."
+            f"{round(estimate, 2)} {currency} in total.\n\n"
+            f"One line per project, in the form '1. Project: hours', for "
+            f"example '1. Website: 120' or '1. Website: 41.5'. Change the "
+            f"number after the colon to correct the hours.\n"
+            f"Keep the number at the start of each line: that is what tells "
+            f"the app which project the line belongs to.\n"
+            f"Delete a whole line to leave that project off this invoice."
         )
         if problems:
             message = (
@@ -1530,9 +1556,11 @@ class WorkTrackerApp(SetupMixin, rumps.App):
     def _show_invoice_result(self, month_label, result):
         docx_path, pdf_path = result.get("docx"), result.get("pdf")
         made = [p.name for p in (docx_path, pdf_path) if p]
+        folder = (docx_path or pdf_path).parent if (docx_path or pdf_path) else None
 
         if made:
             files_line = "Created:\n  " + "\n  ".join(made)
+            files_line += f"\n\nSaved in:\n  {folder}"
         else:
             files_line = "Nothing was created."
 
@@ -1570,7 +1598,17 @@ class WorkTrackerApp(SetupMixin, rumps.App):
         else:
             body += "\n\nAll fields were filled in."
 
-        rumps.alert(title=f"Invoice for {month_label} is ready", message=body)
+        if folder is None:
+            rumps.alert(title=f"Invoice for {month_label} is ready", message=body)
+            return
+
+        if rumps.alert(
+            title=f"Invoice for {month_label} is ready",
+            message=body,
+            ok="Show in Finder",
+            cancel="Close",
+        ):
+            reveal_in_finder(docx_path or pdf_path)
 
     def check_invoice_reminder(self, _sender=None):
         if not invoice.should_show_reminder_now():
@@ -1644,13 +1682,12 @@ class WorkTrackerApp(SetupMixin, rumps.App):
 
         _run_async(worker)
 
-    @rumps.clicked("✨ Generate daily status")
     def generate_daily(self, _sender):
         if self._generation_running:
             rumps.alert(
                 title="Already generating",
                 message="A status is being written right now. Wait for it, or "
-                        "use 📝 Daily statuses → Stop generating.",
+                        "use 📝 Status history → Stop generating.",
             )
             return
 
@@ -1698,12 +1735,10 @@ class WorkTrackerApp(SetupMixin, rumps.App):
             copy_to_clipboard(response.text)
             _notify("Copied to clipboard ✅")
 
-    @rumps.clicked("🔄 Reload rules")
     def reload_rules(self, _sender):
         self.tracker.mapper.reload()
         _notify("Grouping rules reloaded")
 
-    @rumps.clicked("📁 Open saved data folder")
     def open_data_folder(self, _sender):
         subprocess.run(["open", str(db.DB_PATH.parent)])
 
@@ -1725,9 +1760,11 @@ class WorkTrackerApp(SetupMixin, rumps.App):
         self._add_separator(self.peopleforce_menu)
 
         self.pf_intervals_item.state = 1 if settings.is_real_intervals_enabled() else 0
+        menu_text.explain(self.pf_intervals_item)
         self.peopleforce_menu.add(self.pf_intervals_item)
 
         self.pf_auto_item.state = 1 if settings.is_auto_push_enabled() else 0
+        menu_text.explain(self.pf_auto_item)
         self.peopleforce_menu.add(self.pf_auto_item)
 
     def _rebuild_pf_days_menu(self):
@@ -2375,11 +2412,16 @@ class WorkTrackerApp(SetupMixin, rumps.App):
             )
         if len(self._unique_projects(blocks)) > 1:
             header += (
-                "\nEach project gets its own comment. Keep the === Name === "
-                "headers so the text ends up in the right timesheet entry."
+                "\nThe text below becomes the comment on the timesheet entry, "
+                "one comment per project. Edit it freely, but keep the "
+                "=== Project name === lines: they are what sends each block "
+                "to the right entry."
             )
         else:
-            header += "\nYou can edit the comment before pushing:"
+            header += (
+                "\nThe text below becomes the comment on the timesheet entry. "
+                "It is your daily status, and you can edit it before it goes."
+            )
 
         title = f"Push {target_date.isoformat()} to PeopleForce?"
         if len(self._unique_projects(blocks)) == 1 and settings.is_project_scoped():
@@ -2457,6 +2499,19 @@ class WorkTrackerApp(SetupMixin, rumps.App):
         rumps.quit_application()
 
 
+def _start_detached() -> None:
+    import sys
+
+    subprocess.Popen(
+        [sys.executable, "-m", "chronify"],
+        start_new_session=True,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    print("Chronify is running in the background. Quit it from the ⏱ menu.")
+
+
 def main() -> None:
     import sys
 
@@ -2469,11 +2524,23 @@ def main() -> None:
     if args and args[0] in ("-h", "--help"):
         print(
             "chronify — macOS menu bar work tracker\n\n"
-            "Usage: chronify [--version] [--help]\n\n"
-            "Run without arguments to start the menu bar app.\n"
+            "Usage: chronify [--background] [--version] [--help]\n\n"
+            "Run without arguments to start the menu bar app in this\n"
+            "terminal, where Ctrl+C quits it.\n"
+            "  --background   start it detached and give the terminal back\n\n"
             "Data and settings live in ~/.work_tracker/"
         )
         return
+    if args and args[0] in ("-b", "--background"):
+        _start_detached()
+        return
+
+    shortcuts.prepare_app()
+    if sys.stdout.isatty():
+        print(
+            "Chronify is in the menu bar (⏱). Ctrl+C here quits it; "
+            "start it with 'chronify --background' to keep this terminal free."
+        )
 
     WorkTrackerApp().run()
 

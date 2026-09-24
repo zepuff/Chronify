@@ -69,9 +69,9 @@ if [ -n "$STALE" ]; then
     echo
 fi
 
-MARKER="$ROOT/chronify/typst_invoice.py"
-if [ -f "$MARKER" ] && ! grep -q "export_for_editing" "$MARKER"; then
-    echo "chronify/typst_invoice.py is from an older build."
+if ! grep -q "DocxTemplate" "$ROOT/chronify/invoice.py"; then
+    echo "chronify/invoice.py is from an older build: invoices are still filled"
+    echo "with the regex substitution that corrupts templates edited in Word."
     echo "Check which archive you unzipped:"
     echo "    ls -lt ~/Downloads/chronify-repo*.zip"
     echo

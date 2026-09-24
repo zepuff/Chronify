@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chronify Quick Start</title>
+<meta name="description" content="From brew install to a finished daily status and a filled-in timesheet, in about ten minutes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="topbar">
+    <a class="brand" href="./">Chronify <span>⏱</span></a>
+    <nav class="topnav">
+      <a href="./">Home</a>
+      <a href="https://github.com/zepuff/chronify">Source</a>
+      <span class="langs">
+        <a href="start.html" aria-current="true">EN</a><i>/</i><a href="uk/start.html">UK</a>
+      </span>
+    </nav>
+  </header>
+
+  <section class="hero" style="padding-bottom: 0;">
+    <p class="eyebrow">Quick start</p>
+    <h1>Ten minutes, then it runs itself</h1>
+    <p class="lead">
+      Steps 1 to 3 are all you need for a working tracker. The rest are there
+      when you want them, and Chronify asks for them the first time you use
+      something that needs them.
+    </p>
+  </section>
+
+  <section>
+    <div class="steps">
+
+      <article class="step">
+        <div class="step-body">
+          <h3>Install it</h3>
+          <p>You need macOS and Homebrew. Homebrew brings Python and every library with it.</p>
+          <pre><code>brew tap zepuff/chronify
+brew trust zepuff/chronify
+brew install chronify</code></pre>
+          <p>
+            <code>brew trust</code> confirms you are fine installing a formula
+            from outside the official Homebrew repo. Without it the install
+            stops with an error about an untrusted tap. The first install takes
+            a while, because Homebrew builds the Python libraries from source.
+          </p>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-body">
+          <h3>Start it</h3>
+          <pre><code>chronify --background</code></pre>
+          <p>
+            A ⏱ icon appears at the top right of the screen. Without
+            <code>--background</code> the app holds on to the terminal window
+            and <kbd>Ctrl</kbd>+<kbd>C</kbd> quits it, which is handy while
+            you are trying things out.
+          </p>
+          <p class="plain">To have it start when you log in:</p>
+          <pre><code>brew services start chronify</code></pre>
+          <p>
+            macOS will ask for two permissions. <strong>Screen Recording</strong>
+            is the one that matters: without it the window titles are invisible
+            and your day is logged as bare app names with no task breakdown.
+            Grant it in System Settings, then quit and start Chronify again,
+            because macOS only reads that permission at launch.
+            <strong>Notifications</strong> is the other, otherwise the timed
+            reminders never fire.
+          </p>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-body">
+          <h3>Name one project</h3>
+          <p>
+            Click ⏱ in the menu bar, then <code>🏷 Project → + Add a
+            project</code>. Only the name is required. Until a project exists
+            there is nowhere to put the hours, so tracking stays paused.
+          </p>
+          <p>
+            That is the whole setup. Chronify is now recording, and the menu bar
+            shows the total for today. Every item in the menu carries a small
+            grey line underneath saying what it does, so you can read the menu
+            instead of a manual.
+          </p>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-body">
+          <h3>Pick who writes your status <span class="optional">optional</span></h3>
+          <p>
+            <code>⚙️ Settings → Daily status</code>. Choose <strong>Ollama</strong>
+            if you want the status written in a different language from your
+            notes, including Ukrainian. Choose <strong>Apple Intelligence</strong>
+            if you would rather not download a model, and you are on macOS 26
+            with Apple Silicon. Choose <strong>No AI</strong> and the status is a
+            plain list of your notes.
+          </p>
+          <p>
+            Chronify installs whichever you pick, through Homebrew, in the
+            background. Ollama also pulls a model of about 2 GB, so give it a few
+            minutes.
+          </p>
+          <p class="plain">Using it looks like this:</p>
+          <p>
+            During the day, <code>✅ What I did today → + Log a completed task</code>
+            whenever you finish something. Write it however it comes out. In the
+            evening, <code>✨ Write today's status</code> gives you the finished
+            text in a window you can edit, and the Save button copies it.
+          </p>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-body">
+          <h3>Connect PeopleForce <span class="optional">optional</span></h3>
+          <p>
+            Three numbers and one key, all from your PeopleForce, all in
+            different places.
+          </p>
+          <div class="scroller">
+            <table class="fields">
+              <tr>
+                <th>Company API key</th>
+                <td>One key for the whole company, issued by whoever administers PeopleForce. Ask them for it, then paste it into ⚙️ Settings → PeopleForce.</td>
+              </tr>
+              <tr>
+                <th>Employee id</th>
+                <td>The number at the end of your own profile URL: <code>…peopleforce.io/people/12345</code> gives <code>12345</code>.</td>
+              </tr>
+              <tr>
+                <th>Project id</th>
+                <td>Open Time → Attendance, filter by the project, and read the URL: <code>…criteria%5Bproject_id%5D=42</code> gives <code>42</code>. This one goes into the project itself, under 🏷 Project → ✏️ Edit a project.</td>
+              </tr>
+              <tr>
+                <th>Working day starts at</th>
+                <td>Not from PeopleForce. It is the hour a lump timesheet entry is counted from, and you pick it yourself.</td>
+              </tr>
+            </table>
+          </div>
+          <p>
+            After that, <code>📤 Send hours to PeopleForce → Today</code> sends the
+            hours and the status text. Turn on <code>Auto-push at 00:00</code>
+            and yesterday goes by itself.
+          </p>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-body">
+          <h3>Set up invoices <span class="optional">optional</span></h3>
+          <p>
+            <code>⚙️ Settings → Invoicing</code> takes your rate, your name, the
+            client, and the folder the finished files are written to. Payment
+            details live in their own section, and if you have an invoice you
+            already sent, <code>🧾 Invoice → 📥 Import details from an existing
+            invoice…</code> reads the IBAN, SWIFT, tax number and addresses
+            straight out of it.
+          </p>
+          <p>
+            PDF conversion needs LibreOffice, which is free:
+            <code>brew install --cask libreoffice</code>. Without it you still
+            get the <code>.docx</code>.
+          </p>
+          <p>
+            When the invoice is ready Chronify tells you where it landed and
+            offers to show it in Finder.
+          </p>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="note">
+      <strong>Everything you enter lives in <code>~/.work_tracker/</code></strong>,
+      next to your database and your statuses, and never inside the app folder
+      that Homebrew rewrites on every upgrade. That is also the one folder worth
+      backing up. Open it any time from <code>📁 Show my data folder</code>.
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>If something looks wrong</h2>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <h3>Only app names, no tasks</h3>
+        <p>
+          Screen Recording is not granted. Check it from
+          <code>⚙️ Settings → Screen Recording</code>. macOS ties the permission
+          to the exact binary, so after <code>brew upgrade chronify</code> you
+          have to grant it again.
+        </p>
+      </div>
+
+      <div class="feature">
+        <h3>Nothing is recorded at all</h3>
+        <p>
+          Look at the icon. <code>⏸</code> means tracking is paused and
+          <code>⚠️ no project</code> means there is no project to record against.
+        </p>
+      </div>
+
+      <div class="feature">
+        <h3>The status is just my notes</h3>
+        <p>
+          The model is not answering. Check <code>⚙️ Settings → Daily status</code>,
+          and for Ollama that the service is up (<code>brew services start
+          ollama</code>) and the model is pulled.
+        </p>
+      </div>
+
+      <div class="feature">
+        <h3>The invoice has no table</h3>
+        <p>
+          The template was saved in Pages or TextEdit, which flatten the nested
+          table into text. Edit templates in Word or LibreOffice only.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Chronify · GPL-3.0</span>
+    <nav>
+      <a href="./">Home</a>
+      <a href="https://github.com/zepuff/chronify">Source</a>
+      <a href="uk/start.html">Українською</a>
+    </nav>
+  </footer>
+
+</div>
+
+</body>
+</html>

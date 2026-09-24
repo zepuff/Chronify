@@ -166,8 +166,13 @@ def test_every_section_field_has_a_path_and_label():
         assert section["fields"], section["key"]
         for field in section["fields"]:
             assert field["path"] and field["label"]
+            assert field.get("hint"), (
+                f"{section['key']}: '{field['label']}' has no hint, and the "
+                f"hint is printed under the field as the only explanation of "
+                f"what to type there"
+            )
             kind = field.get("kind", "text")
-            assert kind in ("text", "secret", "int", "float", "choice")
+            assert kind in ("text", "secret", "int", "float", "choice", "folder")
             if kind == "choice":
                 assert field["options"], field["label"]
                 for option in field["options"]:

@@ -15,11 +15,14 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import re
+import sys
 import tempfile
 import xml.dom.minidom
 import zipfile
 from html import unescape
 from pathlib import Path
+
+import pytest
 
 from chronify import invoice
 
@@ -71,6 +74,33 @@ def test_the_invoice_number_follows_the_client_code_and_month():
     _report, _raw, text = _fill(config, [])
 
     assert "XY092026" in text
+
+
+def test_the_file_name_skips_names_that_are_not_filled_in_yet():
+    empty = {"invoice": {"supplier_name": "", "client_name": ""}}
+    assert invoice.build_invoice_filename(2026, 9, empty) == "Invoice_September_2026.docx"
+
+    named = {"invoice": {"supplier_name": "Yaroslav", "client_name": "Amynebo"}}
+    assert invoice.build_invoice_filename(2026, 9, named) == (
+        "Invoice_Yaroslav_Amynebo_September_2026.docx"
+    )
+
+
+def test_a_signature_already_in_the_right_format_needs_no_pillow(tmp_path, monkeypatch):
+    signature = tmp_path / "signature.png"
+    signature.write_bytes(b"\x89PNG\r\n\x1a\n not really a png")
+    monkeypatch.setitem(sys.modules, "PIL", None)
+
+    assert invoice._signature_bytes(signature, ".png") == signature.read_bytes()
+
+
+def test_a_signature_that_needs_converting_says_what_to_do(tmp_path, monkeypatch):
+    signature = tmp_path / "signature.jpg"
+    signature.write_bytes(b"not really a jpeg")
+    monkeypatch.setitem(sys.modules, "PIL", None)
+
+    with pytest.raises(RuntimeError, match="Pillow"):
+        invoice._signature_bytes(signature, ".png")
 
 
 def test_empty_requisites_stay_as_visible_tokens():

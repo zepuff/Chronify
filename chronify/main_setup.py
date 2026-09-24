@@ -35,29 +35,35 @@ SETTINGS_SECTIONS = [
     {
         "key": "peopleforce",
         "title": "PeopleForce",
-        "intro": "Lets the app push tracked hours and the daily status "
-                 "straight into PeopleForce.",
+        "intro": "Sends your tracked hours and the daily status into your "
+                 "PeopleForce timesheet. Everything you type here stays on "
+                 "this Mac and goes nowhere except PeopleForce itself.",
         "required": [("peopleforce", "api_key"), ("peopleforce", "employee_id")],
         "fields": [
             {"path": ["peopleforce", "api_key"], "label": "Company API key",
              "kind": "secret", "optional": False,
-             "hint": "PeopleForce only issues company-wide keys. "
-                     "Settings -> API keys."},
+             "hint": "The key that lets Chronify send your hours and statuses "
+                     "to PeopleForce. There is one key for the whole company, "
+                     "so paste the one you were given. Press Show to check it."},
             {"path": ["peopleforce", "employee_id"], "label": "Employee id",
              "kind": "int", "optional": False,
-             "hint": "The number at the end of your own profile URL "
-                     "in PeopleForce."},
+             "hint": "Your own number, digits only. Open your profile in "
+                     "PeopleForce and take the number at the end of the "
+                     "address: .../people/12345 means you type 12345."},
             {"path": ["peopleforce", "start_hour"], "label": "Working day starts at",
              "kind": "int", "placeholder": "9",
-             "hint": "Hour a timesheet entry starts from."},
+             "hint": "Hour your day usually begins, as a number: 9 means "
+                     "09:00. Only used when 'Push real time ranges' is off, "
+                     "to decide where one lump entry starts."},
         ],
     },
     {
         "key": "status",
         "title": "Daily status",
-        "intro": "Who writes your daily status, and in which language. "
-                 "Chronify installs the one you pick — nothing to set up by "
-                 "hand.",
+        "intro": "Who turns the rough lines you log during the day into a "
+                 "status you can paste into Slack, and in which language. "
+                 "Chronify installs whichever you pick, so there is nothing "
+                 "to set up by hand.",
         "required": [],
         "fields": [
             {"path": ["ai_backend"], "label": "Written by",
@@ -65,53 +71,85 @@ SETTINGS_SECTIONS = [
              "options": [("No AI", "none"),
                          ("Ollama", "ollama"),
                          ("Apple Intelligence", "apfel")],
-             "hint": "Ollama understands Ukrainian and downloads a 2 GB "
-                     "model. Apple Intelligence uses the model already in "
-                     "macOS but cannot write Ukrainian. No AI leaves your "
-                     "notes exactly as you wrote them."},
+             "hint": "Ollama understands Ukrainian and downloads a model of "
+                     "about 2 GB. Apple Intelligence uses the model already "
+                     "in macOS, so nothing is downloaded, but it cannot write "
+                     "Ukrainian and needs macOS 26 on Apple Silicon. No AI "
+                     "leaves your notes exactly as you wrote them."},
             {"path": ["status_language"], "label": "Status language",
              "placeholder": "English",
-             "hint": "e.g. English, Ukrainian, Polish. Apple Intelligence "
-                     "cannot write Ukrainian; Ollama can."},
+             "hint": "The language the finished status is written in: "
+                     "English, Ukrainian, Polish. Your own notes can be in "
+                     "any language, they get translated."},
         ],
     },
     {
         "key": "invoice",
         "title": "Invoicing",
         "intro": "Fills your .docx template and produces a PDF in one click "
-                 "at the end of the month.",
+                 "at the end of the month. The hours come from the tracker or "
+                 "from PeopleForce; these are the things it cannot work out "
+                 "on its own.",
         "required": [("invoice", "hourly_rate"), ("invoice", "supplier_full_name")],
         "fields": [
             {"path": ["invoice", "hourly_rate"], "label": "Hourly rate",
-             "kind": "float", "optional": False},
+             "kind": "float", "optional": False,
+             "hint": "Digits only, for example 35 or 27.5. A project can "
+                     "carry its own rate, and that one wins over this."},
             {"path": ["invoice", "supplier_full_name"], "label": "Your full name",
              "optional": False,
-             "hint": "As it should appear inside the document."},
+             "hint": "Printed inside the invoice as the person being paid, "
+                     "for example Yaroslav Lukhkhovetsky."},
             {"path": ["invoice", "supplier_name"], "label": "Your name for the file name",
-             "hint": "No spaces."},
+             "hint": "Goes into the file name, so keep it one word: "
+                     "Yaroslav gives Invoice_Yaroslav_Client_August_2026.docx"},
             {"path": ["invoice", "client_name"], "label": "Client name",
-             "hint": "Used in the invoice file name."},
+             "hint": "Also part of the file name. Short is better; the full "
+                     "legal name belongs in Payment details."},
             {"path": ["invoice", "client_code"], "label": "Client code",
-             "hint": "Short code that starts the invoice number."},
+             "hint": "Short code that starts the invoice number. AMYNEBO for "
+                     "August 2026 gives the number AMYNEBO082026."},
+            {"path": ["invoice", "output_dir"], "label": "Save invoices to",
+             "kind": "folder", "placeholder": "~/Documents/Invoices",
+             "hint": "Folder for the finished .docx and PDF. Press Choose… to "
+                     "pick one. Empty means ~/Documents/Invoices."},
         ],
     },
     {
         "key": "requisites",
         "title": "Payment details",
-        "intro": "Substituted into the {{...}} tokens of your invoice template. "
-                 "Anything left empty stays as a visible token. Faster: import "
-                 "them from an invoice you have already sent.",
+        "intro": "Printed into your invoice wherever the matching {{TOKEN}} "
+                 "sits in the template. Anything left empty stays visible as "
+                 "{{TOKEN}} in the finished document, which is how you spot "
+                 "what is missing. Quicker than typing: the button below "
+                 "reads all of it out of an invoice you have already sent.",
         "required": [],
         "fields": [
-            {"path": ["invoice", "requisites", "tax_number"], "label": "Tax number"},
-            {"path": ["invoice", "requisites", "iban"], "label": "IBAN"},
-            {"path": ["invoice", "requisites", "swift_code"], "label": "SWIFT / BIC"},
-            {"path": ["invoice", "requisites", "address"], "label": "Your address"},
-            {"path": ["invoice", "requisites", "acquirer_name"], "label": "Client legal name"},
-            {"path": ["invoice", "requisites", "acquirer_address"], "label": "Client address"},
-            {"path": ["invoice", "requisites", "vat_number"], "label": "Client VAT number"},
-            {"path": ["invoice", "requisites", "nip"], "label": "Client NIP"},
-            {"path": ["invoice", "requisites", "krs"], "label": "Client KRS"},
+            {"path": ["invoice", "requisites", "tax_number"], "label": "Tax number",
+             "hint": "Your own tax number, printed where {{TAX_NUMBER}} is."},
+            {"path": ["invoice", "requisites", "iban"], "label": "IBAN",
+             "hint": "The account the client pays into, printed where "
+                     "{{IBAN}} is."},
+            {"path": ["invoice", "requisites", "swift_code"], "label": "SWIFT / BIC",
+             "hint": "Your bank's SWIFT or BIC code, printed where "
+                     "{{SWIFT_CODE}} is."},
+            {"path": ["invoice", "requisites", "address"], "label": "Your address",
+             "hint": "Your address as it should appear on the invoice, "
+                     "printed where {{ADDRESS}} is."},
+            {"path": ["invoice", "requisites", "acquirer_name"], "label": "Client legal name",
+             "hint": "The client's full legal name, exactly as in the "
+                     "contract. Printed where {{ACQUIRER_NAME}} is."},
+            {"path": ["invoice", "requisites", "acquirer_address"], "label": "Client address",
+             "hint": "The client's registered address, printed where "
+                     "{{ACQUIRER_ADDRESS}} is."},
+            {"path": ["invoice", "requisites", "vat_number"], "label": "Client VAT number",
+             "hint": "Leave empty if the invoice does not need one."},
+            {"path": ["invoice", "requisites", "nip"], "label": "Client NIP",
+             "hint": "Polish tax number of the client. Leave empty if the "
+                     "template has no {{NIP}} in it."},
+            {"path": ["invoice", "requisites", "krs"], "label": "Client KRS",
+             "hint": "Polish register number of the client. Leave empty if "
+                     "the template has no {{KRS}} in it."},
         ],
     },
 ]
@@ -147,7 +185,8 @@ def docx_requisites_section(config):
     return _requisites_from([
         {"path": ["invoice", "requisites", token.lower()],
          "label": _label_for_token(token.lower()),
-         "hint": "{{" + token + "}}"}
+         "hint": "Printed in your template where {{" + token + "}} sits. "
+                 "Left empty, that token stays visible in the document."}
         for token in invoice.party_tokens(path)
     ])
 
@@ -170,11 +209,16 @@ def all_sections(config):
 
 PROJECT_FIELDS = [
     {"key": "name", "label": "Project name", "optional": False,
-     "hint": "Only shown inside the app."},
+     "hint": "Shown in the menu and printed on the invoice. Use the same "
+             "name as in PeopleForce so the two are easy to match."},
     {"key": "peopleforce_id", "label": "PeopleForce project id", "kind": "int",
-     "hint": "Leave empty if this project is never pushed."},
+     "hint": "Digits only. In PeopleForce open Time → Attendance, filter by "
+             "this project, and take the number from the address: "
+             "...criteria[project_id]=42 means you type 42. Empty means this "
+             "project is never sent to PeopleForce."},
     {"key": "rate", "label": "Hourly rate", "kind": "float",
-     "hint": "Leave empty to use the default rate from Settings."},
+     "hint": "Rate for this project only, digits like 35. Empty falls back "
+             "to the rate in ⚙️ Settings → Invoicing."},
 ]
 
 SECTION_MARKS = {"ok": "✅", "partial": "⚠️", "empty": "—"}
@@ -209,7 +253,7 @@ def _notify_saved(title, count):
 
 def _notify_first_run():
     return notify(
-        "Click ⏱ in the menu bar → 🏷 Active project → + Add a project.",
+        "Click ⏱ in the menu bar → 🏷 Project → + Add a project.",
         title="Pick a project to start tracking",
     )
 
@@ -531,13 +575,26 @@ class SetupMixin:
         self.warn_if_titles_are_hidden()
         if projects.is_configured():
             return
-        if not _notify_first_run():
-            rumps.alert(
-                title="Welcome to Chronify",
-                message="Nothing is tracked until you name a project.\n\n"
-                        "Click ⏱ in the menu bar → 🏷 Active project → "
-                        "+ Add a project.",
-            )
+        if rumps.alert(
+            title="Welcome to Chronify",
+            message=(
+                "Chronify is the ⏱ clock now sitting in your menu bar. It "
+                "watches which window is in front and writes your day down for "
+                "you: hours per task, a daily status built from your own rough "
+                "notes, and the numbers your timesheet and invoice need at the "
+                "end of the month. None of it leaves this Mac.\n\n"
+                "Every hour has to belong to a project, so nothing is recorded "
+                "until you name one. That is the only thing needed to start.\n\n"
+                "After that: log what you finish under ✅ What I did today, and "
+                "in the evening press ✨ Write today's status. Everything else "
+                "in the menu explains itself in small print underneath."
+            ),
+            ok="Name my first project",
+            cancel="Later",
+        ):
+            self.add_project()
+        else:
+            _notify_first_run()
         self.refresh_title()
 
     def add_project(self, _sender=None):

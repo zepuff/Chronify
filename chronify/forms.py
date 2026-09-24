@@ -21,17 +21,23 @@ from AppKit import (
 )
 from Foundation import NSObject
 
-from chronify.ui_windows import make_button, make_panel, top_right_origin
+from chronify.ui_windows import (
+    choose_folder, hint_label, make_button, make_panel, top_right_origin,
+    wrapped_height,
+)
 
-WIDTH = 560
-LABEL_WIDTH = 190
-ROW_HEIGHT = 34
+WIDTH = 610
+LABEL_WIDTH = 185
+ROW_HEIGHT = 32
 FIELD_HEIGHT = 22
+HINT_GAP = 5
+ROW_GAP = 12
 PAD = 18
-MAX_BODY = 440
+MAX_BODY = 470
 BUTTON_HEIGHT = 34
 STATUS_HEIGHT = 18
-INTRO_HEIGHT = 40
+INTRO_HEIGHT = 52
+HINT_SIZE = 11
 
 
 class FlippedView(NSView):
@@ -52,6 +58,14 @@ def _static_label(text, frame, color=None):
     return field
 
 
+def _hint_label(text, frame):
+    label = _static_label(text, frame, NSColor.secondaryLabelColor())
+    label.setFont_(NSFont.systemFontOfSize_(HINT_SIZE))
+    label.setUsesSingleLineMode_(False)
+    label.cell().setWraps_(True)
+    return label
+
+
 def _choice_for(spec, frame):
     button = NSPopUpButton.alloc().initWithFrame_pullsDown_(frame, False)
     titles = [title for title, _ in spec["options"]]
@@ -69,11 +83,10 @@ def _choice_for(spec, frame):
     return button
 
 
-def _input_for(spec, frame):
-    if spec.get("kind") == "choice":
-        return _choice_for(spec, frame)
+SIDE_BUTTON_WIDTH = 74
 
-    cls = NSSecureTextField if spec.get("kind") == "secret" else NSTextField
+
+def _text_field(cls, spec, frame):
     field = cls.alloc().initWithFrame_(frame)
     field.setStringValue_(str(spec.get("value") or ""))
     field.setFont_(NSFont.systemFontOfSize_(12))
@@ -87,33 +100,100 @@ def _input_for(spec, frame):
     return field
 
 
-def _build_rows(fields, inner_width):
-    height = max(len(fields) * ROW_HEIGHT, 1)
+def _input_for(spec, frame):
+    if spec.get("kind") == "choice":
+        return _choice_for(spec, frame)
+
+    cls = NSSecureTextField if spec.get("kind") == "secret" else NSTextField
+    return _text_field(cls, spec, frame)
+
+
+def _row_heights(fields, hint_width):
+    heights = []
+    for spec in fields:
+        height = ROW_HEIGHT
+        if spec.get("hint"):
+            height += HINT_GAP + wrapped_height(spec["hint"], hint_width)
+        heights.append(height + ROW_GAP)
+    return heights
+
+
+def _build_rows(fields, inner_width, controller):
+    field_x = LABEL_WIDTH + 8
+    full_width = inner_width - field_x - 4
+
+    heights = _row_heights(fields, full_width)
+    height = max(sum(heights), 1)
     body = FlippedView.alloc().initWithFrame_(NSMakeRect(0, 0, inner_width, height))
 
-    field_x = LABEL_WIDTH + 8
-    field_width = inner_width - field_x - 4
     controls = {}
+    secrets = {}
     previous = None
+    top = 0
 
     for index, spec in enumerate(fields):
-        top = index * ROW_HEIGHT
+        kind = spec.get("kind", "text")
         caption = spec["label"] + ("" if spec.get("optional", True) else " *")
 
         label = _static_label(caption, NSMakeRect(0, top + 5, LABEL_WIDTH, 16))
-        if spec.get("hint"):
-            label.setToolTip_(spec["hint"])
         body.addSubview_(label)
 
-        field = _input_for(spec, NSMakeRect(field_x, top + 2, field_width, FIELD_HEIGHT))
+        has_button = kind in ("secret", "folder")
+        field_width = full_width - (SIDE_BUTTON_WIDTH + 6 if has_button else 0)
+        field_frame = NSMakeRect(field_x, top + 2, field_width, FIELD_HEIGHT)
+        button_frame = NSMakeRect(
+            field_x + field_width + 6, top, SIDE_BUTTON_WIDTH, FIELD_HEIGHT + 4
+        )
+
+        field = _input_for(spec, field_frame)
         body.addSubview_(field)
         controls[spec["key"]] = field
+
+        if kind == "secret":
+            plain = _text_field(NSTextField, spec, field_frame)
+            plain.setHidden_(True)
+            body.addSubview_(plain)
+            secrets[spec["key"]] = (field, plain)
+
+            button = make_button(
+                "Show", button_frame, controller, controller.toggleSecretClicked_,
+                font_size=11,
+            )
+            button.setTag_(index)
+            body.addSubview_(button)
+            controller.secret_keys[index] = spec["key"]
+
+        elif kind == "folder":
+            button = make_button(
+                "Choose…", button_frame, controller, controller.chooseFolderClicked_,
+                font_size=11,
+            )
+            button.setTag_(index)
+            body.addSubview_(button)
+            controller.folder_keys[index] = spec["key"]
+
+        if spec.get("hint"):
+            hint_top = top + ROW_HEIGHT + HINT_GAP - 4
+            body.addSubview_(_hint_label(
+                spec["hint"],
+                NSMakeRect(field_x, hint_top, full_width,
+                           wrapped_height(spec["hint"], full_width)),
+            ))
 
         if previous is not None:
             previous.setNextKeyView_(field)
         previous = field
+        top += heights[index]
 
-    return body, height, controls
+    return body, height, controls, secrets
+
+
+def _visible_control(controls, secrets, key):
+    pair = secrets.get(key)
+    if pair is None:
+        return controls[key]
+    secure, plain = pair
+    return plain if secure.isHidden() else secure
 
 
 def _read(spec, control) -> str:
@@ -166,15 +246,23 @@ class FormController(NSObject):
         self.on_close = spec.get("on_close")
         self.window = None
         self.controls = {}
+        self.secrets = {}
+        self.secret_keys = {}
+        self.folder_keys = {}
         self.status = None
         return self
 
     def show(self):
         inner_width = WIDTH - PAD * 2
-        body, body_height, self.controls = _build_rows(self.fields, inner_width)
+        body, body_height, self.controls, self.secrets = _build_rows(
+            self.fields, inner_width, self
+        )
         body_visible = min(body_height, MAX_BODY)
 
-        intro_height = INTRO_HEIGHT if self.intro_text else 0
+        intro_height = (
+            max(INTRO_HEIGHT, wrapped_height(self.intro_text, inner_width) + 6)
+            if self.intro_text else 0
+        )
         height = (
             PAD * 2
             + BUTTON_HEIGHT
@@ -218,16 +306,21 @@ class FormController(NSObject):
 
         content.addSubview_(make_button(
             "Save", NSMakeRect(WIDTH - 118, buttons_y, 100, 30),
-            self, self.saveClicked_,
+            self, self.saveClicked_, key="\r",
         ))
         content.addSubview_(make_button(
             "Cancel", NSMakeRect(WIDTH - 226, buttons_y, 100, 30),
-            self, self.cancelClicked_,
+            self, self.cancelClicked_, key="\x1b",
         ))
         if self.extra_label and self.on_extra:
             content.addSubview_(make_button(
                 self.extra_label, NSMakeRect(PAD, buttons_y, 240, 30),
                 self, self.extraClicked_,
+            ))
+        else:
+            content.addSubview_(hint_label(
+                "⌘V pastes · ⏎ saves · Esc closes",
+                NSMakeRect(PAD, buttons_y + 8, 260, 16),
             ))
 
         self.window.makeKeyAndOrderFront_(None)
@@ -235,11 +328,42 @@ class FormController(NSObject):
             self.window.makeFirstResponder_(self.controls[self.fields[0]["key"]])
         NSApplication.sharedApplication().activateIgnoringOtherApps_(True)
 
+    def toggleSecretClicked_(self, sender):
+        key = self.secret_keys.get(int(sender.tag()))
+        if key is None:
+            return
+        secure, plain = self.secrets[key]
+
+        if secure.isHidden():
+            secure.setStringValue_(plain.stringValue())
+            plain.setHidden_(True)
+            secure.setHidden_(False)
+            sender.setTitle_("Show")
+            self.window.makeFirstResponder_(secure)
+        else:
+            plain.setStringValue_(secure.stringValue())
+            secure.setHidden_(True)
+            plain.setHidden_(False)
+            sender.setTitle_("Hide")
+            self.window.makeFirstResponder_(plain)
+
+    def chooseFolderClicked_(self, sender):
+        key = self.folder_keys.get(int(sender.tag()))
+        if key is None:
+            return
+        control = self.controls[key]
+        picked = choose_folder("Choose a folder", control.stringValue())
+        if picked:
+            control.setStringValue_(picked)
+
     def saveClicked_(self, sender):
         by_key = {spec["key"]: spec for spec in self.fields}
         values = {
-            key: _read(by_key.get(key, {}), control)
-            for key, control in self.controls.items()
+            key: _read(
+                by_key.get(key, {}),
+                _visible_control(self.controls, self.secrets, key),
+            )
+            for key in self.controls
         }
 
         bad = _problems(self.fields, values)
@@ -343,16 +467,21 @@ class EditorController(NSObject):
 
         content.addSubview_(make_button(
             "Save", NSMakeRect(EDITOR_WIDTH - 118, buttons_y, 100, 30),
-            self, self.saveClicked_,
+            self, self.saveClicked_, key="\r", command=True,
         ))
         content.addSubview_(make_button(
             "Cancel", NSMakeRect(EDITOR_WIDTH - 226, buttons_y, 100, 30),
-            self, self.cancelClicked_,
+            self, self.cancelClicked_, key="\x1b",
         ))
         if self.extra_label and self.on_extra:
             content.addSubview_(make_button(
                 self.extra_label, NSMakeRect(PAD, buttons_y, 240, 30),
                 self, self.extraClicked_,
+            ))
+        else:
+            content.addSubview_(hint_label(
+                "⌘V pastes · ⌘⏎ saves · Esc closes",
+                NSMakeRect(PAD, buttons_y + 8, 260, 16),
             ))
 
         self.window.makeKeyAndOrderFront_(None)

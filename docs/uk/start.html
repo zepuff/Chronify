@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Швидкий старт Chronify</title>
+<meta name="description" content="Від brew install до готового daily status і заповненого таймшита, приблизно за десять хвилин.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="topbar">
+    <a class="brand" href="./">Chronify <span>⏱</span></a>
+    <nav class="topnav">
+      <a href="./">Головна</a>
+      <a href="https://github.com/zepuff/chronify">Код</a>
+      <span class="langs">
+        <a href="../start.html">EN</a><i>/</i><a href="start.html" aria-current="true">UK</a>
+      </span>
+    </nav>
+  </header>
+
+  <section class="hero" style="padding-bottom: 0;">
+    <p class="eyebrow">швидкий старт</p>
+    <h1>Десять хвилин, далі він сам</h1>
+    <p class="lead">
+      Кроків з першого по третій достатньо, щоб трекер працював. Решта потрібна
+      тоді, коли захочете, і Chronify спитає про них сам, коли ви вперше
+      скористаєтесь чимось, що їх потребує.
+    </p>
+  </section>
+
+  <section>
+    <div class="steps">
+
+      <article class="step">
+        <div class="step-body">
+          <h3>Встановити</h3>
+          <p>Потрібні macOS і Homebrew. Homebrew принесе з собою Python і всі бібліотеки.</p>
+          <pre><code>brew tap zepuff/chronify
+brew trust zepuff/chronify
+brew install chronify</code></pre>
+          <p>
+            <code>brew trust</code> підтверджує, що ви згодні ставити формулу
+            поза офіційним репозиторієм Homebrew. Без нього встановлення
+            зупиниться з помилкою про недовірений tap. Перше встановлення триває
+            довго, бо Homebrew збирає бібліотеки Python з вихідників.
+          </p>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-body">
+          <h3>Запустити</h3>
+          <pre><code>chronify --background</code></pre>
+          <p>
+            У правому верхньому куті зʼявиться іконка ⏱. Без
+            <code>--background</code> застосунок тримає термінал, а
+            <kbd>Ctrl</kbd>+<kbd>C</kbd> його закриває, що зручно, поки ви
+            пробуєте.
+          </p>
+          <p class="plain">Щоб він стартував при вході в систему:</p>
+          <pre><code>brew services start chronify</code></pre>
+          <p>
+            macOS попросить два дозволи. Головний це
+            <strong>Screen Recording</strong>: без нього заголовки вікон не
+            видно, і день записується самими назвами програм, без розбивки на
+            задачі. Видайте його в Системних налаштуваннях, потім закрийте й
+            запустіть Chronify заново, бо macOS перечитує цей дозвіл лише на
+            старті. Другий це <strong>сповіщення</strong>, інакше не спрацюють
+            нагадування за часом.
+          </p>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-body">
+          <h3>Назвати один проєкт</h3>
+          <p>
+            Клік по ⏱ у рядку меню, далі <code>🏷 Project → + Add a
+            project</code>. Обовʼязкова тільки назва. Поки проєкту немає,
+            години нема куди писати, тому трекінг стоїть на паузі.
+          </p>
+          <p>
+            Це все налаштування. Chronify уже пише, а в рядку меню видно
+            сьогоднішню суму. Під кожним пунктом меню дрібним сірим шрифтом
+            написано, що він робить, тож меню можна читати замість інструкції.
+          </p>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-body">
+          <h3>Обрати, хто пише статус <span class="optional">за бажанням</span></h3>
+          <p>
+            <code>⚙️ Settings → Daily status</code>. Беріть <strong>Ollama</strong>,
+            якщо хочете статус мовою, відмінною від мови ваших нотаток, зокрема
+            українською. Беріть <strong>Apple Intelligence</strong>, якщо не
+            хочете нічого качати і у вас macOS 26 на Apple Silicon. Беріть
+            <strong>No AI</strong>, і статус буде просто списком ваших нотаток.
+          </p>
+          <p>
+            Обране Chronify встановить сам, через Homebrew, у фоні. Ollama ще й
+            завантажить модель приблизно на 2 ГБ, тож дайте їй кілька хвилин.
+          </p>
+          <p class="plain">Користуватися цим виглядає так:</p>
+          <p>
+            Протягом дня <code>✅ What I did today → + Log a completed task</code>
+            щоразу, коли щось закінчили. Пишіть як виходить. Увечері
+            <code>✨ Write today's status</code> віддасть готовий текст у вікні,
+            де його можна поправити, а кнопка Save скопіює його.
+          </p>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-body">
+          <h3>Підключити PeopleForce <span class="optional">за бажанням</span></h3>
+          <p>
+            Три числа й один ключ, усі з вашого PeopleForce, усі в різних
+            місцях.
+          </p>
+          <div class="scroller">
+            <table class="fields">
+              <tr>
+                <th>Company API key</th>
+                <td>Один ключ на всю компанію, його видає той, хто адмініструє PeopleForce. Попросіть ключ і вставте його в ⚙️ Settings → PeopleForce.</td>
+              </tr>
+              <tr>
+                <th>Employee id</th>
+                <td>Число в кінці адреси вашого профілю: <code>…peopleforce.io/people/12345</code> дає <code>12345</code>.</td>
+              </tr>
+              <tr>
+                <th>Project id</th>
+                <td>Відкрийте Time → Attendance, відфільтруйте по проєкту й подивіться в адресу: <code>…criteria%5Bproject_id%5D=42</code> дає <code>42</code>. Це число вписується в сам проєкт, у 🏷 Project → ✏️ Edit a project.</td>
+              </tr>
+              <tr>
+                <th>Working day starts at</th>
+                <td>Береться не з PeopleForce. Це година, від якої відлічується сумарний запис у таймшиті, і ви обираєте її самі.</td>
+              </tr>
+            </table>
+          </div>
+          <p>
+            Далі <code>📤 Send hours to PeopleForce → Today</code> надсилає години й
+            текст статусу. Увімкніть <code>Auto-push at 00:00</code>, і вчорашній
+            день піде сам.
+          </p>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-body">
+          <h3>Налаштувати інвойси <span class="optional">за бажанням</span></h3>
+          <p>
+            <code>⚙️ Settings → Invoicing</code> запитає ставку, ваше імʼя,
+            клієнта й теку, куди складати готові файли. Реквізити живуть в
+            окремій секції, а якщо у вас є вже надісланий інвойс, то
+            <code>🧾 Invoice → 📥 Import details from an existing invoice…</code>
+            вичитає з нього IBAN, SWIFT, податковий номер і адреси.
+          </p>
+          <p>
+            Для PDF потрібен LibreOffice, він безкоштовний:
+            <code>brew install --cask libreoffice</code>. Без нього ви все одно
+            отримаєте <code>.docx</code>.
+          </p>
+          <p>
+            Коли інвойс готовий, Chronify скаже, де він лежить, і запропонує
+            показати його у Finder.
+          </p>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="note">
+      <strong>Усе введене лежить у <code>~/.work_tracker/</code></strong>, поруч
+      з базою й вашими статусами, і ніколи в теці застосунку, яку Homebrew
+      перезаписує при кожному оновленні. Це ж і єдина тека, яку варто
+      бекапити. Відкрити її можна будь-коли: <code>📁 Show my data folder</code>.
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Якщо щось виглядає не так</h2>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <h3>Записуються лише назви програм</h3>
+        <p>
+          Не видано Screen Recording. Перевірте з
+          <code>⚙️ Settings → Screen Recording</code>. macOS привʼязує дозвіл до
+          конкретного файлу програми, тому після <code>brew upgrade chronify</code>
+          його треба видати заново.
+        </p>
+      </div>
+
+      <div class="feature">
+        <h3>Не записується взагалі нічого</h3>
+        <p>
+          Подивіться на іконку. <code>⏸</code> означає паузу, а
+          <code>⚠️ no project</code> означає, що немає проєкту, на який писати.
+        </p>
+      </div>
+
+      <div class="feature">
+        <h3>Статус просто список нотаток</h3>
+        <p>
+          Модель не відповідає. Перевірте <code>⚙️ Settings → Daily status</code>,
+          а для Ollama ще й що сервіс живий (<code>brew services start
+          ollama</code>) і модель завантажена.
+        </p>
+      </div>
+
+      <div class="feature">
+        <h3>В інвойсі немає таблиці</h3>
+        <p>
+          Шаблон зберегли в Pages чи TextEdit, а вони перетворюють вкладену
+          таблицю на текст. Редагуйте шаблони лише у Word або LibreOffice.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Chronify · GPL-3.0</span>
+    <nav>
+      <a href="./">Головна</a>
+      <a href="https://github.com/zepuff/chronify">Код</a>
+      <a href="../start.html">In English</a>
+    </nav>
+  </footer>
+
+</div>
+
+</body>
+</html>

@@ -15,7 +15,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from datetime import date, datetime, time as dtime
+from pathlib import Path
 
+import os
+import subprocess
 import time
 
 import objc
@@ -23,15 +26,15 @@ import rumps
 from AppKit import (
     NSApplication, NSBackingStoreBuffered, NSBezelBorder, NSButton, NSOpenPanel,
     NSClosableWindowMask, NSColor, NSDatePicker, NSEvent, NSFloatingWindowLevel,
-    NSFont, NSMakeRect, NSPanel, NSScreen, NSScrollView, NSTextField, NSTextView,
-    NSTitledWindowMask,
+    NSFont, NSFontAttributeName, NSMakeRect, NSPanel, NSScreen, NSScrollView,
+    NSTextField, NSTextView, NSTitledWindowMask,
 )
 
 try:
     from AppKit import NSSwitchButton
 except ImportError:
     NSSwitchButton = 3
-from Foundation import NSDate, NSObject
+from Foundation import NSDate, NSObject, NSString, NSURL
 
 from chronify import alerts
 
@@ -72,6 +75,30 @@ def choose_docx_file(title="Choose an invoice"):
 
     urls = panel.URLs()
     return urls[0].path() if urls else None
+
+
+def choose_folder(title="Choose a folder", current=""):
+    panel = NSOpenPanel.openPanel()
+    panel.setTitle_(title)
+    panel.setCanChooseFiles_(False)
+    panel.setCanChooseDirectories_(True)
+    panel.setCanCreateDirectories_(True)
+    panel.setAllowsMultipleSelection_(False)
+
+    start = Path(os.path.expanduser(current or "~"))
+    if start.is_dir():
+        panel.setDirectoryURL_(NSURL.fileURLWithPath_(str(start)))
+
+    NSApplication.sharedApplication().activateIgnoringOtherApps_(True)
+    if panel.runModal() != 1:
+        return None
+
+    urls = panel.URLs()
+    return urls[0].path() if urls else None
+
+
+def reveal_in_finder(path) -> None:
+    subprocess.run(["open", "-R", str(path)])
 
 
 def screen_frame_at_mouse():
@@ -124,13 +151,55 @@ def make_window_always_on_top(window):
         pass
 
 
-def make_button(title, frame, target, method):
+COMMAND_KEY_MASK = 1 << 20
+
+
+def make_button(title, frame, target, method, key="", command=False,
+                font_size=None):
     button = NSButton.alloc().initWithFrame_(frame)
     button.setTitle_(title)
     button.setBezelStyle_(1)
     button.setTarget_(target)
     button.setAction_(objc.selector(method, signature=b"v@:@"))
+    if key:
+        # "\r" is the default button, "\x1b" is Esc, command adds ⌘.
+        button.setKeyEquivalent_(key)
+        if command:
+            button.setKeyEquivalentModifierMask_(COMMAND_KEY_MASK)
+    if font_size is not None:
+        button.setFont_(NSFont.systemFontOfSize_(font_size))
     return button
+
+
+NS_STRING_LINE_FRAGMENT_ORIGIN = 1 << 0
+
+
+def wrapped_height(text, width, font_size=11):
+    if not text:
+        return 0
+    font = NSFont.systemFontOfSize_(font_size)
+    try:
+        bounds = NSString.stringWithString_(text).boundingRectWithSize_options_attributes_(
+            (width, 400), NS_STRING_LINE_FRAGMENT_ORIGIN, {NSFontAttributeName: font}
+        )
+        return max(15, int(bounds.size.height) + 3)
+    except Exception:
+        per_line = max(20, int(width // (font_size * 0.55)))
+        return 15 * (len(text) // per_line + 1)
+
+
+def hint_label(text, frame):
+    label = NSTextField.alloc().initWithFrame_(frame)
+    label.setStringValue_(text)
+    label.setEditable_(False)
+    label.setBezeled_(False)
+    label.setDrawsBackground_(False)
+    label.setSelectable_(False)
+    label.setFont_(NSFont.systemFontOfSize_(10))
+    label.setTextColor_(NSColor.secondaryLabelColor())
+    label.setUsesSingleLineMode_(False)
+    label.cell().setWraps_(True)
+    return label
 
 
 def make_panel(origin, width, height, title):
@@ -140,6 +209,8 @@ def make_panel(origin, width, height, title):
     )
     panel.setTitle_(title)
     panel.setLevel_(NSFloatingWindowLevel)
+    # NSPanel hides itself whenever the app is not frontmost; ours must not.
+    panel.setHidesOnDeactivate_(False)
     return panel
 
 
@@ -245,7 +316,8 @@ class AlertEditorController(NSObject):
         content.addSubview_(self.one_shot_box)
 
         content.addSubview_(
-            make_button("Save", NSMakeRect(16, 14, 110, 30), self, self.saveClicked_)
+            make_button("Save", NSMakeRect(16, 14, 110, 30), self,
+                        self.saveClicked_, key="\r")
         )
         if alert:
             content.addSubview_(
@@ -253,7 +325,8 @@ class AlertEditorController(NSObject):
             )
         content.addSubview_(
             make_button(
-                "Cancel", NSMakeRect(self.WIDTH - 110, 14, 94, 30), self, self.cancelClicked_
+                "Cancel", NSMakeRect(self.WIDTH - 110, 14, 94, 30), self,
+                self.cancelClicked_, key="\x1b",
             )
         )
 
@@ -301,8 +374,8 @@ class AlertEditorController(NSObject):
 
 
 class QuickInputController(NSObject):
-    WIDTH = 440
-    HEIGHT = 220
+    WIDTH = 460
+    EDITOR_HEIGHT = 110
 
     def initWithCallback_title_message_(self, callback, title, message):
         self = objc.super(QuickInputController, self).init()
@@ -316,7 +389,12 @@ class QuickInputController(NSObject):
         return self
 
     def show(self):
-        width, height = self.WIDTH, self.HEIGHT
+        width = self.WIDTH
+        inner = width - 28
+
+        message_height = wrapped_height(self.message_text, inner, 12)
+        height = 55 + self.EDITOR_HEIGHT + 10 + message_height + 16
+
         origin = top_right_origin(width, height, 10, (1000, 700))
 
         self.window = make_panel(origin, width, height, self.title_text)
@@ -324,8 +402,17 @@ class QuickInputController(NSObject):
 
         content = self.window.contentView()
 
+        if message_height:
+            prompt = hint_label(
+                self.message_text,
+                NSMakeRect(14, 55 + self.EDITOR_HEIGHT + 10, inner, message_height),
+            )
+            prompt.setFont_(NSFont.systemFontOfSize_(12))
+            prompt.setTextColor_(NSColor.labelColor())
+            content.addSubview_(prompt)
+
         scroll_view = NSScrollView.alloc().initWithFrame_(
-            NSMakeRect(14, 55, width - 28, height - 70)
+            NSMakeRect(14, 55, inner, self.EDITOR_HEIGHT)
         )
         scroll_view.setHasVerticalScroller_(True)
         scroll_view.setBorderType_(NSBezelBorder)
@@ -343,16 +430,23 @@ class QuickInputController(NSObject):
 
         content.addSubview_(
             make_button(
-                "Cancel", NSMakeRect(width - 215, 12, 95, 32), self, self.cancelClicked_
+                "Cancel", NSMakeRect(width - 215, 12, 95, 32), self,
+                self.cancelClicked_, key="\x1b",
             )
         )
         content.addSubview_(
             make_button(
-                "Save", NSMakeRect(width - 110, 12, 95, 32), self, self.saveClicked_
+                "Save", NSMakeRect(width - 110, 12, 95, 32), self,
+                self.saveClicked_, key="\r", command=True,
             )
+        )
+        content.addSubview_(
+            hint_label("⌘V pastes · ⌘⏎ saves · Esc closes",
+                       NSMakeRect(16, 20, width - 230, 16))
         )
 
         self.window.makeKeyAndOrderFront_(None)
+        self.window.makeFirstResponder_(self.text_view)
         NSApplication.sharedApplication().activateIgnoringOtherApps_(True)
 
     def saveClicked_(self, sender):

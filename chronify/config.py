@@ -26,7 +26,16 @@ import yaml
 # app is installed through Homebrew, so nothing user-editable may live there.
 # config.yaml is copied into the data directory on first run instead.
 PACKAGE_DIR = Path(__file__).parent
-BASE_DIR = Path(os.path.expanduser("~/.work_tracker"))
+
+
+def _data_dir() -> Path:
+    # WORK_TRACKER_HOME points the data folder elsewhere while testing.
+    return Path(os.path.expanduser(
+        os.environ.get("WORK_TRACKER_HOME") or "~/.work_tracker"
+    ))
+
+
+BASE_DIR = _data_dir()
 CONFIG_PATH = BASE_DIR / "config.yaml"
 DEFAULT_CONFIG_PATH = PACKAGE_DIR / "default_config.yaml"
 TEMPLATES_DIR = PACKAGE_DIR / "templates"

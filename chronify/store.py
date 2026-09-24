@@ -22,7 +22,7 @@ import uuid
 from pathlib import Path
 from typing import Any, Callable, Optional
 
-BASE_DIR = Path(os.path.expanduser("~/.work_tracker"))
+from chronify.config import BASE_DIR
 
 
 _locks = {}

@@ -1,0 +1,167 @@
+#!/usr/bin/env python3
+# Chronify — a macOS menu bar work tracker.
+# Copyright (C) 2026 Zepuff
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+"""Print the `resource` blocks for the Homebrew formula, pointing at
+prebuilt wheels instead of source archives.
+
+Homebrew builds every Python dependency from source, which is where the long
+install goes. Wheels are already compiled, so the install turns into a
+download. The catch is that a wheel is tied to one Python version, so this
+has to be re-run whenever Homebrew moves Chronify to a newer Python.
+
+    python3 packaging/wheels.py --python 3.13 > resources.rb
+
+Then paste the output into the formula, replacing the old resource blocks.
+"""
+
+import argparse
+import hashlib
+import json
+import shutil
+import subprocess
+import sys
+import tempfile
+import urllib.request
+from pathlib import Path
+
+# What the app imports. Everything else below is pulled in by these.
+TOP_LEVEL = [
+    "pyobjc-framework-Cocoa",
+    "pyobjc-framework-Quartz",
+    "pyyaml",
+    "requests",
+    "docxtpl",
+    "Pillow",
+]
+
+# Needed inside the virtualenv to build the one dependency that publishes no
+# wheel, and to install anything at all on a Python that no longer bundles
+# setuptools.
+BUILD_TOOLS = ["setuptools", "wheel"]
+
+# Published as a source archive only. It is pure Python, so it costs a second
+# to build and does not need a compiler.
+SOURCE_ONLY = ["rumps"]
+
+ARCHES = {
+    "arm": ["macosx_11_0_arm64", "macosx_10_13_universal2"],
+    "intel": ["macosx_10_13_x86_64", "macosx_10_13_universal2"],
+}
+
+
+def _pypi(package: str) -> dict:
+    url = f"https://pypi.org/pypi/{package}/json"
+    with urllib.request.urlopen(url, timeout=60) as response:
+        return json.load(response)
+
+
+def _download(python_version: str, platforms: list, into: Path) -> list:
+    command = [
+        sys.executable, "-m", "pip", "download",
+        "--only-binary=:all:",
+        "--python-version", python_version,
+        "--dest", str(into),
+    ]
+    for platform in platforms:
+        command += ["--platform", platform]
+    command += TOP_LEVEL + BUILD_TOOLS
+
+    result = subprocess.run(command, capture_output=True, text=True)
+    if result.returncode != 0:
+        sys.exit(f"pip download failed:\n{result.stdout}\n{result.stderr}")
+
+    return sorted(p.name for p in into.glob("*.whl"))
+
+
+def _url_and_hash(filename: str) -> tuple:
+    """Find a wheel on PyPI by its file name."""
+    name, version = filename.split("-")[:2]
+    for candidate in (name, name.replace("_", "-"), name.replace("-", "_")):
+        try:
+            data = _pypi(candidate)
+        except Exception:
+            continue
+        for entry in data.get("releases", {}).get(version, []):
+            if entry["filename"] == filename:
+                return entry["url"], entry["digests"]["sha256"], candidate, version
+    sys.exit(f"could not find {filename} on PyPI")
+
+
+def _source_resource(package: str) -> str:
+    data = _pypi(package)
+    version = data["info"]["version"]
+    for entry in data["releases"][version]:
+        if entry["packagetype"] == "sdist":
+            return _block(package, entry["url"], entry["digests"]["sha256"])
+    sys.exit(f"{package} has no source archive")
+
+
+def _block(name: str, url: str, sha256: str, nounzip: bool = False, indent: str = "  ") -> str:
+    name = name.lower().replace("_", "-")
+    lines = [f'{indent}resource "{name}" do',
+             f'{indent}  url "{url}"{", using: :nounzip" if nounzip else ""}',
+             f'{indent}  sha256 "{sha256}"',
+             f"{indent}end"]
+    return "\n".join(lines)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--python", default="3.13",
+                        help="the Python the formula builds against")
+    args = parser.parse_args()
+
+    per_arch = {}
+    for arch, platforms in ARCHES.items():
+        folder = Path(tempfile.mkdtemp(prefix=f"chronify-{arch}-"))
+        try:
+            per_arch[arch] = _download(args.python, platforms, folder)
+        finally:
+            shutil.rmtree(folder, ignore_errors=True)
+
+    shared = sorted(set(per_arch["arm"]) & set(per_arch["intel"]))
+    only_arm = sorted(set(per_arch["arm"]) - set(per_arch["intel"]))
+    only_intel = sorted(set(per_arch["intel"]) - set(per_arch["arm"]))
+
+    print(f"  # Wheels for Python {args.python}, generated by "
+          f"packaging/wheels.py.")
+    print(f"  # Re-run it when the formula moves to another Python.")
+    print()
+
+    for filename in shared:
+        url, sha256, name, _version = _url_and_hash(filename)
+        print(_block(name, url, sha256, nounzip=True))
+        print()
+
+    for package in SOURCE_ONLY:
+        print(_source_resource(package))
+        print()
+
+    for arch, files in (("on_arm", only_arm), ("on_intel", only_intel)):
+        if not files:
+            continue
+        print(f"  {arch} do")
+        for filename in files:
+            url, sha256, name, _version = _url_and_hash(filename)
+            print(_block(name, url, sha256, nounzip=True, indent="    "))
+            print()
+        print("  end")
+        print()
+
+
+if __name__ == "__main__":
+    main()

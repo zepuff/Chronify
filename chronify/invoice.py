@@ -35,7 +35,7 @@ from chronify import db
 from chronify.config import MONTH_NAMES
 
 PROJECT_DIR = Path(__file__).parent
-STATE_PATH = Path(os.path.expanduser("~/.work_tracker/invoice_reminder_state.txt"))
+STATE_PATH = config_module.BASE_DIR / "invoice_reminder_state.txt"
 
 
 def _resolve_template(raw: str) -> Path:
@@ -193,9 +193,14 @@ def build_invoice_context(year: int, month: int, hours: float, config: dict) -> 
 
 def build_invoice_filename(year: int, month: int, config: dict) -> str:
     invoice_cfg = config.get("invoice", {}) or {}
-    supplier = invoice_cfg.get("supplier_name", "Supplier")
-    client = invoice_cfg.get("client_name", "Client")
-    return f"Invoice_{supplier}_{client}_{calendar.month_name[month]}_{year}.docx"
+    parts = [
+        "Invoice",
+        str(invoice_cfg.get("supplier_name") or "").strip(),
+        str(invoice_cfg.get("client_name") or "").strip(),
+        calendar.month_name[month],
+        str(year),
+    ]
+    return "_".join(part.replace(" ", "_") for part in parts if part) + ".docx"
 
 
 _ROW_TOKEN = "{{ROW_PROJECT}}"
@@ -350,6 +355,27 @@ def _signature_target(contents: dict, preferred_name: str = "") -> Optional[str]
     )
 
 
+def _signature_bytes(path: Path, target_suffix: str) -> bytes:
+    fmt, mode = _IMAGE_FORMATS.get(target_suffix, ("PNG", "RGBA"))
+
+    try:
+        from PIL import Image
+    except ImportError:
+        if path.suffix.lower() == target_suffix:
+            return path.read_bytes()
+        raise RuntimeError(
+            f"The picture in the template is {fmt}, your signature is "
+            f"{path.suffix.lstrip('.').upper() or 'of another format'}, and "
+            f"Pillow is not installed to convert between them. Either save "
+            f"the signature as {target_suffix} next to the old one, or "
+            f"install Pillow: pip install Pillow."
+        )
+
+    buffer = io.BytesIO()
+    Image.open(path).convert(mode).save(buffer, format=fmt)
+    return buffer.getvalue()
+
+
 def _apply_signature_image(docx_path: Path, signature_path: Optional[str],
                            preferred_name: str = "") -> None:
     if not signature_path:
@@ -369,12 +395,7 @@ def _apply_signature_image(docx_path: Path, signature_path: Optional[str],
     if target is None:
         return
 
-    from PIL import Image
-
-    fmt, mode = _IMAGE_FORMATS.get(Path(target).suffix.lower(), ("PNG", "RGBA"))
-    buffer = io.BytesIO()
-    Image.open(path).convert(mode).save(buffer, format=fmt)
-    contents[target] = buffer.getvalue()
+    contents[target] = _signature_bytes(path, Path(target).suffix.lower())
 
     with zipfile.ZipFile(docx_path, "w", zipfile.ZIP_DEFLATED) as zout:
         for name, data in contents.items():
@@ -506,7 +527,8 @@ def convert_docx_to_pdf(docx_path: Path) -> Optional[Path]:
 
 def get_invoice_docx_path(year: int, month: int, config: dict) -> Path:
     invoice_cfg = config.get("invoice", {}) or {}
-    output_dir = Path(os.path.expanduser(invoice_cfg.get("output_dir", "~/Documents/Invoices")))
+    raw_dir = str(invoice_cfg.get("output_dir") or "").strip() or "~/Documents/Invoices"
+    output_dir = Path(os.path.expanduser(raw_dir))
     return output_dir / build_invoice_filename(year, month, config)
 
 

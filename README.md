@@ -2,81 +2,99 @@
 
 **Your workday writes itself down.**
 
-At six in the evening someone asks what you got done today. And you honestly can't remember. There was a bug with a button, then something about authentication, then an hour in chat — and all of it has blurred into one grey smudge. At the end of the month you also have to recall how many hours you actually worked.
+It's six in the evening and someone asks what you got done today. You honestly can't remember. There was the bug with the button, then something about auth, then an hour in chat, and all of it has blurred into one grey smear. And at the end of the month you're supposed to recall how many hours you put in, too.
 
-Chronify lives in the menu bar and quietly keeps that log for you. There is nothing to switch on or off — it simply runs while you work.
+Chronify sits in the menu bar and keeps that log for you. Nothing to start or stop. It just runs while you work.
 
 ---
 
 ## What it does
 
-### ⏱ Counts your hours so you don't have to
+### ⏱ Counts hours so you don't have to
 
-It watches which window is active and breaks the day into tasks on its own — not "Chrome, 4 hours", but `Ticket ABC-123 — 52m`, `Code Review — 24m`. You write the grouping rules once, to match how you actually work.
+It watches which window is in front and splits your day into tasks by itself. Not "Chrome, 4 hours" but `Ticket ABC-123 - 52m`, `Code Review - 24m`. You write the grouping rules once, to match how you actually work.
 
-Went to lunch? It notices the idle stretch and asks when you get back whether to count that time. Reading documentation without touching the mouse — say yes, and the hour isn't lost. Watching a show — say no, and it never reaches your report.
+Went for lunch? It notices the idle stretch and asks when you're back whether that time counts. Were you reading docs without touching the mouse, say yes and the hour isn't lost. Were you watching a show, say no and it never shows up in your report.
 
-Real calls are the exception: Zoom, Meet and Teams count as work even when you haven't touched the keyboard. Slack and Discord count only while the window title says it's a huddle or a call, so a messenger left open won't quietly log you a whole evening.
+Real calls are the exception. Zoom, Meet and Teams count as work even if you didn't touch the keyboard. Slack only counts while the window title says it's a call, a huddle or a meeting, so a messenger left open doesn't quietly log your whole evening. Any other app goes into the same list with one line of config.
 
-And when the laptop is needed for personal things, one **Pause** click and the tracker sees nothing.
+And when the laptop is needed for personal things, there's **Pause**. The tracker stops seeing anything.
 
 ### 🏷 Keeps projects apart
 
-Every hour belongs to a project. Switch the active one straight from the menu bar and the tracker follows you — the current project is visible right in the title, so you always know where your time is going.
+Every hour belongs to a project. Switch the active one from the menu bar and the tracker follows you. The current project shows up in the title, so you always know where your time is going.
 
-Made a mistake? Move a whole day, or a date range, from one project to another in two clicks. Or open a day and fix the recorded segments by hand: delete what doesn't belong, move what landed in the wrong place.
+Got it wrong? Move a whole day, or a range of dates, from one project to another in two clicks. Or open the day and fix the recorded stretches by hand: delete what shouldn't be there, move what landed in the wrong place.
 
-Tasks, blockers and notes can be either shared across all projects or separate for each one — your choice, and you can change it at any time.
+Tasks, blockers and notes can be shared across all projects or kept separately for each one. Your call, and you can change your mind later.
 
-### ✨ Writes your daily status for you
+### ✨ Writes your daily status
 
-Through the day you jot notes down in one motion: "fixed the button in safari", "approved the pull request". Roughly, however they come out.
+During the day you jot notes down in one motion: "fixed the button in safari", "approved the payments PR". Sloppy is fine.
 
-In the evening you press one button and a local AI model turns that into a proper status, together with your tasks, plans for tomorrow, blockers and infrastructure status. The text can be edited right in the window and copied to the clipboard.
+In the evening you press one button and a local AI model turns that into a normal status:
 
-The archive fills itself in the background: even on days when you never pressed the button, a status is written and saved — so the history is there when someone asks about last Tuesday.
+```
+What was done today:
+• Fixed the button rendering in Safari
+• Reviewed and approved the payments pull request
+
+What is planned next:
+• Finish the timesheet export
+
+Blockers: None
+
+Infrastructure status: 🟢 All systems stable
+
+Reminders:
+• Ask about the staging database
+```
+
+Only "What was done today" goes through the AI, and under tight rules: invent nothing, don't mention durations or hours, don't name apps, don't add praise like "successfully". The rest is assembled as is. The plan section takes your unfinished items, blockers take whatever was still open on that day. You can edit the text in the window and copy it.
+
+The archive fills itself in the background. Even on days when you never pressed the button, a status gets written and saved, so the history is there when someone asks about last Tuesday.
 
 **Everything runs on your machine.** No OpenAI, no cloud. Your work notes never leave the laptop.
 
 ### 📋 Remembers what you forget
 
-A day plan with checkboxes — and one item can be pinned right in the menu bar so it stares at you all day and doesn't let you forget. Unfinished items move themselves to the next day.
+A plan for the day with checkboxes, and one item can be pinned right into the menu bar so it stares at you all day. Unfinished items move themselves to tomorrow.
 
-Blockers, notes to self, alarms along the lines of "13:00 — go get lunch". All in one place, without a separate app and without yet another account.
+Blockers, notes to self, alarms like "13:00, go have lunch". All in one place, without a separate app and without another account.
 
 ### 📅 Shows the month at a glance
 
-A calendar with a heat map: you can see immediately where the heavy days were and where you barely worked. Each day shows the split across projects, and what you logged that day is one click away. Open any of the last 30 days and look at what you were really doing — even if you forgot long ago.
+A calendar with a heat map. You can see straight away which days were heavy and which ones you barely worked. Each day carries a breakdown by project, and what you logged that day is one click away. Open any of the last 30 days and see what you were actually doing, even if you've long forgotten.
 
-If PeopleForce is connected, every day also gets a sync indicator: hours match, hours differ, or the day hasn't been pushed yet.
+If PeopleForce is connected, every day also gets a sync marker: hours match, hours differ, or the day hasn't been pushed yet.
 
 ### 📤 Fills in timesheets in one click
 
-Hours and status text go to PeopleForce for a day, for yesterday, or for the whole month at once. Turn on auto-push and it happens by itself after midnight, including catching up on up to a week if the Mac was switched off.
+Hours and the status text go to PeopleForce for a day, for yesterday, or for the whole month at once. Turn auto-push on and it happens by itself after midnight, catching up to a week back if the Mac was off.
 
-You choose what exactly gets sent: the real intervals the tracker recorded (09:00–10:37, 10:38–12:57…), or one summary entry per project. Days that already have an entry are never overwritten without your confirmation. Nothing disappears.
+You choose what gets sent: the real stretches the tracker recorded (09:00–10:37, 10:38–12:57 and so on), or one lump entry per project. Days that already have an entry are never overwritten without your say-so. Nothing disappears.
 
-### 🧾 Produces an invoice in a minute
+### 🧾 Makes an invoice in a minute
 
-On the last working day of the month it reminds you and proposes a split of hours across projects. You confirm — and a finished `.docx` with your payment details, signature and total is already open, with a PDF next to it.
+On the last working day of the month it reminds you and offers a split of hours across projects. You confirm, and a finished `.docx` with your details, signature and total is already open, with a PDF next to it. The app tells you which folder they landed in and offers to show them in Finder; you pick that folder yourself in ⚙️ Settings → Invoicing.
 
-Already have an old invoice? Point the app at it and it will read your IBAN, SWIFT, tax number and addresses straight out of the document, so you don't have to type them in.
+Already have an old invoice? Point the app at it and it reads your IBAN, SWIFT, tax number and addresses straight out of the document, so you don't have to type them in.
 
 ---
 
 ## Who it's for
 
-Developers, designers, anyone on **macOS** who writes a status every day and counts hours — especially on contract or freelance.
+Developers, designers, anyone on **macOS** who writes a status every day and counts hours, especially on contract or freelance.
 
-Setup is one panel: name a project and tracking starts. PeopleForce credentials and invoice details are asked for the first time you actually use those features, never up front.
+To get going you only need to name one project. The rest, PeopleForce and the invoice details, is asked for the first time you use it, one field per window. All the setup lives inside the app.
 
-The PeopleForce integration and invoice generation are optional. Without them this is still a full time tracker with daily statuses.
+The PeopleForce integration and the invoices are optional. Without them this is still a full time tracker with daily statuses.
 
 ---
 
-## Installation
+## Installing
 
-macOS required. The easiest way is Homebrew:
+You need macOS and Homebrew. Homebrew brings Python and every library along with it.
 
 ```bash
 brew tap zepuff/chronify
@@ -84,114 +102,173 @@ brew trust zepuff/chronify
 brew install chronify
 ```
 
-The `brew trust` step is Homebrew asking you to confirm that you're willing to
-run a formula from outside its official repository. Without it the install stops
-with an "untrusted tap" error.
+`brew trust` confirms you're fine installing a formula from outside the official Homebrew repo. Without it the install stops with an error about an untrusted tap.
 
-The first install takes a few minutes: this tap has no pre-built bottles, so
-Pillow and the PyObjC frameworks are compiled from source on your machine.
+The first install takes about two minutes, since Pillow, lxml and the PyObjC frameworks are built from source. Updates after that are much quicker.
 
-Run it:
+To start it:
 
 ```bash
-chronify
+chronify --background
 ```
 
-To start it automatically at login:
+If all went well, a ⏱ icon shows up in the top right of your screen. Plain `chronify` runs it in the foreground instead, where Ctrl+C quits it, which is handy while you are trying things out.
+
+To have it start when you log in:
 
 ```bash
 brew services start chronify
 ```
 
-Disable autostart: `brew services stop chronify`
+Turning that off is `brew services stop chronify`.
 
-Upgrade: `brew update && brew upgrade chronify`.
-
-Uninstall:
+### Updating and removing
 
 ```bash
-brew services stop chronify
+brew upgrade chronify
+```
+
+Your data in `~/.work_tracker/` is left alone. One thing to know: macOS ties the Screen Recording permission to the exact binary, so after an upgrade you'll have to grant it again.
+
+```bash
 brew uninstall chronify
-brew untap zepuff/chronify
 ```
 
-Your data in `~/.work_tracker/` survives an uninstall — delete that folder by
-hand if you want it gone too.
+That removes the app only. The `~/.work_tracker/` folder with your history, statuses and payment details stays where it is.
 
-### Local AI (optional)
+### AI for the statuses, optional
 
-Statuses are written by a local model. Without it the app still works, but the status stays a plain list of tasks:
+Without it the app works fine, the status is just a plain list of your notes.
+
+You don't install anything by hand. Open **⚙️ Settings → Daily status**, pick who writes the status, and Chronify installs it for you through Homebrew, in the background, reporting each step.
+
+- **Ollama** understands Ukrainian and other languages, so it can write the status in a different language from your notes. The app installs the formula, starts the service and pulls the `qwen2.5:3b` model, about 2 GB.
+- **Apple Intelligence** (`apfel`) uses the model already in macOS, so nothing gets downloaded. Needs macOS 26 on Apple Silicon, and it can't write Ukrainian.
+
+Both listen on port 11434, so only one of them can run at a time. If you'd rather do it by hand, this is exactly what the app would have run:
 
 ```bash
-brew install ollama
-brew services start ollama
-ollama pull qwen2.5:3b
+brew install ollama && brew services start ollama && ollama pull qwen2.5:3b
 ```
 
-Then set `ai_backend: "ollama"` in `~/.work_tracker/config.yaml`. On macOS 26+ with Apple Silicon there is an alternative, `apfel` (`brew install apfel && brew services start apfel`, then `ai_backend: "apfel"`).
+Converting invoices to PDF needs LibreOffice, also optional: `brew install --cask libreoffice`.
 
-PDF export for invoices: `brew install --cask libreoffice` (the `.docx` itself is created without it).
+### Working on the code
 
-### From source
+If you're editing the code, install from a clone so your changes are picked up without reinstalling:
 
 ```bash
-git clone https://github.com/zepuff/Chronify.git
-cd Chronify
+git clone https://github.com/zepuff/chronify.git
+cd chronify
 python3 -m venv venv && source venv/bin/activate
 pip install -e .
-chronify
+pip install pytest
+python3 -m pytest tests -q
 ```
+
+The tests need neither macOS nor a display.
 
 ### macOS permissions
 
-On first launch the system will ask for permissions. Both are needed:
+On the first run the system asks for permissions. You want both:
 
-- **Screen Recording** — without it window titles are invisible and all activity is logged as a bare app name, with no breakdown into tasks. Granted in *System Settings → Privacy & Security → Screen Recording*. The app has to be restarted after the change.
-
-  macOS attaches this permission to the exact executable, and `brew upgrade` installs a new one, so an upgrade can quietly revoke it. The app checks at launch and warns you; **⚙️ Settings → Screen Recording** shows the current state at any time and can reopen the system prompt.
-- **Notifications** — otherwise timed reminders never fire.
+- **Screen Recording.** Without it window titles are invisible and everything gets logged under the bare app name, with no task breakdown. Grant it in *System Settings → Privacy & Security → Screen Recording*. The app has to be restarted afterwards. **⚙️ Settings → Screen Recording** shows the current state and can bring up the system prompt for you.
+- **Notifications.** Otherwise the timed reminders won't fire.
 
 ---
 
-## First launch
+## First run
 
-Nothing opens by itself. The menu bar shows ⏱ ⚠️ no project until you add one.
+Two seconds after launch the app checks the Screen Recording permission and whether you have any projects. If you don't, you get a **Pick a project to start tracking** notification. Clicking it opens the new project window.
 
-**Projects.** 🏷 Active project → + Add a project. A name is required; the PeopleForce id and the hourly rate can stay empty. At least one project is needed, otherwise there is nowhere to log hours and tracking stays paused.
+**The project.** A name (required), the numeric PeopleForce id (leave it empty if you never push this one) and an hourly rate (empty falls back to the general rate). You need at least one project, because without it there's nowhere to write the hours and tracking sits paused. Once you save, the app asks whether there's another one, and if you end up with more than one it asks whether tasks and notes should be kept per project.
 
-**⚙️ Settings.** Four sections, each opened on its own and marked ✅ ⚠️ — depending on how complete it is. A section you never use can stay empty:
+**⚙️ Settings.** Four sections. You don't have to fill them in up front: press 📤 Send hours to PeopleForce or 🧾 Invoice and the app opens whichever section is missing. Each one carries a state marker: ✅ filled in, ⚠️ partly filled in, a dash for empty.
 
-| Section | What it covers |
+Every field prints its own explanation underneath: where the value comes from, what format it wants, and what happens if you leave it empty. The API key field has a Show button so you can check what you pasted.
+
+| Section | What's in it |
 |---|---|
-| PeopleForce | Company API key (PeopleForce only issues company-wide keys), employee id, hour the workday starts |
-| Daily status | The language the AI writes in — your own notes can be in any language |
-| Invoicing | Rate, your name for the document and for the file name, client name and code |
-| Payment details | Tax number, IBAN, SWIFT, addresses and the client's registration numbers |
+| PeopleForce | Company API key (PeopleForce only issues company-wide keys), employee id, the hour your working day starts |
+| Daily status | Who writes the status (No AI / Ollama / Apple Intelligence) and in which language. Your own notes can be in any language |
+| Invoicing | Rate, your name for the document and for the file name, client name and client code, and the folder the finished files go to |
+| Payment details | Tax number, IBAN, SWIFT, addresses, VAT, NIP, KRS. The list of fields is read from your own invoice template, so a different template gives a different list |
 
-Everything you enter is stored in `~/.work_tracker/profile.json`, **outside the project folder**, so your API key and payment details never end up in git. Values from there override `config.yaml`.
+Everything you type goes into `~/.work_tracker/profile.json`, next to the rest of your data rather than inside the app folder that every Homebrew upgrade rewrites. That's why your API key and payment details can never end up in git. Values from there always override `config.yaml`.
 
-Every section can be reopened at any time from ⚙️ Settings.
+Any section can be reopened later from the menu.
+
+---
+
+## The menu
+
+Everything lives under the ⏱ icon. Lines split the menu into blocks: recording and projects first, then your daily lists, then statistics, then documents and pushing, and settings at the bottom.
+
+Every item carries a small grey line underneath saying what it does, so the menu can be read instead of this table. The table is here for the detail that does not fit in one line.
+
+| Item | What it does |
+|---|---|
+| `⏸ Pause tracking` | Stops recording completely. The item turns into `▶️ Resume tracking` and the icon into `⏸` |
+| `🏷 Project` | Switch the active project, add and edit projects, move days between them |
+| `✨ Write today's status` | Builds today's status and opens it in a window for you to edit and copy |
+| `✅ What I did today` | What you finished today. The main source for the status |
+| `💭 Notes to self` | Context and ideas, no date attached |
+| `🚧 What is blocking me` | What's in the way. Its own section in the status. Also holds `✅ Mark as resolved` and `📜 Resolved blockers…` |
+| `📋 Plan for today` | The plan with checkboxes, plus `🧹 Clear completed` and `📌 Show in the menu bar` |
+| `⏰ Remind me at a time` | Alarms: text, time, days of the week, one-off or not |
+| `🚦 Infrastructure status` | 🟢 / 🟡 / 🔴 or your own wording, as one line in the status |
+| `📊 Where today went` | Today's time broken down by task |
+| `📆 Another day` | The last 30 days: `📄 Summary and hours` and `✏️ Edit tracked segments…` |
+| `📅 Month calendar` | The month's HTML calendar in your browser: This month / Last month |
+| `🧾 Invoice` | Create an invoice, `📥 Import details…`, `Refresh PDF…` |
+| `📤 Send hours to PeopleForce` | Today / Yesterday / Days this month / `📦 Push every day this month`, plus two switches: `Push real time ranges` and `Auto-push at 00:00` |
+| `📝 Status history` | `Open status history` for the markdown archive, and `🛑 Stop generating` |
+| `⚙️ Settings` | The four settings sections, `📝 Edit invoice template in Word…`, `Screen Recording`, `🏷 Add a project…` |
+| `🔄 Reload rules` | Rereads the grouping rules from `config.yaml` without a restart |
+| `📁 Show my data folder` | Opens `~/.work_tracker/` in Finder |
+| `Quit` | Stops the background loop and closes the current stretch of time |
+
+The three lists, tasks, notes and blockers, all work the same way. The first item adds an entry, clicking an existing one opens it for editing, and saving an empty field deletes it after a confirmation.
+
+Every window the app opens takes the usual keys: ⌘V pastes, ⌘A selects all, Return saves (⌘Return where the field is multi-line, so Return can still start a new line) and Esc closes. Windows stay open when you click away to another app.
+
+---
+
+## PeopleForce
+
+You need three numbers and one key, all from your PeopleForce, all in different places.
+
+| What | Where to find it |
+|---|---|
+| **Company API key** | One key for the whole company, issued by whoever administers PeopleForce. Ask them for it, then paste it into ⚙️ Settings → PeopleForce |
+| **Employee id** | The number at the end of your own profile URL: `https://YOUR-COMPANY.peopleforce.io/people/12345` gives `12345` |
+| **PeopleForce project id** | Open *Time → Attendance*, filter the page by the project and look at the URL: `…criteria%5Bproject_id%5D=42` gives `42`. This one doesn't go into Settings but into the project itself: 🏷 Project → ✏️ Edit a project |
+| **Working day starts at** | Not from PeopleForce, you pick it yourself. It's the hour a lump timesheet entry is counted from |
+
+The API address `https://app.peopleforce.io/api/public/v3` is the same for everyone and has nothing to do with your subdomain. The subdomain is only how you find the ids in the browser. For a separate server there's the `peopleforce.base_url` key.
+
+A project without a PeopleForce id works like any other: hours are counted, they land in the calendar and the invoice, they're simply never pushed. The confirmation window lists them on their own line.
 
 ---
 
 ## Configuration
 
-Personal data goes through ⚙️ Settings. `~/.work_tracker/config.yaml` is for fine-tuning the tracking itself — the file is created on first launch from a bundled default, is thoroughly commented, and is not overwritten by upgrades. The main keys:
+Personal data goes through **⚙️ Settings**. `config.yaml` is for the fine tuning of the tracking itself. It lives at `~/.work_tracker/config.yaml` and is seeded from a bundled sample on the first run. That's the copy to edit, because the one inside the installed package is overwritten by every `brew upgrade`. The file is thoroughly commented, and the main keys are below.
 
 | Key | What it does |
 |---|---|
 | `poll_interval` | how often to check the active window, in seconds |
-| `min_segment_seconds` | shorter segments are not stored |
+| `min_segment_seconds` | shorter stretches aren't stored |
 | `idle_threshold_seconds` | how many seconds without input count as idle |
 | `treat_media_as_active` | count calls as active time even without input |
 | `call_apps` / `call_apps_conditional` / `call_title_markers` | what counts as a call |
-| `alert_sound` | any name from `/System/Library/Sounds`, empty means silence |
-| `ai_backend` | `ollama`, `apfel` or `none` |
-| `status_language` | language of the generated status: `English`, `Ukrainian`, `Polish`… |
+| `alert_sound` | any name from `/System/Library/Sounds`, empty for silence |
+| `ai_backend` | `ollama`, `apfel` or `none` (the default), easier to switch from ⚙️ Settings |
+| `status_language` | the language of the generated status: `English`, `Ukrainian`, `Polish` and so on |
 | `rules` | how windows are grouped into tasks |
 | `ignore_apps` | never recorded |
 
-Rules are read top to bottom, first match wins. The regular expression is applied to the string `app name — window title`. Capture groups can be substituted into the task name:
+Rules are read top to bottom and the first match wins. The regex is applied to the string `app name - window title`. Capture groups can be dropped into the task name:
 
 ```yaml
 rules:
@@ -199,147 +276,115 @@ rules:
     task: "Ticket {1}"
 ```
 
-If no rule matches, the task is simply named after the app.
+If nothing matched, the task is simply named after the app.
 
-No restart is needed after editing rules — use the **🔄 Reload rules** menu item.
+You don't need to restart after editing rules. Use the **🔄 Reload rules** menu item.
 
-### Invoice template
+### The invoice template
 
-`Invoice_Template_TOKENS.docx` ships with the app — an ordinary Word document where every value is marked with a `{{TOKEN}}`. If you have your own template, put it in `~/.work_tracker/` and set the file name (or a full path) in `invoice.template_path`.
+`Invoice_Template_TOKENS.docx` ships with the app. It's an ordinary Word document where every value is marked with a `{{TOKEN}}`. If you have your own template, point `invoice.template_path` at it.
 
-The bundled template is one example layout: the currency is fixed to USD, the payment terms say full post-payment, and it carries a few jurisdiction-specific registration fields. If that doesn't match your situation, edit the document directly — only the `{{TOKENS}}` are substituted, everything else is plain text you can change.
+The main tokens are `{{INVOICE_NUMBER}}`, `{{INVOICE_DATE}}`, `{{PERIOD_START}}`, `{{PERIOD_END}}`, `{{TOTAL_HOURS}}`, `{{RATE}}`, `{{TOTAL_AMOUNT}}`, `{{CURRENCY}}`, `{{SUPPLIER_FULL_NAME}}`, and everything from Payment details: `{{IBAN}}`, `{{TAX_NUMBER}}`, `{{SWIFT_CODE}}`, `{{ADDRESS}}`, `{{ACQUIRER_NAME}}`, `{{ACQUIRER_ADDRESS}}`, `{{VAT_NUMBER}}`, `{{NIP}}`, `{{KRS}}`. The invoice number builds itself from the client code, the month and the year, so `AMYNEBO` for August 2026 gives `AMYNEBO082026`.
 
-Chronify ships with a working invoice template, so there is nothing to set up before the first invoice — fill in **⚙️ Settings → Payment details** and create one.
+The field list in the Payment details section is read from the template itself. A template for another country only needs its own tokens added, no code changes.
 
-**⚙️ Settings → 📝 Edit the invoice template…** copies the bundled template to `~/.work_tracker/my_invoice_template.docx` and opens it in Microsoft Word. Change only the parts that don't match your own paperwork — a label your country words differently, a registration number you have and the form does not. Anything in `{{DOUBLE BRACES}}` is filled in when an invoice is created; add one of your own the same way, for example `{{REGON}}`, and it appears in Payment details too.
+The table row holding `{{ROW_PROJECT}}` is a row template. It gets repeated once per project on the invoice, together with `{{ROW_DATES}}`, `{{ROW_HOURS}}`, `{{ROW_RATE}}` and `{{ROW_AMOUNT}}`. Empty fields stay visible as `{{TOKENS}}` on purpose, so you can see what's missing, and the app lists them for you after the invoice is created.
 
-> **Edit the template in Word or LibreOffice — not in Pages or TextEdit.** Neither of those supports the nested table the invoice rows live in. They save the file with that table replaced by plain text, and every invoice made from it then comes out without a table. Chronify checks for this when you connect a template and refuses one whose table is gone.
+If the template has more than one image, set `invoice.signature_image_name` so the app knows which one to replace with your signature. Or just name the picture "signature" in Word, right click on it and choose Edit Alt Text.
 
-The app computes these itself and never asks for them: `{{INVOICE_NUMBER}}` `{{INVOICE_DATE}}` `{{PERIOD_START}}` `{{PERIOD_END}}` `{{MONTH_NAME}}` `{{YEAR}}` `{{TOTAL_HOURS}}` `{{RATE}}` `{{TOTAL_AMOUNT}}` `{{CURRENCY}}` `{{SUPPLIER_FULL_NAME}}`, plus the `{{ROW_*}}` fields of the project row.
+> **The template can only be edited in Word or LibreOffice.** Pages and TextEdit don't support the nested table the project rows live in. On save they replace it with plain text, and every invoice from such a template comes out with no table at all. The app checks for this when you connect the file and refuses a broken template.
 
-The PDF beside the `.docx` is produced by LibreOffice: `brew install --cask libreoffice`. Without it the `.docx` is still created, and the PDF can be added later through **🧾 Invoice → Refresh PDF**.
-**🧾 Invoice → 📥 Import details from an existing invoice…** reads values — IBAN, tax number, addresses — out of an invoice you have already sent, so you don't retype them. The same import is one click away inside **⚙️ Settings → Payment details**.
-
-The table row containing `{{ROW_PROJECT}}` is a row template: it is duplicated once per project in the invoice. Empty fields deliberately stay as visible `{{TOKENS}}`, so you can see at once what's missing.
-
-If the template has more than one image, set `invoice.signature_image_name` so the app knows which one to replace with your signature — or simply name the picture "signature" in Word (right-click the image → Edit Alt Text).
+The convenient way in is **⚙️ Settings → 📝 Edit invoice template in Word…**. It copies the stock template to `~/.work_tracker/my_invoice_template.docx`, opens it in Word, and connects it in place of the stock one once you've saved.
 
 ---
 
 ## Where the data lives
 
-Everything is in `~/.work_tracker/`:
+All of it is in `~/.work_tracker/`:
 
-| File | Contents |
+| File | What's inside |
 |---|---|
-| `config.yaml` | tracking settings (rules, intervals, AI backend) |
-| `tracker.db` | SQLite with activity segments and the status archive |
+| `tracker.db` | SQLite with the activity stretches and the status archive |
+| `config.yaml` | tracking settings, seeded from the bundled sample on the first run |
 | `profile.json` | everything from ⚙️ Settings: API key, payment details, rate |
+| `my_invoice_template.docx` | your invoice template, if you connected one |
 | `projects.json` | projects |
 | `tasks.json` | completed tasks |
 | `blockers.json` | blockers |
 | `reminders.json` | notes to self |
-| `planner.json` | the day plan |
+| `planner.json` | the plan for the day |
 | `alerts.json` | timed reminders |
-| `settings.json` | active project, infrastructure status, pinned item, auto-push flag |
+| `settings.json` | active project, infrastructure status, pinned item, the auto-push flag |
 
-The generated calendar (`calendar_2026-08.html`) and the history export (`history_export.md`) live there too. Open the folder from the menu: **📁 Open saved data folder**.
+The generated calendar (`calendar_2026-08.html`) and the history export (`history_export.md`) sit there too. To open the folder from the menu: **📁 Show my data folder**.
 
-A backup is a copy of that one folder. Invoices are stored separately, in the folder from `invoice.output_dir` (by default `~/Documents/Invoices`).
+A backup is a copy of that one folder. Invoices are kept separately, in the folder from `invoice.output_dir`, by default `~/Documents/Invoices`.
 
 ---
 
-## Code structure
+## How the code is laid out
 
-| File | Responsibility |
+| File | What it's responsible for |
 |---|---|
-| `main.py` | the menu bar, all its items, timers, PeopleForce sync logic |
+| `main.py` | the menu bar, every item, timers, the PeopleForce sync logic |
+| `main_setup.py` | the settings panels and the first run |
+| `forms.py` | the field definitions each panel is built from |
 | `tracker.py` | the background loop polling the active window |
-| `task_mapper.py` | the "window → task" rules |
-| `db.py` | SQLite: time segments, status archive, HTML calendar |
+| `task_mapper.py` | the window to task rules |
+| `db.py` | SQLite: time stretches, the status archive, the HTML calendar |
 | `store.py` | the base layer for working with JSON files |
 | `notes.py` | tasks, blockers, reminders, the plan |
-| `projects.py` | projects and the active one |
+| `projects.py` | projects and which one is active |
 | `alerts.py` | timed reminders |
-| `settings.py` | small persisted settings |
-| `summarizer.py` | assembling the status text, requests to the AI |
-| `main_setup.py` | the Settings panels and the first-run wizard |
-| `forms.py` | the field definitions each Settings panel is built from |
-| `invoice.py` | filling the template, conversion to PDF |
-| `docx_layout.py` | measuring an existing invoice so its details can be read |
-| `invoice_import.py` | reading payment details out of an existing invoice |
+| `settings.py` | small stored settings |
+| `summarizer.py` | assembling the status text, talking to the AI |
+| `backends.py` | checking and installing the AI backends through Homebrew |
+| `invoice.py` | filling the template, converting to PDF |
+| `invoice_import.py` | reading details out of an existing invoice |
+| `docx_layout.py` | measuring an existing invoice so its data can be read |
 | `peopleforce.py` | the PeopleForce API |
 | `ui_windows.py` | native input windows |
 | `config.py` | reading `config.yaml` and `profile.json`, shared constants |
 
-The modules live in the `chronify/` package; the entry point is the `chronify` command (`chronify.main:main`).
+The modules live in the `chronify/` package and the entry point is the `chronify` command (`chronify.main:main`). Tests are in `tests/`, helper scripts in `scripts/`.
 
 ---
 
-## Development
+## When something doesn't work
 
-```bash
-git clone https://github.com/zepuff/Chronify.git
-cd Chronify
-python3 -m venv venv && source venv/bin/activate
-pip install -e .
-pip install pytest
-python3 -m pytest tests -q
-```
+**Only app names get recorded, no tasks.**
+Screen Recording hasn't been granted, see the permissions section above. macOS ties the permission to the exact binary, so after `brew upgrade chronify` you have to grant it again.
 
-The tests run anywhere — they need neither macOS nor a display. `test_invoice.py` fills real `.docx` files and checks the result is still a valid document; `test_setup_wiring.py` reads the Settings code as a syntax tree and catches the mistakes PyObjC only reports at runtime: a selector with the wrong number of arguments, a `self.` attribute nothing defines, a mixin that lost its place in the MRO.
+**Nothing gets recorded at all.**
+Look at the menu bar icon. `⏸` means tracking is paused and `⚠️ no project` means there's no project to record against.
 
-Two scripts help with the parts tests can't reach:
-
-| Script | What it does |
-|---|---|
-| `scripts/check_template.py` | reports what an invoice template contains and fills a sample invoice from it |
-| `scripts/first_run_sandbox.sh` | runs the app against a throwaway `HOME`, so a first run can be tried without touching your data |
-
----
-
-## If something doesn't work
-
-**Only app names are recorded, no tasks.**
-Screen Recording permission hasn't been granted, or an upgrade dropped it. Check **⚙️ Settings → Screen Recording**; a — instead of ✅ means macOS is hiding window titles.
-
-**Nothing is recorded at all.**
-Look at the menu bar icon: `⏸` means tracking is paused, `⚠️ no project` means there is no project to log to.
-
-**The status comes out as a plain list, with no rewriting.**
-The AI backend is unavailable. Check that Ollama is running (`ollama list`) and that `ollama_model` in the config matches the model name exactly, including a tag like `:3b`. Ollama and apfel use the same port, 11434 — run only one of them (`lsof -i :11434` shows who took it).
+**The status comes out as a plain list, without any rewriting.**
+The AI backend is unavailable or wasn't picked. Start with **⚙️ Settings → Daily status**. For Ollama, check that it's running (`ollama list`) and that `ollama_model` in the config matches the model name exactly, tag like `:3b` included. Ollama and apfel share port 11434, so run only one of them. `lsof -i :11434` shows who took it.
 
 **The invoice PDF isn't created.**
-LibreOffice is missing: `brew install --cask libreoffice`. The `.docx` is created either way, and the PDF can be generated later via **🧾 Invoice → Refresh PDF**.
+LibreOffice is missing: `brew install --cask libreoffice`. The `.docx` is created either way, and the PDF can be generated later through **🧾 Invoice → Refresh PDF**.
+
+**The invoice has no table, the rows run as plain text.**
+The template was saved in Pages or TextEdit and the nested table became text. Delete `~/.work_tracker/my_invoice_template.docx` to go back to the stock template, and from then on edit it only in Word or LibreOffice. To check any template: `python3 scripts/check_template.py <file>`.
 
 **The invoice still shows `{{TOKENS}}`.**
-The corresponding field is empty. Fill it in through **⚙️ Settings** and create the invoice again — after every run the app lists exactly which values are missing.
-
-**The invoice has no table: the rows come out as plain text.**
-The template lost it. Pages and TextEdit both drop the nested table the rows live in when they save a `.docx`. Delete `~/.work_tracker/my_invoice_template.docx` and remove `template_path` from `~/.work_tracker/profile.json` to go back to the bundled template, then edit it in Word or LibreOffice instead. `python3 scripts/check_template.py <file>` reports what a template still contains.
+That field is empty. Fill it in through **⚙️ Settings → Payment details** and create the invoice again. The app lists exactly which values were missing after every run.
 
 **PeopleForce returns an error.**
-Usually a missing project id, or a key taken from the wrong place. You need a Company API key from *Settings → API keys*. Project ids are set per project: **🏷 Active project → ✏️ Edit a project**.
+Usually a missing project id, or a key that is not the company one. Ask whoever administers PeopleForce for the right key. Project ids are set per project: **🏷 Project → ✏️ Edit a project**.
 
-**PeopleForce says the hours don't fit in the day.**
-The total, counted from your workday start hour, runs past midnight. Lower that hour in ⚙️ Settings → PeopleForce, or push part of the time manually.
+**PeopleForce says the hours don't fit into the day.**
+The total, counted from your start of the working day, runs past midnight. Lower that hour in **⚙️ Settings → PeopleForce** or push part of the time by hand.
 
 **The app didn't start after a reboot.**
-Check `brew services list` — Chronify should be `started`. Logs: `cat $(brew --prefix)/var/log/chronify.log`
+Check the service: `brew services list`. If it's in the `error` state, the log is at `/opt/homebrew/var/log/chronify.log`.
 
 ---
 
 ## Limitations
 
-- macOS only — tracking depends on Quartz and AppKit.
-- Status quality depends on the local model. `qwen2.5:3b` is fast, but small and occasionally muddles details. If the text looks odd, try a bigger model. apfel has a 4096-token context, so very long days get truncated.
-- Deleting a project doesn't move its hours anywhere — they stay in your statistics as time without a project and are never pushed.
-- Copy `~/.work_tracker/` before upgrading. Nothing has ever eaten it, but it is the one folder that matters.
-
----
-
-## License
-
-Copyright (C) 2026 Zepuff.
-
-Chronify is free software, released under the GNU General Public License v3 or later. You may use, study, modify and redistribute it — but any distributed derivative work has to stay under the same license and ship its source. The full terms are in [LICENSE](LICENSE); there is no warranty of any kind.
+- macOS only. The tracking depends on Quartz and AppKit.
+- It's worth copying `~/.work_tracker/` before an upgrade. Nothing has ever eaten it, but it's the one folder that matters.
+- The quality of the status depends on the local model. `qwen2.5:3b` is fast but small and gets details muddled now and then. If the text looks odd, try a bigger model. apfel has a 4096 token context, so very long days get cut off.
+- Deleting a project doesn't move its hours anywhere. They stay in your stats as unassigned time and are never pushed.
+- The tests cover the logic that runs without macOS: invoices, backends, status assembly, menu wiring. The tracking itself, the windows and the PeopleForce sync aren't covered and get checked by hand.

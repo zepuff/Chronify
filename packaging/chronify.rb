@@ -177,17 +177,22 @@ class Chronify < Formula
       end
     end
 
-    pip = libexec/"bin/pip"
+    # The virtualenv is created with --without-pip, so there is no bin/pip to
+    # call. Running it as a module works because --system-site-packages lets
+    # the environment see the pip that comes with python@3.13.
+    python = libexec/"bin/python"
     offline = ["--no-index", "--find-links", wheelhouse.to_s]
 
-    system pip, "install", *offline, "--no-deps", "setuptools", "wheel"
+    system python, "-m", "pip", "install", *offline, "--no-deps",
+           "setuptools", "wheel"
 
     sources.each do |path|
-      system pip, "wheel", "--no-deps", "--no-build-isolation",
+      system python, "-m", "pip", "wheel", "--no-deps", "--no-build-isolation",
              "--wheel-dir", wheelhouse, path
     end
 
-    system pip, "install", *offline, "--no-deps", *Dir[wheelhouse/"*.whl"]
+    system python, "-m", "pip", "install", *offline, "--no-deps",
+           *Dir[wheelhouse/"*.whl"]
 
     venv.pip_install_and_link buildpath
   end
@@ -217,7 +222,7 @@ class Chronify < Formula
       #{d}Made for people who bill by the hour: contractors, freelancers, anyone
       who has to say what they did today and how long it took.#{r}
 
-      #{h}START HERE — three steps, about two minutes#{r}
+      #{h}START HERE. Three steps, about two minutes#{r}
         #{g}1.#{r} #{g}chronify --background#{r}
            Starts it and gives this terminal back. Plain `chronify` runs it
            here instead, where Ctrl+C quits it.

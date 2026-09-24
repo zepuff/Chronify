@@ -9,7 +9,7 @@ The code is released first, then the formula is pointed at it.
 
 ## In the code repository
 
-1. Update `CHANGELOG.md` with what changed.
+1. Write down what changed, for the release notes on GitHub.
 
 2. Bump the version in two places, and keep them equal:
 
@@ -35,7 +35,7 @@ The code is released first, then the formula is pointed at it.
    downloads:
 
    ```bash
-   gh release create v0.3.0 --title "0.3.0" --notes-file CHANGELOG.md
+   gh release create v0.3.0 --title "0.3.0" --notes "what changed in this version"
    ```
 
 6. Take the checksum of that tarball:

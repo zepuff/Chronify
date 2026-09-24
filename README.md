@@ -97,14 +97,11 @@ The PeopleForce integration and the invoices are optional. Without them this is 
 You need macOS and Homebrew. Homebrew brings Python and every library along with it.
 
 ```bash
-brew tap zepuff/chronify
-brew trust zepuff/chronify
-brew install chronify
+brew install zepuff/chronify/chronify
 ```
 
-`brew trust` confirms you're fine installing a formula from outside the official Homebrew repo. Without it the install stops with an error about an untrusted tap.
 
-The first install takes about two minutes, since Pillow, lxml and the PyObjC frameworks are built from source. Updates after that are much quicker.
+The install takes a few seconds. The formula ships prebuilt wheels, so nothing is compiled on your machine.
 
 To start it:
 

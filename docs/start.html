@@ -42,14 +42,10 @@
         <div class="step-body">
           <h3>Install it</h3>
           <p>You need macOS and Homebrew. Homebrew brings Python and every library with it.</p>
-          <pre><code>brew tap zepuff/chronify
-brew trust zepuff/chronify
-brew install chronify</code></pre>
+          <pre><code>brew install zepuff/chronify/chronify</code></pre>
           <p>
-            <code>brew trust</code> confirms you are fine installing a formula
-            from outside the official Homebrew repo. Without it the install
-            stops with an error about an untrusted tap. The first install takes
-            a while, because Homebrew builds the Python libraries from source.
+            The install takes a few seconds. The formula ships prebuilt
+            wheels, so nothing is compiled on your machine.
           </p>
         </div>
       </article>

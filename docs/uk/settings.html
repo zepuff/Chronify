@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Налаштування · Chronify</title>
+<meta name="description" content="Кожне поле в налаштуваннях Chronify і точна відповідь, де взяти потрібне значення.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="topbar">
+    <a class="brand" href="./">Chronify <span>⏱</span></a>
+    <nav class="topnav">
+      <a href="start.html">Швидкий старт</a>
+      <a href="menu.html">Меню</a>
+      <a href="settings.html" aria-current="page">Налаштування</a>
+      <a href="data.html">Ваші дані</a>
+      <a href="https://github.com/zepuff/Chronify">Код</a>
+      <span class="langs">
+        <a href="../settings.html">EN</a><i>/</i><a href="settings.html" aria-current="true">UK</a>
+      </span>
+    </nav>
+  </header>
+
+  <div class="page-title">
+    <p class="eyebrow">довідник</p>
+    <h1>Кожне поле і звідки береться його значення</h1>
+    <p>
+      Нічого з цього не потрібно в перший день. Кожна група питається тоді, коли
+      ви вперше відкриваєте те, що її потребує, і тоді ж її можна заповнити.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="doc">
+
+    <nav class="toc" aria-label="Зміст">
+      <p>на цій сторінці</p>
+      <ul>
+        <li><a href="#marks">Як читати позначки</a></li>
+        <li><a href="#peopleforce">PeopleForce</a></li>
+        <li><a href="#status">Daily status</a></li>
+        <li><a href="#invoice">Invoicing</a></li>
+        <li><a href="#requisites">Payment details</a></li>
+        <li><a href="#template">Шаблон рахунку</a></li>
+        <li><a href="#projects">Поля проєкту</a></li>
+        <li><a href="#permission">Запис екрана</a></li>
+        <li><a href="#stored">Де зберігаються налаштування</a></li>
+      </ul>
+    </nav>
+
+    <div class="prose">
+
+      <h2 id="marks">Як читати позначки</h2>
+
+      <p>
+        Кожна група в <b>⚙️ Settings</b> має позначку, щоб було видно, чого ще
+        бракує, не відкриваючи нічого.
+      </p>
+
+      <div class="scroller">
+        <table class="table">
+          <thead>
+            <tr><th>Позначка</th><th>Що означає</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>✅</td><td>Усе обов'язкове в цій групі заповнено.</td></tr>
+            <tr><td>⚠️</td><td>Щось заповнено, але обов'язкове поле лишилось порожнім.</td></tr>
+            <tr><td>—</td><td>Групу не чіпали, там нічого не задано.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <p>
+          <strong>У самому застосунку під кожним полем теж є сірий рядок.</strong>
+          Ця сторінка це той самий текст, але з місцем на пояснення, щоб не
+          тримати сайт відкритим, поки заповнюєте.
+        </p>
+      </div>
+
+      <h2 id="peopleforce">PeopleForce</h2>
+
+      <p>
+        Відправляє відпрацьовані години і щоденний статус у ваш таймшит
+        PeopleForce. Усе, що ви тут вводите, лишається на цьому Mac і не йде
+        нікуди, окрім самого PeopleForce.
+      </p>
+
+      <dl class="fields">
+        <div class="field">
+          <dt>Company API key <em>обов'язкове</em></dt>
+          <dd>
+            Ключ, який дозволяє Chronify надсилати ваші години і статуси в
+            PeopleForce.
+          </dd>
+          <dd>
+            <b>Де взяти:</b> ключ один на всю компанію, тому вставте той, який
+            вам видали. Свій власний створювати не треба.
+          </dd>
+          <dd>
+            Поле приховане. Натисніть <b>Show</b>, щоб перевірити вставлене, і
+            ще раз, щоб знову сховати.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Employee id <em>обов'язкове</em></dt>
+          <dd>Ваш власний номер у PeopleForce, тільки цифри.</dd>
+          <dd>
+            <b>Де взяти:</b> відкрийте свій профіль у PeopleForce і подивіться в
+            адресний рядок. Він закінчується вашим номером, тобто
+            <code>.../people/12345</code> означає, що ви вводите
+            <code>12345</code>.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Working day starts at</dt>
+          <dd>Година, коли зазвичай починається ваш день, числом: <code>9</code> означає 09:00.</dd>
+          <dd>
+            Використовується тільки тоді, коли <b>Push real time ranges</b>
+            вимкнено, щоб вирішити, звідки починається єдиний зведений запис. З
+            увімкненими реальними проміжками це поле не враховується.
+          </dd>
+        </div>
+      </dl>
+
+      <div class="note">
+        <p>
+          <strong>Кожному проєкту потрібен ще й власний номер у PeopleForce</strong>,
+          інакше його години не відправляться. Той номер живе з проєктом, а не
+          тут. <a href="#projects">Дивіться нижче</a>.
+        </p>
+      </div>
+
+      <h2 id="status">Daily status</h2>
+
+      <p>
+        Хто перетворює чернеткові рядки, які ви записуєте протягом дня, на
+        статус для Slack, і якою мовою. Chronify сам встановить те, що ви
+        оберете, руками робити нічого не треба.
+      </p>
+
+      <dl class="fields">
+        <div class="field">
+          <dt>Written by</dt>
+          <dd>
+            <b>Ollama</b> розуміє українську і завантажує модель приблизно на
+            2 ГБ.
+          </dd>
+          <dd>
+            <b>Apple Intelligence</b> бере модель, яка вже є в macOS, тому нічого
+            не завантажує, але не вміє писати українською і потребує macOS 26 на
+            Apple Silicon.
+          </dd>
+          <dd>
+            <b>No AI</b> лишає ваші нотатки рівно такими, як ви їх написали.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Status language</dt>
+          <dd>
+            Мова, якою пишеться готовий статус: English, Ukrainian, Polish.
+          </dd>
+          <dd>
+            Ваші власні нотатки можуть бути будь-якою мовою, вони по дорозі
+            перекладаються.
+          </dd>
+        </div>
+      </dl>
+
+      <p>
+        Якщо обраний автор ще не встановлений, Chronify спершу питає, а потім
+        ставить його через Homebrew у фоні, поки ви працюєте далі. Якщо якийсь
+        крок не вдасться, вам скажуть який, щоб ви могли доробити руками.
+      </p>
+
+      <h2 id="invoice">Invoicing</h2>
+
+      <p>
+        Заповнює ваш шаблон .docx і в один клік робить PDF наприкінці місяця.
+        Години беруться з трекера або з PeopleForce, а тут ті речі, яких він не
+        може вирахувати сам.
+      </p>
+
+      <dl class="fields">
+        <div class="field">
+          <dt>Hourly rate <em>обов'язкове</em></dt>
+          <dd>Тільки цифри, наприклад <code>35</code> або <code>27.5</code>.</dd>
+          <dd>
+            У проєкта може бути власна ставка, і вона має перевагу над цією.
+            Тут ставте звичну, а виняток задавайте на проєкті.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Your full name <em>обов'язкове</em></dt>
+          <dd>
+            Друкується всередині рахунку як особа, якій платять, наприклад
+            <code>Yulia Tymoshenko</code>.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Your name for the file name</dt>
+          <dd>
+            Іде в назву файлу, тому тримайте одне слово. <code>Yulia</code>
+            дає <code>Invoice_Yulia_Client_August_2026.docx</code>.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Client name</dt>
+          <dd>
+            Теж частина назви файлу. Краще коротко, а повна юридична назва
+            належить до <a href="#requisites">реквізитів</a>.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Client code</dt>
+          <dd>
+            Короткий код, з якого починається номер рахунку.
+            <code>AMYNEBO</code> за серпень 2026 дає номер
+            <code>AMYNEBO082026</code>.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Save invoices to</dt>
+          <dd>
+            Папка для готових .docx і PDF. Натисніть <b>Choose…</b>, щоб обрати.
+          </dd>
+          <dd>
+            Якщо лишити порожнім, буде <code>~/Documents/Invoices</code>.
+          </dd>
+        </div>
+      </dl>
+
+      <h2 id="requisites">Payment details</h2>
+
+      <p>
+        Друкуються у вашому рахунку там, де в шаблоні стоїть відповідний
+        <code>{{TOKEN}}</code>. Усе, що лишиться порожнім, так і буде видно в
+        готовому документі як <code>{{TOKEN}}</code>, і саме так ви помічаєте, чого
+        бракує.
+      </p>
+
+      <div class="note">
+        <p>
+          <strong>Швидше, ніж набирати:</strong> кнопка
+          <b>Import from an invoice…</b> унизу цієї групи зчитує все це з
+          рахунку, який ви вже колись відправляли.
+        </p>
+      </div>
+
+      <dl class="fields">
+        <div class="field">
+          <dt>Tax number <em>{{TAX_NUMBER}}</em></dt>
+          <dd>Ваш власний податковий номер.</dd>
+        </div>
+        <div class="field">
+          <dt>IBAN <em>{{IBAN}}</em></dt>
+          <dd>Рахунок, на який платить клієнт.</dd>
+        </div>
+        <div class="field">
+          <dt>SWIFT / BIC <em>{{SWIFT_CODE}}</em></dt>
+          <dd>Код SWIFT або BIC вашого банку.</dd>
+        </div>
+        <div class="field">
+          <dt>Your address <em>{{ADDRESS}}</em></dt>
+          <dd>Ваша адреса в тому вигляді, в якому вона має бути в рахунку.</dd>
+        </div>
+        <div class="field">
+          <dt>Client legal name <em>{{ACQUIRER_NAME}}</em></dt>
+          <dd>Повна юридична назва клієнта, точно як у договорі.</dd>
+        </div>
+        <div class="field">
+          <dt>Client address <em>{{ACQUIRER_ADDRESS}}</em></dt>
+          <dd>Зареєстрована адреса клієнта.</dd>
+        </div>
+        <div class="field">
+          <dt>Client VAT number <em>{{VAT_NUMBER}}</em></dt>
+          <dd>Лишіть порожнім, якщо рахунку це не потрібно.</dd>
+        </div>
+        <div class="field">
+          <dt>Client NIP <em>{{NIP}}</em></dt>
+          <dd>Польський податковий номер клієнта. Порожньо, якщо у вашому шаблоні немає <code>{{NIP}}</code>.</dd>
+        </div>
+        <div class="field">
+          <dt>Client KRS <em>{{KRS}}</em></dt>
+          <dd>Польський реєстраційний номер клієнта. Порожньо, якщо у вашому шаблоні немає <code>{{KRS}}</code>.</dd>
+        </div>
+      </dl>
+
+      <p>
+        Коли ви підключите власний шаблон, цей перелік читається вже з нього.
+        Тож шаблон для іншої країни просто приносить свої токени, а поля
+        підлаштовуються самі. Міняти щось у коді не треба.
+      </p>
+
+      <h2 id="template">Шаблон рахунку</h2>
+
+      <p>
+        <b>⚙️ Settings → 📝 Edit invoice template in Word…</b> відкриває
+        стандартний шаблон, чекає, поки ви його відредагуєте, і потім підключає
+        збережений файл.
+      </p>
+
+      <ul>
+        <li>
+          Свої постійні дані вписуйте прямо в документ. Не вигадуйте нових
+          <code>{{TOKENS}}</code>, їх нема звідки взяти.
+        </li>
+        <li>
+          Лишіть ті плейсхолдери, які вже є, наприклад
+          <code>{{SUPPLIER_FULL_NAME}}</code> і <code>{{TOTAL_AMOUNT}}</code>,
+          щоб автоматичні значення все ще потрапляли на місце.
+        </li>
+        <li>
+          Збережіть як .docx, поверніться і натисніть <b>Select saved file</b>.
+        </li>
+      </ul>
+
+      <div class="note warn">
+        <p>
+          <strong>Тільки Word або LibreOffice.</strong> Pages і TextEdit під час
+          збереження замінюють таблицю рахунку звичайним текстом, і в готовому
+          документі таблиці не лишається зовсім. Chronify це перевіряє і скаже
+          вам, замість того щоб видати зіпсований документ.
+        </p>
+      </div>
+
+      <h2 id="projects">Поля проєкту</h2>
+
+      <p>
+        Питаються при додаванні проєкту, а змінити їх можна через
+        <b>⏱ → 🏷 Project → ✏️ Edit a project</b>.
+      </p>
+
+      <dl class="fields">
+        <div class="field">
+          <dt>Project name <em>обов'язкове</em></dt>
+          <dd>Видно в меню і друкується в рахунку.</dd>
+          <dd>
+            Беріть ту саму назву, що й у PeopleForce, тоді їх легко зіставити.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>PeopleForce project id</dt>
+          <dd>Тільки цифри.</dd>
+          <dd>
+            <b>Де взяти:</b> у PeopleForce відкрийте <b>Time → Attendance</b>,
+            відфільтруйте за цим проєктом і візьміть число з адреси:
+            <code>...criteria[project_id]=42</code> означає, що ви вводите
+            <code>42</code>.
+          </dd>
+          <dd>
+            Якщо лишити порожнім, цей проєкт ніколи не відправляється в
+            PeopleForce. Це охайний спосіб рахувати особисту роботу так, щоб вона
+            не потрапляла в таймшит.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Hourly rate</dt>
+          <dd>Ставка тільки для цього проєкту, цифрами, наприклад <code>35</code>.</dd>
+          <dd>
+            Якщо порожньо, береться ставка з
+            <a href="#invoice">Settings → Invoicing</a>.
+          </dd>
+        </div>
+      </dl>
+
+      <h2 id="permission">Запис екрана</h2>
+
+      <p>
+        Не поле, а перевірка. <b>⚙️ Settings → Screen Recording</b> показує, чи
+        читаються зараз заголовки вікон, і відкриває системний запит macOS, якщо
+        ні.
+      </p>
+
+      <p>
+        Без цього дозволу macOS ховає всі заголовки вікон, і день записується
+        голими назвами застосунків, без жодного розподілу за задачами.
+      </p>
+
+      <div class="note warn">
+        <p>
+          <strong>macOS прив'язує цей дозвіл до конкретного виконуваного файлу.</strong>
+          Після <code>brew upgrade</code> файл новий, тому дозвіл може тихо
+          злетіти, і ніхто про це не попередить. Якщо після оновлення зникли
+          назви задач, причина саме в цьому. Видайте дозвіл заново і
+          перезапустіть застосунок.
+        </p>
+      </div>
+
+      <h2 id="stored">Де зберігаються налаштування</h2>
+
+      <p>
+        Усе, що ви вводите в Settings, записується у
+        <code>~/.work_tracker/profile.json</code>. Значення за замовчуванням
+        лежать у <code>~/.work_tracker/config.yaml</code>, і там, де вони
+        перетинаються, перемагає ваш профіль.
+      </p>
+
+      <p>
+        Практичний наслідок приємний: оновлення можуть міняти замовчування,
+        жодного разу не чіпаючи того, що задали ви.
+        <a href="data.html">Докладніше про файли</a>.
+      </p>
+
+      <div class="next">
+        <a href="menu.html"><span>кожен пункт</span><b>Меню →</b></a>
+        <a href="data.html"><span>файли, бекапи, оновлення</span><b>Ваші дані →</b></a>
+        <a href="start.html"><span>з нуля до обліку</span><b>Швидкий старт →</b></a>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Chronify · GPL-3.0</span>
+    <a href="https://github.com/zepuff/Chronify">Код</a>
+    <span class="spacer"><a href="../settings.html">In English</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

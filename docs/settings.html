@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings · Chronify</title>
+<meta name="description" content="Every field in Chronify's settings, and exactly where to find the value it wants.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="topbar">
+    <a class="brand" href="./">Chronify <span>⏱</span></a>
+    <nav class="topnav">
+      <a href="start.html">Quick start</a>
+      <a href="menu.html">The menu</a>
+      <a href="settings.html" aria-current="page">Settings</a>
+      <a href="data.html">Your data</a>
+      <a href="https://github.com/zepuff/Chronify">Source</a>
+      <span class="langs">
+        <a href="./" aria-current="true">EN</a><i>/</i><a href="uk/settings.html">UK</a>
+      </span>
+    </nav>
+  </header>
+
+  <div class="page-title">
+    <p class="eyebrow">Reference</p>
+    <h1>Every field, and where its value comes from</h1>
+    <p>
+      Nothing here is needed on day one. Each group is asked for the first time
+      you open the thing that needs it, and you can fill it in then.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="doc">
+
+    <nav class="toc" aria-label="On this page">
+      <p>On this page</p>
+      <ul>
+        <li><a href="#marks">Reading the marks</a></li>
+        <li><a href="#peopleforce">PeopleForce</a></li>
+        <li><a href="#status">Daily status</a></li>
+        <li><a href="#invoice">Invoicing</a></li>
+        <li><a href="#requisites">Payment details</a></li>
+        <li><a href="#template">The invoice template</a></li>
+        <li><a href="#projects">Project fields</a></li>
+        <li><a href="#permission">Screen Recording</a></li>
+        <li><a href="#stored">Where settings are stored</a></li>
+      </ul>
+    </nav>
+
+    <div class="prose">
+
+      <h2 id="marks">Reading the marks</h2>
+
+      <p>
+        Each group in <b>⚙️ Settings</b> carries a mark, so you can see at a
+        glance what is still missing without opening anything.
+      </p>
+
+      <div class="scroller">
+        <table class="table">
+          <thead>
+            <tr><th>Mark</th><th>What it means</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>✅</td><td>Everything required in this group is filled in.</td></tr>
+            <tr><td>⚠️</td><td>Something is filled in, but a required field is still empty.</td></tr>
+            <tr><td>—</td><td>Untouched. Nothing in this group has been set.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <p>
+          <strong>Every field has a grey line under it inside the app too.</strong>
+          This page is the same text with more room to explain, so you do not
+          have to keep the site open while you fill things in.
+        </p>
+      </div>
+
+      <h2 id="peopleforce">PeopleForce</h2>
+
+      <p>
+        Sends your tracked hours and the daily status into your PeopleForce
+        timesheet. Everything you type here stays on this Mac and goes nowhere
+        except PeopleForce itself.
+      </p>
+
+      <dl class="fields">
+        <div class="field">
+          <dt>Company API key <em>required</em></dt>
+          <dd>
+            The key that lets Chronify send your hours and statuses to
+            PeopleForce.
+          </dd>
+          <dd>
+            <b>Where to get it:</b> there is one key for the whole company, so
+            paste the one you were given. You do not create your own.
+          </dd>
+          <dd>
+            The field is masked. Press <b>Show</b> to check what you pasted, and
+            press it again to hide it.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Employee id <em>required</em></dt>
+          <dd>Your own number in PeopleForce, digits only.</dd>
+          <dd>
+            <b>Where to get it:</b> open your own profile in PeopleForce and
+            look at the address bar. It ends in your number, so
+            <code>.../people/12345</code> means you type <code>12345</code>.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Working day starts at</dt>
+          <dd>The hour your day usually begins, as a number: <code>9</code> means 09:00.</dd>
+          <dd>
+            Only used when <b>Push real time ranges</b> is off, to decide where
+            the single lump entry starts. With real ranges on, this is ignored.
+          </dd>
+        </div>
+      </dl>
+
+      <div class="note">
+        <p>
+          <strong>Each project also needs its own PeopleForce id</strong> before
+          its hours can be sent. That one lives with the project, not here.
+          <a href="#projects">See below</a>.
+        </p>
+      </div>
+
+      <h2 id="status">Daily status</h2>
+
+      <p>
+        Who turns the rough lines you log during the day into a status you can
+        paste into Slack, and in which language. Chronify installs whichever you
+        pick, so there is nothing to set up by hand.
+      </p>
+
+      <dl class="fields">
+        <div class="field">
+          <dt>Written by</dt>
+          <dd>
+            <b>Ollama</b> understands Ukrainian and downloads a model of about
+            2 GB.
+          </dd>
+          <dd>
+            <b>Apple Intelligence</b> uses the model already in macOS, so
+            nothing is downloaded, but it cannot write Ukrainian and needs
+            macOS 26 on Apple Silicon.
+          </dd>
+          <dd>
+            <b>No AI</b> leaves your notes exactly as you wrote them.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Status language</dt>
+          <dd>
+            The language the finished status is written in: English, Ukrainian,
+            Polish.
+          </dd>
+          <dd>
+            Your own notes can be in any language, they get translated on the
+            way.
+          </dd>
+        </div>
+      </dl>
+
+      <p>
+        When you pick a writer that is not installed yet, Chronify asks before
+        doing anything, then installs it with Homebrew in the background while
+        you keep working. If a step fails you are told which one, so you can
+        finish it by hand.
+      </p>
+
+      <h2 id="invoice">Invoicing</h2>
+
+      <p>
+        Fills your .docx template and produces a PDF in one click at the end of
+        the month. The hours come from the tracker or from PeopleForce; these
+        are the things it cannot work out on its own.
+      </p>
+
+      <dl class="fields">
+        <div class="field">
+          <dt>Hourly rate <em>required</em></dt>
+          <dd>Digits only, for example <code>35</code> or <code>27.5</code>.</dd>
+          <dd>
+            A project can carry its own rate, and that one wins over this. Use
+            this for your usual rate and set the exception on the project.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Your full name <em>required</em></dt>
+          <dd>
+            Printed inside the invoice as the person being paid, for example
+            <code>Yulia Tymoshenko</code>.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Your name for the file name</dt>
+          <dd>
+            Goes into the file name, so keep it to one word.
+            <code>Yulia</code> gives
+            <code>Invoice_Yulia_Client_August_2026.docx</code>.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Client name</dt>
+          <dd>
+            Also part of the file name. Short is better; the full legal name
+            belongs in <a href="#requisites">Payment details</a>.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Client code</dt>
+          <dd>
+            Short code that starts the invoice number. <code>AMYNEBO</code> for
+            August 2026 gives the number <code>AMYNEBO082026</code>.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Save invoices to</dt>
+          <dd>
+            Folder for the finished .docx and PDF. Press <b>Choose…</b> to pick
+            one.
+          </dd>
+          <dd>
+            Left empty it falls back to <code>~/Documents/Invoices</code>.
+          </dd>
+        </div>
+      </dl>
+
+      <h2 id="requisites">Payment details</h2>
+
+      <p>
+        Printed into your invoice wherever the matching
+        <code>{{TOKEN}}</code> sits in the template. Anything left empty stays
+        visible as <code>{{TOKEN}}</code> in the finished document, which is how
+        you spot what is missing.
+      </p>
+
+      <div class="note">
+        <p>
+          <strong>Quicker than typing:</strong> the
+          <b>Import from an invoice…</b> button at the bottom of this group
+          reads all of it out of an invoice you have already sent.
+        </p>
+      </div>
+
+      <dl class="fields">
+        <div class="field">
+          <dt>Tax number <em>{{TAX_NUMBER}}</em></dt>
+          <dd>Your own tax number.</dd>
+        </div>
+        <div class="field">
+          <dt>IBAN <em>{{IBAN}}</em></dt>
+          <dd>The account the client pays into.</dd>
+        </div>
+        <div class="field">
+          <dt>SWIFT / BIC <em>{{SWIFT_CODE}}</em></dt>
+          <dd>Your bank's SWIFT or BIC code.</dd>
+        </div>
+        <div class="field">
+          <dt>Your address <em>{{ADDRESS}}</em></dt>
+          <dd>Your address as it should appear on the invoice.</dd>
+        </div>
+        <div class="field">
+          <dt>Client legal name <em>{{ACQUIRER_NAME}}</em></dt>
+          <dd>The client's full legal name, exactly as in the contract.</dd>
+        </div>
+        <div class="field">
+          <dt>Client address <em>{{ACQUIRER_ADDRESS}}</em></dt>
+          <dd>The client's registered address.</dd>
+        </div>
+        <div class="field">
+          <dt>Client VAT number <em>{{VAT_NUMBER}}</em></dt>
+          <dd>Leave empty if the invoice does not need one.</dd>
+        </div>
+        <div class="field">
+          <dt>Client NIP <em>{{NIP}}</em></dt>
+          <dd>Polish tax number of the client. Leave empty if your template has no <code>{{NIP}}</code> in it.</dd>
+        </div>
+        <div class="field">
+          <dt>Client KRS <em>{{KRS}}</em></dt>
+          <dd>Polish register number of the client. Leave empty if your template has no <code>{{KRS}}</code> in it.</dd>
+        </div>
+      </dl>
+
+      <p>
+        Once you connect your own template, this list is read from that document
+        instead, so a template for another country only needs its own tokens and
+        the fields follow. Nothing in the code has to change.
+      </p>
+
+      <h2 id="template">The invoice template</h2>
+
+      <p>
+        <b>⚙️ Settings → 📝 Edit invoice template in Word…</b> opens the default
+        template, waits while you edit it, and then connects your saved file.
+      </p>
+
+      <ul>
+        <li>
+          Type your own static details straight into the document. Do not invent
+          new <code>{{TOKENS}}</code>, they are not read from anywhere.
+        </li>
+        <li>
+          Keep the placeholders that are already there, such as
+          <code>{{SUPPLIER_FULL_NAME}}</code> and <code>{{TOTAL_AMOUNT}}</code>,
+          so the automatic values still land.
+        </li>
+        <li>
+          Save as .docx, come back, and press <b>Select saved file</b>.
+        </li>
+      </ul>
+
+      <div class="note warn">
+        <p>
+          <strong>Word or LibreOffice only.</strong> Pages and TextEdit replace
+          the invoice table with plain text when they save, and the finished
+          invoice then has no table at all. Chronify checks for this and tells
+          you rather than producing a broken document.
+        </p>
+      </div>
+
+      <h2 id="projects">Project fields</h2>
+
+      <p>
+        Asked when you add a project, and editable afterwards from
+        <b>⏱ → 🏷 Project → ✏️ Edit a project</b>.
+      </p>
+
+      <dl class="fields">
+        <div class="field">
+          <dt>Project name <em>required</em></dt>
+          <dd>
+            Shown in the menu and printed on the invoice.
+          </dd>
+          <dd>
+            Use the same name as in PeopleForce, so the two are easy to match
+            later.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>PeopleForce project id</dt>
+          <dd>Digits only.</dd>
+          <dd>
+            <b>Where to get it:</b> in PeopleForce open <b>Time → Attendance</b>,
+            filter by this project, and take the number out of the address:
+            <code>...criteria[project_id]=42</code> means you type
+            <code>42</code>.
+          </dd>
+          <dd>
+            Left empty, this project is never sent to PeopleForce. That is the
+            clean way to track personal work without it reaching the timesheet.
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt>Hourly rate</dt>
+          <dd>Rate for this project only, digits like <code>35</code>.</dd>
+          <dd>
+            Left empty, it falls back to the rate in
+            <a href="#invoice">Settings → Invoicing</a>.
+          </dd>
+        </div>
+      </dl>
+
+      <h2 id="permission">Screen Recording</h2>
+
+      <p>
+        Not a field but a check. <b>⚙️ Settings → Screen Recording</b> tells you
+        whether window titles are currently readable, and reopens the macOS
+        prompt if they are not.
+      </p>
+
+      <p>
+        Without it macOS hides every window title, so the day is logged as bare
+        app names with no task breakdown.
+      </p>
+
+      <div class="note warn">
+        <p>
+          <strong>macOS ties this permission to the exact binary.</strong> A
+          <code>brew upgrade</code> produces a new binary, so the permission can
+          quietly drop and nothing warns you. If your task names disappear after
+          an update, this is why. Grant it again and restart the app.
+        </p>
+      </div>
+
+      <h2 id="stored">Where settings are stored</h2>
+
+      <p>
+        Everything you type in Settings is written to
+        <code>~/.work_tracker/profile.json</code>. The defaults live in
+        <code>~/.work_tracker/config.yaml</code>, and your profile wins wherever
+        the two overlap.
+      </p>
+
+      <p>
+        The practical consequence is a good one: upgrades can change the
+        defaults without ever touching what you set.
+        <a href="data.html">More about the files</a>.
+      </p>
+
+      <div class="next">
+        <a href="menu.html"><span>Every item explained</span><b>The menu →</b></a>
+        <a href="data.html"><span>Files, backups, updates</span><b>Your data →</b></a>
+        <a href="start.html"><span>From nothing to tracking</span><b>Quick start →</b></a>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Chronify · GPL-3.0</span>
+    <a href="https://github.com/zepuff/Chronify">Source</a>
+    <span class="spacer"><a href="uk/settings.html">Українською</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

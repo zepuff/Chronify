@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Меню · Chronify</title>
+<meta name="description" content="Кожен пункт меню Chronify: що він робить і що всередині.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="topbar">
+    <a class="brand" href="./">Chronify <span>⏱</span></a>
+    <nav class="topnav">
+      <a href="start.html">Швидкий старт</a>
+      <a href="menu.html" aria-current="page">Меню</a>
+      <a href="settings.html">Налаштування</a>
+      <a href="data.html">Ваші дані</a>
+      <a href="https://github.com/zepuff/Chronify">Код</a>
+      <span class="langs">
+        <a href="../menu.html">EN</a><i>/</i><a href="menu.html" aria-current="true">UK</a>
+      </span>
+    </nav>
+  </header>
+
+  <div class="page-title">
+    <p class="eyebrow">довідник</p>
+    <h1>Кожен пункт меню</h1>
+    <p>
+      У тому самому порядку, в якому ви їх бачите. Назви англійські, як у
+      застосунку. Сірий рядок під заголовком це той самий рядок, який Chronify
+      друкує під пунктом у меню, перекладений.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="doc">
+
+    <nav class="menu-nav" aria-label="Натисніть на будь-який пункт, щоб розгорнути">
+      <p class="menu-nav-caption">Натисніть на будь-який пункт, щоб розгорнути</p>
+      <div class="mock">
+        <div class="mock-bar">
+          <a class="tracker" href="#clock" title="Сам годинник">⏱ 3h 25m</a>
+        </div>
+        <div class="dropdown">
+          <ul>
+            <li><a href="#pause"><span class="grow">⏸ Pause tracking</span></a></li>
+            <li><a href="#project"><span class="grow">🏷 Project</span><span class="chev">›</span></a></li>
+            <li class="sep"></li>
+            <li><a href="#status"><span class="grow">✨ Write today's status</span></a></li>
+            <li><a href="#tasks"><span class="grow">✅ What I did today</span><span class="chev">›</span></a></li>
+            <li><a href="#notes"><span class="grow">💭 Notes to self</span><span class="chev">›</span></a></li>
+            <li><a href="#blockers"><span class="grow">🚧 What is blocking me</span><span class="chev">›</span></a></li>
+            <li><a href="#plan"><span class="grow">📋 Plan for today</span><span class="chev">›</span></a></li>
+            <li><a href="#alerts"><span class="grow">⏰ Remind me at a time</span><span class="chev">›</span></a></li>
+            <li><a href="#infra"><span class="grow">🚦 Infrastructure status</span><span class="chev">›</span></a></li>
+            <li class="sep"></li>
+            <li><a href="#stats"><span class="grow">📊 Where today went</span></a></li>
+            <li><a href="#day"><span class="grow">📆 Another day</span><span class="chev">›</span></a></li>
+            <li><a href="#calendar"><span class="grow">📅 Month calendar</span><span class="chev">›</span></a></li>
+            <li class="sep"></li>
+            <li><a href="#invoice"><span class="grow">🧾 Invoice</span><span class="chev">›</span></a></li>
+            <li><a href="#push"><span class="grow">📤 Send hours to PeopleForce</span><span class="chev">›</span></a></li>
+            <li><a href="#history"><span class="grow">📝 Status history</span><span class="chev">›</span></a></li>
+            <li class="sep"></li>
+            <li><a href="#settings"><span class="grow">⚙️ Settings</span><span class="chev">›</span></a></li>
+            <li><a href="#reload"><span class="grow">🔄 Reload rules</span></a></li>
+            <li><a href="#folder"><span class="grow">📁 Show my data folder</span></a></li>
+            <li class="sep"></li>
+            <li><a href="#quit"><span class="grow">Quit</span></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="prose">
+
+      <h2 id="clock">Сам годинник</h2>
+
+      <p>
+        ⏱ у рядку меню показує, скільки часу вже записано за сьогодні. Це не
+        секундомір, який треба не забути увімкнути: він рахує завжди, коли
+        застосунок запущений, обраний проєкт і ви справді за комп'ютером.
+      </p>
+
+      <p>
+        Якщо закріпити щось із <b>📋 Plan for today</b>, поруч із годинником
+        цілий день стоятиме той текст. Напрочуд дієвий спосіб не забути ту саму
+        одну справу.
+      </p>
+
+      <h2 id="pause">⏸ Pause tracking</h2>
+
+      <div class="entry">
+        <p class="said">Нічого не записує, поки не увімкнете назад</p>
+        <p>
+          Зупиняє запис, не закриваючи застосунок. Для години, яка належить
+          комусь іншому, або обіду, який потім не хочеться пояснювати.
+        </p>
+        <p>
+          На паузі пункт читається як <b>▶️ Resume tracking</b>, тож меню
+          завжди показує, у якому ви стані. Годинник у рядку меню зберігає
+          накопичену суму.
+        </p>
+      </div>
+
+      <h2 id="project">🏷 Project</h2>
+
+      <div class="entry">
+        <p class="said">Якому проєкту належать сьогоднішні години. Додати, змінити, перенести день</p>
+        <p>
+          Угорі підменю перелічені ваші проєкти, активний позначений. Усе, що
+          записується далі, належить обраному, тож перемикайтеся тут, коли
+          перемикаєте клієнта.
+        </p>
+        <ul class="sub-items">
+          <li><b>+ Add a project</b><span>Назва, і за бажанням номер у PeopleForce та власна ставка. Обов'язкова тільки назва.</span></li>
+          <li><b>✏️ Edit a project</b><span>Змінити будь-що з трьох або видалити проєкт.</span></li>
+          <li><b>🔀 Move a day</b><span>Цілий день записаного часу переноситься з одного проєкту в інший. Для дня, коли ви забули перемкнутися.</span></li>
+          <li><b>📅 Move a date range…</b><span>Те саме, але одразу за кілька днів.</span></li>
+          <li><b>Separate tasks &amp; notes per project</b><span>Вимкнено: один спільний список задач і нотаток. Увімкнено: у кожного проєкту свій.</span></li>
+        </ul>
+        <div class="note">
+          <p>
+            <strong>Проєкт без номера PeopleForce ніколи туди не відправляється.</strong>
+            Це охайний спосіб тримати особисту чи внутрішню роботу поза
+            таймшитом, але все одно її рахувати.
+          </p>
+        </div>
+      </div>
+
+      <h2 id="status">✨ Write today's status</h2>
+
+      <div class="entry">
+        <p class="said">Перетворює сьогоднішні нотатки на текст для Slack</p>
+        <p>
+          Збирає все, що ви записали в <b>✅ What I did today</b>, додає години
+          з трекера, дописує блокери окремим розділом і рядок про інфраструктуру,
+          якщо ви його ставили, і видає готовий статус.
+        </p>
+        <p>
+          Залежно від того,
+          <a href="settings.html#status">кого ви обрали автором</a>, ваші рядки
+          або переписуються у нормальні речення, або лишаються рівно такими, як
+          ви їх набрали. У будь-якому разі результат зберігається, тож завтра
+          він буде в <b>📝 Status history</b>.
+        </p>
+        <p>
+          Статуси також пишуться у фоні за ті дні, коли ви цього пункту не
+          натискали, якщо там було про що писати.
+        </p>
+      </div>
+
+      <h2 id="tasks">✅ What I did today</h2>
+
+      <div class="entry">
+        <p class="said">Записуйте кожну завершену справу. З них пишеться статус</p>
+        <p>
+          Звичка, навколо якої побудований увесь застосунок. Завершили щось,
+          відкрили, написали рядок. Орфографія і стиль не мають значення, це
+          сировина.
+        </p>
+        <ul class="sub-items">
+          <li><b>+ Log a completed task</b><span>По одній справі на запис, тими словами, які першими спали на думку.</span></li>
+          <li><b>самі записи</b><span>Клік по запису дозволяє змінити текст або видалити його.</span></li>
+        </ul>
+        <p>
+          Список тільки на сьогодні й очищається зі зміною дати. Те, що лишиться
+          в ньому наприкінці дня, і піде у статус.
+        </p>
+      </div>
+
+      <h2 id="notes">💭 Notes to self</h2>
+
+      <div class="entry">
+        <p class="said">Що варто пам'ятати. Без дати, лежить, поки не видалите</p>
+        <p>
+          Відмінність від <b>✅ What I did today</b> у тому, що це не завершена
+          робота і в неї немає дати. Підказка до пароля, тема до наступного
+          один-на-один, ім'я людини, яка відповідає за той сервіс.
+        </p>
+        <p>
+          Вони лежать, доки ви їх не приберете, і ніколи не потрапляють у
+          статус.
+        </p>
+      </div>
+
+      <h2 id="blockers">🚧 What is blocking me</h2>
+
+      <div class="entry">
+        <p class="said">Потрапляє у статус окремим розділом</p>
+        <p>
+          Усе, що заважає. Кожен блокер друкується у щоденному статусі під
+          власним заголовком, і саме так команда про нього дізнається без того,
+          щоб ви щоразу згадували вголос.
+        </p>
+        <ul class="sub-items">
+          <li><b>+ Add a blocker</b><span>Що саме заважає, одним рядком.</span></li>
+          <li><b>✅ Mark as resolved</b><span>Прибирає блокер із майбутніх статусів.</span></li>
+        </ul>
+        <p>
+          Коли список порожній, статус просто пише, що блокерів немає.
+        </p>
+      </div>
+
+      <h2 id="plan">📋 Plan for today</h2>
+
+      <div class="entry">
+        <p class="said">Відмічайте зроблене. Невідмічене переїде на завтра</p>
+        <p>
+          Короткий список того, що ви збиралися зробити. Клік по пункту відмічає
+          його. Усе невідмічене наприкінці дня повертається завтра, тож план
+          ніколи не зникає тихцем.
+        </p>
+        <ul class="sub-items">
+          <li><b>+ Add an item</b><span>По одному рядку на справу.</span></li>
+          <li><b>🧹 Clear completed</b><span>Прибирає все вже відмічене.</span></li>
+          <li><b>📌 Show in the menu bar</b><span>Виносить один незавершений пункт поруч із годинником, щоб він цілий день був перед очима.</span></li>
+        </ul>
+      </div>
+
+      <h2 id="alerts">⏰ Remind me at a time</h2>
+
+      <div class="entry">
+        <p class="said">Нагадування вашим текстом, у вибрані дні</p>
+        <p>
+          Сповіщення у вибраний час, у вибрані дні тижня, вашими словами.
+          Щоденний стендап, п'ятничний таймшит, нагадування нарешті закінчити
+          роботу.
+        </p>
+        <ul class="sub-items">
+          <li><b>+ New timed reminder</b><span>Текст, час і дні, у які воно повторюється.</span></li>
+          <li><b>самі нагадування</b><span>Клік дозволяє змінити або прибрати.</span></li>
+        </ul>
+        <p>
+          Звук задається в <code>config.yaml</code> і за замовчуванням це
+          <code>Glass</code>. Підходить будь-який файл із
+          <code>/System/Library/Sounds</code>, а порожнє значення робить
+          нагадування беззвучними.
+        </p>
+      </div>
+
+      <h2 id="infra">🚦 Infrastructure status</h2>
+
+      <div class="entry">
+        <p class="said">Рядок у статусі: 🟢 🟡 🔴 або ваше формулювання</p>
+        <p>
+          Для команд, від яких у щоденному статусі очікують відповіді, чи все
+          живе. Оберіть готовий рядок або напишіть свій, і він дописуватиметься
+          до кожного статусу, доки ви його не зміните.
+        </p>
+        <ul class="sub-items">
+          <li><b>готові варіанти</b><span>🟢 все стабільно, 🟡 є проблеми, 🔴 інцидент.</span></li>
+          <li><b>✏️ Custom text…</b><span>Ваше формулювання, зі світлофором попереду або без нього.</span></li>
+        </ul>
+      </div>
+
+      <h2 id="stats">📊 Where today went</h2>
+
+      <div class="entry">
+        <p class="said">Години за задачами, від початку дня</p>
+        <p>
+          Сьогоднішній записаний час, розбитий за назвами задач, із підсумком
+          унизу. Найшвидший спосіб перевірити, чи ваші правила групують речі
+          розумно.
+        </p>
+        <p>
+          Якщо тут видно голі назви застосунків замість назв задач, значить
+          запис екрана вимкнений і заголовки вікон невидимі.
+          <a href="start.html#permission">Як це виправити</a>.
+        </p>
+      </div>
+
+      <h2 id="day">📆 Another day</h2>
+
+      <div class="entry">
+        <p class="said">Останні 30 днів: години, статус і виправлення записаного</p>
+        <p>
+          Той самий перегляд, що й вище, але за будь-який з останніх тридцяти
+          днів, плюс можливість виправити записане.
+        </p>
+        <ul class="sub-items">
+          <li><b>📄 Summary and hours</b><span>Години за задачами того дня і збережений за нього статус.</span></li>
+          <li><b>✏️ Edit tracked segments…</b><span>Окремі проміжки часу так, як їх записано, де можна перейменувати, обʼєднати або прибрати.</span></li>
+        </ul>
+        <div class="note">
+          <p>
+            <strong>Виправляйте до відправки, а не після.</strong> Коли день уже
+            пішов у PeopleForce, правки тут не змінять того, що в таймшиті.
+          </p>
+        </div>
+      </div>
+
+      <h2 id="calendar">📅 Month calendar</h2>
+
+      <div class="entry">
+        <p class="said">Відкриває карту місяця в браузері</p>
+        <p>
+          Місяць одним поглядом: темніші дні довші. Корисно наприкінці місяця,
+          щоб знайти день, який ви забули відстежити, або день, який так і не
+          дійшов до PeopleForce.
+        </p>
+        <ul class="sub-items">
+          <li><b>This month</b><span>Відкривається у браузері за замовчуванням.</span></li>
+          <li><b>Last month</b><span>Те саме, на місяць назад.</span></li>
+        </ul>
+      </div>
+
+      <h2 id="invoice">🧾 Invoice</h2>
+
+      <div class="entry">
+        <p class="said">Зробити рахунок за місяць або зчитати реквізити зі старого</p>
+        <p>
+          Заповнює ваш власний шаблон Word годинами за місяць, ставкою і
+          реквізитами, а поруч кладе PDF. Готові файли потрапляють у папку,
+          задану в <a href="settings.html#invoice">налаштуваннях</a>, і Chronify
+          показує цю папку, коли закінчить.
+        </p>
+        <ul class="sub-items">
+          <li><b>Create for this month</b><span>Поточний місяць.</span></li>
+          <li><b>Create for last month</b><span>Звичний варіант, бо рахунки виставляють після закінчення місяця.</span></li>
+          <li><b>📥 Import details from an existing invoice…</b><span>Зчитує ваше ім'я, податковий номер, IBAN і решту з рахунку, який ви вже відправляли.</span></li>
+          <li><b>Refresh PDF for this month</b><span>Перезбирає PDF після виправлення реквізитів, не змінюючи чисел.</span></li>
+          <li><b>Refresh PDF for last month</b><span>Те саме, на місяць назад.</span></li>
+        </ul>
+        <p>
+          Для PDF потрібен LibreOffice. Якщо його немає, .docx усе одно
+          створиться, і конвертувати можна самостійно:
+        </p>
+        <pre><code>brew install --cask libreoffice</code></pre>
+        <div class="note">
+          <p>
+            <strong>Редагуйте шаблон тільки у Word або LibreOffice.</strong>
+            Pages і TextEdit під час збереження перетворюють таблицю рахунку на
+            звичайний текст, і в готовому документі таблиці не лишається зовсім.
+            Chronify це перевіряє і відмовиться від шаблону, у якому бачить таку
+            проблему.
+          </p>
+        </div>
+      </div>
+
+      <h2 id="push">📤 Send hours to PeopleForce</h2>
+
+      <div class="entry">
+        <p class="said">Відправляє години і текст статусу у ваш таймшит</p>
+        <p>
+          Надсилає записаний час у ваш таймшит PeopleForce, а щоденний статус іде
+          коментарем. Відправляються тільки проєкти, у яких вказаний номер
+          PeopleForce.
+        </p>
+        <ul class="sub-items">
+          <li><b>Today</b><span>Те, що записано за сьогодні.</span></li>
+          <li><b>Yesterday</b><span>Той день, який ви збиралися відправити зранку.</span></li>
+          <li><b>Days this month</b><span>Кожен день поточного місяця з підсумком, щоб відправити один конкретний.</span></li>
+          <li><b>📦 Push every day this month</b><span>Цілий місяць за раз, для випадку, коли ви лишили це на останній день.</span></li>
+          <li><b>Push real time ranges</b><span>Увімкнено: 09:00-10:37 рівно так, як записано. Вимкнено: один акуратний запис на проєкт, починаючи з години з налаштувань.</span></li>
+          <li><b>Auto-push at 00:00</b><span>Сам відправляє вчорашній день щоночі й надолужує до тижня назад, якщо Mac був вимкнений.</span></li>
+        </ul>
+        <p>
+          Цьому пункту потрібні ключ компанії та ваш номер співробітника.
+          <a href="settings.html#peopleforce">Де їх узяти</a>.
+        </p>
+      </div>
+
+      <h2 id="history">📝 Status history</h2>
+
+      <div class="entry">
+        <p class="said">Усі збережені статуси в одному файлі</p>
+        <p>
+          Кожен колись написаний статус, найновіші зверху, зібрані в один файл
+          Markdown, який одразу відкривається. Стане в пригоді на перформанс
+          ревʼю або коли хтось питає, що ви робили три тижні тому.
+        </p>
+        <ul class="sub-items">
+          <li><b>Open status history</b><span>Записує ~/.work_tracker/history_export.md і відкриває його.</span></li>
+          <li><b>🛑 Stop generating</b><span>Скасовує статус, який ще пишеться, якщо модель задумалась надовго.</span></li>
+        </ul>
+      </div>
+
+      <h2 id="settings">⚙️ Settings</h2>
+
+      <div class="entry">
+        <p class="said">Ключ PeopleForce, хто пише статус, реквізити, дозволи</p>
+        <p>
+          Чотири групи полів і три дії. Кожна група має позначку, яка каже, як у
+          неї справи: ✅ заповнено, ⚠️ почато, але чогось обов'язкового бракує,
+          <code>—</code> не чіпали зовсім.
+        </p>
+        <ul class="sub-items">
+          <li><b>PeopleForce</b><span>Ключ компанії, ваш номер співробітника, година початку дня.</span></li>
+          <li><b>Daily status</b><span>Хто переписує ваші нотатки і якою мовою виходить статус.</span></li>
+          <li><b>Invoicing</b><span>Ставка, імена, код клієнта і папка для готових рахунків.</span></li>
+          <li><b>Payment details</b><span>Податковий номер, IBAN, адреси. Перелік залежить від вашого шаблону.</span></li>
+          <li><b>📝 Edit invoice template in Word…</b><span>Відкриває шаблон для редагування і підключає збережений файл назад.</span></li>
+          <li><b>Screen Recording</b><span>Показує, чи читаються заголовки вікон, і відкриває системний запит.</span></li>
+          <li><b>🏷 Add a project…</b><span>Та сама форма, що і в меню проєктів.</span></li>
+        </ul>
+        <p>
+          Кожне поле розібране окремо:
+          <a href="settings.html">звідки береться кожне значення</a>.
+        </p>
+      </div>
+
+      <h2 id="reload">🔄 Reload rules</h2>
+
+      <div class="entry">
+        <p class="said">Перечитати config.yaml після зміни правил</p>
+        <p>
+          Chronify читає <code>~/.work_tracker/config.yaml</code> під час
+          запуску. Після того як ви змінили правила, за якими заголовки вікон
+          перетворюються на назви задач, цей пункт підхоплює зміни без
+          перезапуску.
+        </p>
+        <p>
+          Він впливає тільки на те, що записується далі. Уже записаний час
+          зберігає ті назви, які отримав.
+          <a href="data.html#rules">Як працюють правила</a>.
+        </p>
+      </div>
+
+      <h2 id="folder">📁 Show my data folder</h2>
+
+      <div class="entry">
+        <p class="said">Усе, що зберігає застосунок, у ~/.work_tracker</p>
+        <p>
+          Відкриває у Finder ту єдину папку, яка має значення. Там база,
+          налаштування, нотатки і всі збережені статуси. Скопіювали її, значить
+          скопіювали все. <a href="data.html">Що це за файли</a>.
+        </p>
+      </div>
+
+      <h2 id="quit">Quit</h2>
+
+      <div class="entry">
+        <p class="said">Зупиняє облік до наступного запуску</p>
+        <p>
+          Закриває застосунок. Поки він не працює, нічого не записується, але й
+          нічого не втрачається. Запустіть знову командою
+          <code>chronify --background</code> або поставте автозапуск через
+          <code>brew services start chronify</code>.
+        </p>
+      </div>
+
+      <div class="next">
+        <a href="settings.html"><span>кожне поле</span><b>Налаштування →</b></a>
+        <a href="data.html"><span>файли, бекапи, оновлення</span><b>Ваші дані →</b></a>
+        <a href="start.html"><span>з нуля до обліку</span><b>Швидкий старт →</b></a>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Chronify · GPL-3.0</span>
+    <a href="https://github.com/zepuff/Chronify">Код</a>
+    <span class="spacer"><a href="../menu.html">In English</a></span>
+  </div>
+</footer>
+
+
+<script>
+(function () {
+  var links = Array.prototype.slice.call(
+    document.querySelectorAll('.menu-nav a[href^="#"]'));
+  if (!links.length || !('IntersectionObserver' in window)) return;
+
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+
+  var targets = Object.keys(byId)
+    .map(function (id) { return document.getElementById(id); })
+    .filter(Boolean);
+
+  var current = null;
+  function mark(id) {
+    if (current === id) return;
+    links.forEach(function (a) { a.removeAttribute('aria-current'); });
+    if (byId[id]) {
+      byId[id].setAttribute('aria-current', 'true');
+      current = id;
+    }
+  }
+
+  var seen = {};
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { seen[e.target.id] = e.isIntersecting; });
+    for (var i = 0; i < targets.length; i++) {
+      if (seen[targets[i].id]) { mark(targets[i].id); return; }
+    }
+  }, { rootMargin: '-80px 0px -65% 0px', threshold: 0 });
+
+  targets.forEach(function (el) { io.observe(el); });
+})();
+</script>
+</body>
+</html>

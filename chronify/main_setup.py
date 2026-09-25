@@ -99,10 +99,10 @@ SETTINGS_SECTIONS = [
             {"path": ["invoice", "supplier_full_name"], "label": "Your full name",
              "optional": False,
              "hint": "Printed inside the invoice as the person being paid, "
-                     "for example Yaroslav Lukhkhovetsky."},
+                     "for example Yulia Tymoshenko."},
             {"path": ["invoice", "supplier_name"], "label": "Your name for the file name",
              "hint": "Goes into the file name, so keep it one word: "
-                     "Yaroslav gives Invoice_Yaroslav_Client_August_2026.docx"},
+                     "Yulia gives Invoice_Yulia_Client_August_2026.docx"},
             {"path": ["invoice", "client_name"], "label": "Client name",
              "hint": "Also part of the file name. Short is better; the full "
                      "legal name belongs in Payment details."},

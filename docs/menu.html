@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The menu · Chronify</title>
+<meta name="description" content="Every item in the Chronify menu bar, what it does, and what sits inside it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="topbar">
+    <a class="brand" href="./">Chronify <span>⏱</span></a>
+    <nav class="topnav">
+      <a href="start.html">Quick start</a>
+      <a href="menu.html" aria-current="page">The menu</a>
+      <a href="settings.html">Settings</a>
+      <a href="data.html">Your data</a>
+      <a href="https://github.com/zepuff/Chronify">Source</a>
+      <span class="langs">
+        <a href="./" aria-current="true">EN</a><i>/</i><a href="uk/menu.html">UK</a>
+      </span>
+    </nav>
+  </header>
+
+  <div class="page-title">
+    <p class="eyebrow">Reference</p>
+    <h1>Every item in the menu</h1>
+    <p>
+      In the same order you see them. The grey line under each heading is the
+      one Chronify prints under that item in the menu itself.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="doc">
+
+    <nav class="menu-nav" aria-label="Click any item for the full explanation">
+      <p class="menu-nav-caption">Click any item for the full explanation</p>
+      <div class="mock">
+        <div class="mock-bar">
+          <a class="tracker" href="#clock" title="The clock itself">⏱ 3h 25m</a>
+        </div>
+        <div class="dropdown">
+          <ul>
+            <li><a href="#pause"><span class="grow">⏸ Pause tracking</span></a></li>
+            <li><a href="#project"><span class="grow">🏷 Project</span><span class="chev">›</span></a></li>
+            <li class="sep"></li>
+            <li><a href="#status"><span class="grow">✨ Write today's status</span></a></li>
+            <li><a href="#tasks"><span class="grow">✅ What I did today</span><span class="chev">›</span></a></li>
+            <li><a href="#notes"><span class="grow">💭 Notes to self</span><span class="chev">›</span></a></li>
+            <li><a href="#blockers"><span class="grow">🚧 What is blocking me</span><span class="chev">›</span></a></li>
+            <li><a href="#plan"><span class="grow">📋 Plan for today</span><span class="chev">›</span></a></li>
+            <li><a href="#alerts"><span class="grow">⏰ Remind me at a time</span><span class="chev">›</span></a></li>
+            <li><a href="#infra"><span class="grow">🚦 Infrastructure status</span><span class="chev">›</span></a></li>
+            <li class="sep"></li>
+            <li><a href="#stats"><span class="grow">📊 Where today went</span></a></li>
+            <li><a href="#day"><span class="grow">📆 Another day</span><span class="chev">›</span></a></li>
+            <li><a href="#calendar"><span class="grow">📅 Month calendar</span><span class="chev">›</span></a></li>
+            <li class="sep"></li>
+            <li><a href="#invoice"><span class="grow">🧾 Invoice</span><span class="chev">›</span></a></li>
+            <li><a href="#push"><span class="grow">📤 Send hours to PeopleForce</span><span class="chev">›</span></a></li>
+            <li><a href="#history"><span class="grow">📝 Status history</span><span class="chev">›</span></a></li>
+            <li class="sep"></li>
+            <li><a href="#settings"><span class="grow">⚙️ Settings</span><span class="chev">›</span></a></li>
+            <li><a href="#reload"><span class="grow">🔄 Reload rules</span></a></li>
+            <li><a href="#folder"><span class="grow">📁 Show my data folder</span></a></li>
+            <li class="sep"></li>
+            <li><a href="#quit"><span class="grow">Quit</span></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="prose">
+
+      <h2 id="clock">The clock itself</h2>
+
+      <p>
+        The ⏱ in your menu bar shows how long today has been tracked so far. It
+        is not a stopwatch you have to remember to start: it counts whenever the
+        app is running, a project is selected, and you are actually at the
+        machine.
+      </p>
+
+      <p>
+        If you pin something from <b>📋 Plan for today</b>, that text sits next
+        to the clock all day instead, which is a surprisingly effective way to
+        stop forgetting the one thing you meant to do.
+      </p>
+
+      <h2 id="pause">⏸ Pause tracking</h2>
+
+      <div class="entry">
+        <p class="said">Records nothing until you switch it back on</p>
+        <p>
+          Stops the recording without quitting the app. Use it for the hour that
+          belongs to someone else, or a lunch you would rather not explain later.
+        </p>
+        <p>
+          While paused the item reads <b>▶️ Resume tracking</b>, so the menu
+          always tells you which state you are in. The clock in the menu bar
+          keeps the total it had.
+        </p>
+      </div>
+
+      <h2 id="project">🏷 Project</h2>
+
+      <div class="entry">
+        <p class="said">Which project today's hours belong to. Add, edit, move days</p>
+        <p>
+          The top of this submenu lists your projects with a mark beside the
+          active one. Everything recorded from now on belongs to whichever is
+          selected, so switch here when you switch clients.
+        </p>
+        <ul class="sub-items">
+          <li><b>+ Add a project</b><span>Name, and optionally a PeopleForce id and its own hourly rate. Only the name is required.</span></li>
+          <li><b>✏️ Edit a project</b><span>Change any of the three, or delete the project.</span></li>
+          <li><b>🔀 Move a day</b><span>A whole day of tracked time, moved from one project to another. For the day you forgot to switch.</span></li>
+          <li><b>📅 Move a date range…</b><span>The same, over several days at once.</span></li>
+          <li><b>Separate tasks &amp; notes per project</b><span>Off: one shared list of tasks and notes. On: every project keeps its own.</span></li>
+        </ul>
+        <div class="note">
+          <p>
+            <strong>A project with no PeopleForce id is never sent to
+            PeopleForce.</strong> That is the clean way to keep personal or
+            internal work out of the timesheet while still tracking it.
+          </p>
+        </div>
+      </div>
+
+      <h2 id="status">✨ Write today's status</h2>
+
+      <div class="entry">
+        <p class="said">Turns today's notes into text you can paste into Slack</p>
+        <p>
+          Collects everything you logged under <b>✅ What I did today</b>, adds
+          the hours from the tracker, appends your blockers as their own section
+          and your infrastructure line if you set one, and produces a finished
+          status.
+        </p>
+        <p>
+          Depending on <a href="settings.html#status">who you picked to write
+          it</a>, your lines are either rewritten into proper sentences or kept
+          exactly as typed. Either way the result is saved, so
+          <b>📝 Status history</b> has it tomorrow.
+        </p>
+        <p>
+          Statuses are also written for you in the background for days you never
+          pressed this on, as long as there was something to write about.
+        </p>
+      </div>
+
+      <h2 id="tasks">✅ What I did today</h2>
+
+      <div class="entry">
+        <p class="said">Log each thing you finish. The status is written from these</p>
+        <p>
+          The habit the whole app is built around. Finish something, open this,
+          write one line. Spelling and grammar do not matter, these lines are
+          raw material.
+        </p>
+        <ul class="sub-items">
+          <li><b>+ Log a completed task</b><span>One thing per entry, in whatever words come out.</span></li>
+          <li><b>the entries</b><span>Click one to edit its text, or to delete it.</span></li>
+        </ul>
+        <p>
+          The list is today's only, and it empties itself when the date changes.
+          Whatever is in it at the end of the day is what the status gets built
+          from.
+        </p>
+      </div>
+
+      <h2 id="notes">💭 Notes to self</h2>
+
+      <div class="entry">
+        <p class="said">Anything worth remembering. No date, stays until you delete it</p>
+        <p>
+          The difference from <b>✅ What I did today</b> is that these are not
+          finished work and they have no date. A password hint, a thing to raise
+          at the next one-to-one, the name of the person who owns that service.
+        </p>
+        <p>
+          They stay until you remove them, and they never appear in a status.
+        </p>
+      </div>
+
+      <h2 id="blockers">🚧 What is blocking me</h2>
+
+      <div class="entry">
+        <p class="said">Goes into the daily status as its own section</p>
+        <p>
+          Whatever is in the way. Every blocker here is printed in the daily
+          status under its own heading, which is how the rest of the team finds
+          out without you having to remember to mention it.
+        </p>
+        <ul class="sub-items">
+          <li><b>+ Add a blocker</b><span>What is in the way, in one line.</span></li>
+          <li><b>✅ Mark as resolved</b><span>Removes it from future statuses.</span></li>
+        </ul>
+        <p>
+          With the list empty, the status simply says there are none.
+        </p>
+      </div>
+
+      <h2 id="plan">📋 Plan for today</h2>
+
+      <div class="entry">
+        <p class="said">Tick things off. Whatever is left moves to tomorrow</p>
+        <p>
+          A short list of what you meant to do. Click an item to tick it off.
+          Anything still unticked at the end of the day comes back tomorrow, so
+          a plan never quietly disappears.
+        </p>
+        <ul class="sub-items">
+          <li><b>+ Add an item</b><span>One line per thing.</span></li>
+          <li><b>🧹 Clear completed</b><span>Clears out everything already ticked.</span></li>
+          <li><b>📌 Show in the menu bar</b><span>Puts one unfinished item next to the clock, in front of your eyes all day.</span></li>
+        </ul>
+      </div>
+
+      <h2 id="alerts">⏰ Remind me at a time</h2>
+
+      <div class="entry">
+        <p class="said">Alarms with your own text, on the days you pick</p>
+        <p>
+          A notification at a time you choose, on the weekdays you choose, with
+          the words you choose. The daily stand-up, the Friday timesheet, the
+          reminder to actually stop working.
+        </p>
+        <ul class="sub-items">
+          <li><b>+ New timed reminder</b><span>The text, the time, and which days it repeats on.</span></li>
+          <li><b>the reminders</b><span>Click one to edit or remove it.</span></li>
+        </ul>
+        <p>
+          The sound is set in <code>config.yaml</code> and is
+          <code>Glass</code> by default. Any sound from
+          <code>/System/Library/Sounds</code> works, and an empty value makes
+          reminders silent.
+        </p>
+      </div>
+
+      <h2 id="infra">🚦 Infrastructure status</h2>
+
+      <div class="entry">
+        <p class="said">One line added to the status: 🟢 🟡 🔴 or your own wording</p>
+        <p>
+          For teams whose daily status is expected to say whether things are on
+          fire. Pick one of the ready-made lines, or write your own, and it is
+          appended to every status until you change it.
+        </p>
+        <ul class="sub-items">
+          <li><b>the presets</b><span>🟢 all stable, 🟡 degraded, 🔴 an incident.</span></li>
+          <li><b>✏️ Custom text…</b><span>Your own wording, with or without one of the lights in front.</span></li>
+        </ul>
+      </div>
+
+      <h2 id="stats">📊 Where today went</h2>
+
+      <div class="entry">
+        <p class="said">Hours per task so far today</p>
+        <p>
+          Today's recorded time, broken down by task name, with the total at the
+          bottom. This is the quickest way to check that your rules are grouping
+          things sensibly.
+        </p>
+        <p>
+          If you see raw app names here instead of task names, Screen Recording
+          is off and window titles are invisible.
+          <a href="start.html#permission">How to fix that</a>.
+        </p>
+      </div>
+
+      <h2 id="day">📆 Another day</h2>
+
+      <div class="entry">
+        <p class="said">The last 30 days: hours, the status, and fixing what was recorded</p>
+        <p>
+          The same view as above, for any of the last thirty days, plus the
+          ability to correct what was recorded.
+        </p>
+        <ul class="sub-items">
+          <li><b>📄 Summary and hours</b><span>That day's hours per task, and the status that was saved for it.</span></li>
+          <li><b>✏️ Edit tracked segments…</b><span>The individual stretches of time as recorded, where you can retitle, merge or remove them.</span></li>
+        </ul>
+        <div class="note">
+          <p>
+            <strong>Edit before you send, not after.</strong> Once a day has
+            been pushed to PeopleForce, fixing it here does not change what is
+            already in the timesheet.
+          </p>
+        </div>
+      </div>
+
+      <h2 id="calendar">📅 Month calendar</h2>
+
+      <div class="entry">
+        <p class="said">Opens a heat map of the month in your browser</p>
+        <p>
+          A month at a glance: darker days are longer days. Useful at the end of
+          the month for spotting the day you forgot to track, or the day
+          PeopleForce never received.
+        </p>
+        <ul class="sub-items">
+          <li><b>This month</b><span>Opens in your default browser.</span></li>
+          <li><b>Last month</b><span>The same, one month back.</span></li>
+        </ul>
+      </div>
+
+      <h2 id="invoice">🧾 Invoice</h2>
+
+      <div class="entry">
+        <p class="said">Make this month's invoice, or read your details from an old one</p>
+        <p>
+          Fills your own Word template with the month's hours, your rate and
+          your payment details, then writes a PDF beside it. The finished files
+          land in the folder set under
+          <a href="settings.html#invoice">Settings → Invoicing</a>, and Chronify
+          shows you that folder when it is done.
+        </p>
+        <ul class="sub-items">
+          <li><b>Create for this month</b><span>The month in progress.</span></li>
+          <li><b>Create for last month</b><span>The usual one, since invoices go out after the month ends.</span></li>
+          <li><b>📥 Import details from an existing invoice…</b><span>Reads your name, tax number, IBAN and the rest out of an invoice you already sent, so there is nothing to retype.</span></li>
+          <li><b>Refresh PDF for this month</b><span>Rebuilds the PDF after you corrected a detail, without changing the numbers.</span></li>
+          <li><b>Refresh PDF for last month</b><span>The same, one month back.</span></li>
+        </ul>
+        <p>
+          The PDF step needs LibreOffice. If it is missing, the .docx is still
+          written and you can convert it yourself:
+        </p>
+        <pre><code>brew install --cask libreoffice</code></pre>
+        <div class="note">
+          <p>
+            <strong>Edit the template in Word or LibreOffice only.</strong>
+            Pages and TextEdit flatten the invoice table into plain text when
+            they save, and the finished invoice then has no table at all.
+            Chronify checks for this and refuses a template it can see has been
+            flattened.
+          </p>
+        </div>
+      </div>
+
+      <h2 id="push">📤 Send hours to PeopleForce</h2>
+
+      <div class="entry">
+        <p class="said">Sends the hours and the status text into your timesheet</p>
+        <p>
+          Pushes recorded time into your PeopleForce timesheet, with the daily
+          status as the comment. Only projects that have a PeopleForce id are
+          sent.
+        </p>
+        <ul class="sub-items">
+          <li><b>Today</b><span>What has been recorded so far today.</span></li>
+          <li><b>Yesterday</b><span>The one you meant to send this morning.</span></li>
+          <li><b>Days this month</b><span>Every day of the current month with its total, so you can send one specific day.</span></li>
+          <li><b>📦 Push every day this month</b><span>The whole month in one go, for when you left it until the last day.</span></li>
+          <li><b>Push real time ranges</b><span>On: 09:00-10:37 exactly as recorded. Off: one tidy entry per project, starting at the hour set in Settings.</span></li>
+          <li><b>Auto-push at 00:00</b><span>Sends yesterday by itself every night, and catches up to a week back if your Mac was off.</span></li>
+        </ul>
+        <p>
+          This item needs the company API key and your employee id.
+          <a href="settings.html#peopleforce">Where to find both</a>.
+        </p>
+      </div>
+
+      <h2 id="history">📝 Status history</h2>
+
+      <div class="entry">
+        <p class="said">Every saved status, collected into one file</p>
+        <p>
+          Every status ever written, newest first, exported into a single
+          Markdown file and opened for you. Handy at review time, or when
+          someone asks what you were doing three weeks ago.
+        </p>
+        <ul class="sub-items">
+          <li><b>Open status history</b><span>Writes ~/.work_tracker/history_export.md and opens it.</span></li>
+          <li><b>🛑 Stop generating</b><span>Cancels a status that is still being written, if the model is taking too long.</span></li>
+        </ul>
+      </div>
+
+      <h2 id="settings">⚙️ Settings</h2>
+
+      <div class="entry">
+        <p class="said">PeopleForce key, who writes the status, invoice details, permissions</p>
+        <p>
+          Four groups of fields plus three actions. Each group carries a mark
+          telling you where it stands: ✅ filled in, ⚠️ started but missing
+          something required, <code>—</code> untouched.
+        </p>
+        <ul class="sub-items">
+          <li><b>PeopleForce</b><span>The company API key, your employee id, the hour your day starts.</span></li>
+          <li><b>Daily status</b><span>Who rewrites your notes, and which language the status comes out in.</span></li>
+          <li><b>Invoicing</b><span>Rate, names, client code, and where finished invoices are saved.</span></li>
+          <li><b>Payment details</b><span>Tax number, IBAN, addresses. The list follows your own template.</span></li>
+          <li><b>📝 Edit invoice template in Word…</b><span>Opens the template for editing and connects the saved file back.</span></li>
+          <li><b>Screen Recording</b><span>Tells you whether window titles are readable, and reopens the macOS prompt.</span></li>
+          <li><b>🏷 Add a project…</b><span>The same form as in the Project menu.</span></li>
+        </ul>
+        <p>
+          Every field is explained on its own page:
+          <a href="settings.html">where each value comes from</a>.
+        </p>
+      </div>
+
+      <h2 id="reload">🔄 Reload rules</h2>
+
+      <div class="entry">
+        <p class="said">Re-read config.yaml after editing how windows become tasks</p>
+        <p>
+          Chronify reads <code>~/.work_tracker/config.yaml</code> at startup.
+          After you edit the rules that turn window titles into task names, this
+          picks up the change without restarting the app.
+        </p>
+        <p>
+          It only affects what is recorded from now on. Time already logged
+          keeps the task names it was given.
+          <a href="data.html#rules">How the rules work</a>.
+        </p>
+      </div>
+
+      <h2 id="folder">📁 Show my data folder</h2>
+
+      <div class="entry">
+        <p class="said">Everything the app saves, in ~/.work_tracker. Your backup</p>
+        <p>
+          Opens the one folder that matters in Finder. The database, your
+          settings, your notes and every saved status are all in there.
+          Copy it and you have copied everything.
+          <a href="data.html">What each file is</a>.
+        </p>
+      </div>
+
+      <h2 id="quit">Quit</h2>
+
+      <div class="entry">
+        <p class="said">Stops tracking until you start Chronify again</p>
+        <p>
+          Closes the app. Nothing is recorded while it is not running, and
+          nothing is lost either. Start it again with
+          <code>chronify --background</code>, or have it start at login with
+          <code>brew services start chronify</code>.
+        </p>
+      </div>
+
+      <div class="next">
+        <a href="settings.html"><span>Every field</span><b>Settings →</b></a>
+        <a href="data.html"><span>Files, backups, updates</span><b>Your data →</b></a>
+        <a href="start.html"><span>From nothing to tracking</span><b>Quick start →</b></a>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Chronify · GPL-3.0</span>
+    <a href="https://github.com/zepuff/Chronify">Source</a>
+    <span class="spacer"><a href="uk/menu.html">Українською</a></span>
+  </div>
+</footer>
+
+
+<script>
+(function () {
+  var links = Array.prototype.slice.call(
+    document.querySelectorAll('.menu-nav a[href^="#"]'));
+  if (!links.length || !('IntersectionObserver' in window)) return;
+
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+
+  var targets = Object.keys(byId)
+    .map(function (id) { return document.getElementById(id); })
+    .filter(Boolean);
+
+  var current = null;
+  function mark(id) {
+    if (current === id) return;
+    links.forEach(function (a) { a.removeAttribute('aria-current'); });
+    if (byId[id]) {
+      byId[id].setAttribute('aria-current', 'true');
+      current = id;
+    }
+  }
+
+  var seen = {};
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { seen[e.target.id] = e.isIntersecting; });
+    for (var i = 0; i < targets.length; i++) {
+      if (seen[targets[i].id]) { mark(targets[i].id); return; }
+    }
+  }, { rootMargin: '-80px 0px -65% 0px', threshold: 0 });
+
+  targets.forEach(function (el) { io.observe(el); });
+})();
+</script>
+</body>
+</html>

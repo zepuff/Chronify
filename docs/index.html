@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Chronify</title>
-<meta name="description" content="A macOS menu bar tracker that logs your hours, writes your daily status with a local model, and fills in timesheets and invoices.">
+<meta name="description" content="A macOS menu bar tracker that logs your hours, writes your daily status, and fills in timesheets and invoices. Everything stays on your Mac.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -13,234 +13,277 @@
 <body>
 
 <div class="wrap">
-
   <header class="topbar">
     <a class="brand" href="./">Chronify <span>⏱</span></a>
     <nav class="topnav">
       <a href="start.html">Quick start</a>
+      <a href="menu.html">The menu</a>
+      <a href="settings.html">Settings</a>
+      <a href="data.html">Your data</a>
       <a href="https://github.com/zepuff/Chronify">Source</a>
       <span class="langs">
         <a href="./" aria-current="true">EN</a><i>/</i><a href="uk/">UK</a>
       </span>
     </nav>
   </header>
+</div>
 
-  <section class="hero">
+<main class="wrap">
+
+  <section class="hero" style="padding-top:64px">
     <p class="eyebrow">macOS menu bar</p>
     <h1>Your workday writes itself down.</h1>
     <p class="lead">
-      It is six in the evening and someone asks what you got done today. Chronify
-      already knows. It keeps the log, writes the status, and fills in the
-      timesheet you were going to put off until Friday.
+      It is six in the evening and someone asks what you got done today.
+      Chronify already knows. It keeps the log, writes the status, and fills in
+      the timesheet you were going to put off until Friday.
     </p>
 
     <div class="hero-actions">
       <a class="button" href="start.html">Get started</a>
-      <a class="button ghost" href="https://github.com/zepuff/Chronify">Read the source</a>
+      <a class="button ghost" href="menu.html">See what it does</a>
       <span class="meta">macOS · GPL-3.0 · no account</span>
     </div>
 
-    <div class="screen">
-      <div class="menubar">
-        <span class="tracker">⏱ 3h 25m</span>
+    <div class="showcase">
+      <div class="showcase-notes">
+        <h2>The whole menu, exactly as it appears</h2>
+        <p>Nineteen items in four groups: what you log today, what you look back at, what the end of the month needs, and the app itself. Nothing is hidden behind a preferences window.</p>
+        <dl class="anatomy">
+          <div><dt>⏱ 3h 25m</dt><dd>Today's tracked total, in the menu bar all day</dd></div>
+          <div><dt>the grey line</dt><dd>What the item does, printed under every one of them</dd></div>
+          <div><dt>›</dt><dd>Opens a submenu</dd></div>
+          <div><dt>⏸ / ▶️</dt><dd>The top item always tells you whether tracking is running</dd></div>
+        </dl>
+        <p class="more"><a href="menu.html">Every item, explained in full →</a></p>
+      </div>
+
+      <figure class="mock">
+        <div class="mock-bar">
+          <span class="tracker">⏱ 3h 25m</span>
         <span class="sys">100%</span>
         <span class="sys">Wed 18:04</span>
-      </div>
-
-      <div class="menupane">
+        </div>
         <div class="dropdown">
-          <ul>
-            <li>⏸ Pause tracking</li>
-            <li class="on">🏷 Project <span class="chev">›</span></li>
-            <li class="sep"></li>
-            <li>✨ Write today's status</li>
-            <li>✅ What I did today <span class="chev">›</span></li>
-            <li>🚧 What is blocking me <span class="chev">›</span></li>
-            <li>📋 Plan for today <span class="chev">›</span></li>
-            <li class="sep"></li>
-            <li>📊 Where today went</li>
-            <li>📅 Month calendar <span class="chev">›</span></li>
-            <li class="sep"></li>
-            <li>🧾 Invoice <span class="chev">›</span></li>
-            <li>📤 Send hours to PeopleForce <span class="chev">›</span></li>
-          </ul>
+      <ul>
+      <li><a href="menu.html#pause"><span class="grow">⏸ Pause tracking<i>Records nothing until you switch it back on</i></span></a></li>
+      <li class="on"><a href="menu.html#project"><span class="grow">🏷 Project<i>Which project today's hours belong to. Add, edit, move days</i></span><span class="chev">›</span></a></li>
+      <li class="sep"></li>
+      <li><a href="menu.html#status"><span class="grow">✨ Write today's status<i>Turns today's notes into text you can paste into Slack</i></span></a></li>
+      <li><a href="menu.html#tasks"><span class="grow">✅ What I did today<i>Log each thing you finish. The status is written from these</i></span><span class="chev">›</span></a></li>
+      <li><a href="menu.html#notes"><span class="grow">💭 Notes to self<i>Anything worth remembering. No date, stays until you delete it</i></span><span class="chev">›</span></a></li>
+      <li><a href="menu.html#blockers"><span class="grow">🚧 What is blocking me<i>Goes into the daily status as its own section</i></span><span class="chev">›</span></a></li>
+      <li><a href="menu.html#plan"><span class="grow">📋 Plan for today<i>Tick things off. Whatever is left moves to tomorrow</i></span><span class="chev">›</span></a></li>
+      <li><a href="menu.html#alerts"><span class="grow">⏰ Remind me at a time<i>Alarms with your own text, on the days you pick</i></span><span class="chev">›</span></a></li>
+      <li><a href="menu.html#infra"><span class="grow">🚦 Infrastructure status<i>One line added to the status: 🟢 🟡 🔴 or your own wording</i></span><span class="chev">›</span></a></li>
+      <li class="sep"></li>
+      <li><a href="menu.html#stats"><span class="grow">📊 Where today went<i>Hours per task so far today</i></span></a></li>
+      <li><a href="menu.html#day"><span class="grow">📆 Another day<i>The last 30 days: hours, the status, and fixing what was recorded</i></span><span class="chev">›</span></a></li>
+      <li><a href="menu.html#calendar"><span class="grow">📅 Month calendar<i>Opens a heat map of the month in your browser</i></span><span class="chev">›</span></a></li>
+      <li class="sep"></li>
+      <li><a href="menu.html#invoice"><span class="grow">🧾 Invoice<i>Make this month's invoice, or read your details from an old one</i></span><span class="chev">›</span></a></li>
+      <li><a href="menu.html#push"><span class="grow">📤 Send hours to PeopleForce<i>Sends the hours and the status text into your timesheet</i></span><span class="chev">›</span></a></li>
+      <li><a href="menu.html#history"><span class="grow">📝 Status history<i>Every saved status, collected into one file</i></span><span class="chev">›</span></a></li>
+      <li class="sep"></li>
+      <li><a href="menu.html#settings"><span class="grow">⚙️ Settings<i>PeopleForce key, who writes the status, invoice details, permissions</i></span><span class="chev">›</span></a></li>
+      <li><a href="menu.html#reload"><span class="grow">🔄 Reload rules<i>Re-read config.yaml after editing how windows become tasks</i></span></a></li>
+      <li><a href="menu.html#folder"><span class="grow">📁 Show my data folder<i>Everything the app saves, in ~/.work_tracker. Your backup</i></span></a></li>
+      <li class="sep"></li>
+      <li><a href="menu.html#quit"><span class="grow">Quit<i>Stops tracking until you start Chronify again</i></span></a></li>
+      </ul>
         </div>
-
-        <div class="readout">
-          <h3>Today, so far</h3>
-          <div class="tasks">
-            <div class="task"><span>Ticket TASK-482</span><span>1h 12m</span></div>
-            <div class="task"><span>Code Review / Git</span><span>48m</span></div>
-            <div class="task"><span>Meetings</span><span>55m</span></div>
-            <div class="task"><span>Research</span><span>30m</span></div>
-            <div class="task total"><span>Total</span><span>3h 25m</span></div>
-          </div>
-        </div>
-      </div>
+      </figure>
     </div>
+
   </section>
 
-  <section>
+  <section id="how">
     <div class="section-head">
       <h2>It watches the window, not you</h2>
-      <p class="prose">
-        Every five seconds Chronify checks which window is in front and turns
-        that into a task name by your own rules. Not "Chrome, 4 hours" but
-        <code>Ticket ABC-123</code> and <code>Code Review / Git</code>.
+      <p>
+        Every five seconds Chronify looks at which window is in front and writes
+        down the app name and the window title. Your rules turn those two strings
+        into a task name, so a day of scattered tabs comes out as four or five
+        honest lines.
       </p>
     </div>
 
-    <div class="features">
-      <div class="feature">
-        <p class="item">⏸ Pause tracking</p>
-        <h3>Off means off</h3>
+    <div class="split">
+      <div class="stack">
         <p>
-          One click and nothing is recorded, for when the work laptop is being
-          used for something that is nobody's business.
+          A browser tab called <code>TASK-482 · Fix the export dialog</code>
+          becomes <b>Ticket TASK-482</b>. A Zoom window becomes <b>Meetings</b>.
+          Anything on Stack Overflow or the Apple docs becomes <b>Research</b>.
+        </p>
+        <p>
+          When you step away, the clock stops. Idle time is not billed to
+          anyone, and a video left playing in the foreground no longer counts as
+          work. A real call does, because a call is work.
+        </p>
+        <p>
+          The rules live in a plain text file you can edit, and
+          <a href="data.html#rules">they are nine lines long by default</a>.
         </p>
       </div>
 
-      <div class="feature">
-        <p class="item">idle_threshold_seconds</p>
-        <h3>It asks about the gap</h3>
-        <p>
-          Away for 25 minutes, and when you come back it asks whether that was
-          work. Reading docs counts. Lunch does not. Zoom, Meet and Teams count
-          on their own, because a call is work even with your hands still.
-        </p>
-      </div>
+      <div>
+        <pre><code>TODAY, SO FAR
 
-      <div class="feature">
-        <p class="item">🏷 Project</p>
-        <h3>Hours belong to a project</h3>
-        <p>
-          Switch from the menu bar and the tracker follows. Logged a day against
-          the wrong one? Move that day, or a whole date range, in two clicks.
-        </p>
-      </div>
-
-      <div class="feature">
-        <p class="item">📋 Plan for today</p>
-        <h3>One item stares back at you</h3>
-        <p>
-          Pin an unfinished item and it sits in the menu bar all day. Whatever
-          you do not finish moves itself to tomorrow.
-        </p>
-      </div>
-
-      <div class="feature">
-        <p class="item">📅 Month calendar</p>
-        <h3>The month at a glance</h3>
-        <p>
-          A heat map of the month in your browser, each day split by project,
-          with what you logged one click away.
-        </p>
-      </div>
-
-      <div class="feature">
-        <p class="item">⏰ Remind me at a time</p>
-        <h3>Alarms that give up</h3>
-        <p>
-          Reminders on the days you pick. If the Mac was off and the moment
-          passed by more than two hours, it stays quiet instead of burying you
-          in stale popups.
-        </p>
+Ticket TASK-482      1h 48m
+Code Review / Git      42m
+Meetings               35m
+Research               20m
+                   ────────
+Total                3h 25m</code></pre>
+        <p class="meta">⏱ → 📊 Where today went</p>
       </div>
     </div>
   </section>
 
-  <section>
+  <section id="status">
     <div class="section-head">
-      <h2>The status writes itself</h2>
-      <p class="prose">
-        During the day you jot notes down however they come out: "fixed the
-        button in safari", "approved the payments PR". In the evening one
-        click turns that into something you can paste into Slack.
-      </p>
-      <p class="prose">
-        Only the first section goes through the model, under tight rules:
-        invent nothing, never mention hours, never name the apps you used. The
-        rest is assembled from what you wrote.
+      <h2>The status you were going to write anyway</h2>
+      <p>
+        During the day you log finished things in whatever words come out.
+        In the evening one click turns those lines into something you can paste
+        into Slack, with the hours already attached.
       </p>
     </div>
 
-    <div class="stack" style="margin-top: 28px; max-width: 680px;">
-      <pre><code>What was done today:
-• Fixed the button rendering in Safari
-• Reviewed and approved the payments pull request
+    <div class="split">
+      <div>
+        <pre><code>fixed the export dialog thing
+reviewed maksym's PR
+call with design about the new flow</code></pre>
+        <p class="meta">What you typed during the day</p>
+      </div>
+      <div>
+        <pre><code>Yesterday I finished the export dialog fix
+on TASK-482 and reviewed the pending pull
+request. Also aligned with design on the
+new onboarding flow.
 
-What is planned next:
-• Finish the timesheet export
+Blockers: waiting on staging access.
+Infrastructure status: 🟢 All systems stable
 
-Blockers: None
-
-Infrastructure status: 🟢 All systems stable</code></pre>
+Tracked: 3h 25m</code></pre>
+        <p class="meta">What came out</p>
+      </div>
     </div>
 
     <div class="note">
-      <strong>The model runs on your Mac.</strong> Ollama or Apple Intelligence,
-      whichever you pick in Settings, and Chronify installs it for you. There is
-      no OpenAI key, no cloud, no account. Your work notes never leave the
-      laptop.
+      <p>
+        <strong>The rewriting happens on your Mac.</strong> Ollama downloads a
+        model of about 2 GB and understands Ukrainian. Apple Intelligence uses
+        the model already in macOS and downloads nothing. Pick neither and your
+        notes are kept exactly as you wrote them. Chronify installs whichever
+        you choose, so there is nothing to set up by hand.
+      </p>
     </div>
   </section>
 
-  <section>
-    <div class="split">
-      <div class="stack">
-        <h2>Timesheets, without the Friday ritual</h2>
-        <p>
-          Hours and the status text go into PeopleForce for a day, for yesterday,
-          or for the whole month at once. Turn auto-push on and it happens after
-          midnight, catching up to a week back if the Mac was off.
-        </p>
-        <p>
-          You choose what gets sent: the real stretches the tracker recorded, or
-          one entry per project. Days that already have an entry are never
-          overwritten without your say-so.
-        </p>
-      </div>
-
-      <div class="stack">
-        <h2>Invoices in a minute</h2>
-        <p>
-          On the last working day of the month it reminds you and offers a split
-          of hours across projects. Confirm, and a finished <code>.docx</code>
-          with your details, signature and total is open, with a PDF next to it.
-        </p>
-        <p>
-          Already sent an invoice before? Point Chronify at it and it reads your
-          IBAN, SWIFT, tax number and addresses out of the document, so you never
-          type them again.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section>
+  <section id="month">
     <div class="section-head">
-      <h2>Install it in two minutes</h2>
-      <p>Homebrew brings Python and everything else along with it.</p>
+      <h2>And then the end of the month arrives</h2>
+      <p>
+        The two jobs everyone puts off are the two Chronify already has the
+        numbers for.
+      </p>
     </div>
 
-    <div class="stack" style="margin-top: 24px; max-width: 640px;">
+    <div class="cards">
+      <div class="card">
+        <span class="item">📤 Send hours to PeopleForce</span>
+        <h3>The timesheet</h3>
+        <p>
+          Pushes a day, a chosen day, or the whole month into your PeopleForce
+          timesheet, with the daily status as the comment. It can send the real
+          time ranges the tracker recorded, or one tidy entry per project.
+        </p>
+      </div>
+      <div class="card">
+        <span class="item">🧾 Invoice</span>
+        <h3>The invoice</h3>
+        <p>
+          Fills your own Word template and writes a PDF next to it. Your details
+          can be read out of an invoice you have already sent, so there is
+          nothing to retype.
+        </p>
+      </div>
+      <div class="card">
+        <span class="item">📅 Month calendar</span>
+        <h3>The evidence</h3>
+        <p>
+          A heat map of the month in your browser: which days were long, which
+          were quiet, and which are missing from the timesheet entirely.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="privacy">
+    <div class="section-head">
+      <h2>Nothing leaves this Mac</h2>
+      <p>
+        There is no account, no sign-up, no server of ours. Your hours, notes
+        and statuses live in one folder in your home directory. The only things
+        that ever go out are the hours you explicitly send to PeopleForce.
+      </p>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h3>One folder to back up</h3>
+        <p>
+          <code>~/.work_tracker</code> holds the database, your settings and
+          every saved status. Copy it and you have copied everything.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Upgrades never touch it</h3>
+        <p>
+          <code>config.yaml</code> is created there on the first run and is left
+          alone afterwards, so your edits survive every new version.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Open source</h3>
+        <p>
+          GPL-3.0. Read it, change it, run your own build.
+          <a href="https://github.com/zepuff/Chronify">The source is on GitHub</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="install">
+    <div class="section-head">
+      <h2>One command</h2>
+      <p>You need macOS and Homebrew. Everything else comes along with it.</p>
+    </div>
+
+    <div class="stack" style="margin-top:26px; max-width:640px">
       <pre><code>brew install zepuff/chronify/chronify
 chronify --background</code></pre>
       <p class="meta">Then look at the top right of your screen for ⏱.</p>
-      <p><a href="start.html">The quick start walks through the first ten minutes →</a></p>
+    </div>
+
+    <div class="next">
+      <a href="start.html"><span>Ten minutes</span><b>Quick start →</b></a>
+      <a href="menu.html"><span>Every item</span><b>The menu →</b></a>
+      <a href="settings.html"><span>Every field</span><b>Settings →</b></a>
     </div>
   </section>
 
-  <footer>
-    <span>Chronify · GPL-3.0 · built for people who bill by the hour</span>
-    <nav>
-      <a href="start.html">Quick start</a>
-      <a href="https://github.com/zepuff/Chronify">Source</a>
-      <a href="uk/">Українською</a>
-    </nav>
-  </footer>
+</main>
 
-</div>
+<footer>
+  <div class="wrap">
+    <span>Chronify · GPL-3.0</span>
+    <a href="https://github.com/zepuff/Chronify">Source</a>
+    <span class="spacer"><a href="uk/">Українською</a></span>
+  </div>
+</footer>
 
 </body>
 </html>

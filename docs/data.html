@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your data · Chronify</title>
+<meta name="description" content="What Chronify saves and where, how the tracking rules work, backups, updates and uninstalling.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="topbar">
+    <a class="brand" href="./">Chronify <span>⏱</span></a>
+    <nav class="topnav">
+      <a href="start.html">Quick start</a>
+      <a href="menu.html">The menu</a>
+      <a href="settings.html">Settings</a>
+      <a href="data.html" aria-current="page">Your data</a>
+      <a href="https://github.com/zepuff/Chronify">Source</a>
+      <span class="langs">
+        <a href="./" aria-current="true">EN</a><i>/</i><a href="uk/data.html">UK</a>
+      </span>
+    </nav>
+  </header>
+
+  <div class="page-title">
+    <p class="eyebrow">Reference</p>
+    <h1>Your data, and the rules that shape it</h1>
+    <p>
+      One folder holds everything. This page says what is in it, how the
+      tracking rules work, and what to do when you update, move machine or walk
+      away.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="doc">
+
+    <nav class="toc" aria-label="On this page">
+      <p>On this page</p>
+      <ul>
+        <li><a href="#folder">The one folder</a></li>
+        <li><a href="#files">What each file is</a></li>
+        <li><a href="#rules">How a window becomes a task</a></li>
+        <li><a href="#idle">What counts as working</a></li>
+        <li><a href="#backup">Backups</a></li>
+        <li><a href="#move">Moving to another Mac</a></li>
+        <li><a href="#update">Updating</a></li>
+        <li><a href="#elsewhere">Keeping data somewhere else</a></li>
+        <li><a href="#remove">Uninstalling</a></li>
+        <li><a href="#privacy">What leaves the machine</a></li>
+      </ul>
+    </nav>
+
+    <div class="prose">
+
+      <h2 id="folder">The one folder</h2>
+
+      <p>
+        Everything Chronify saves lives in <code>~/.work_tracker</code>. There
+        is no database server, no cloud, no account. Open it from
+        <b>⏱ → 📁 Show my data folder</b>, or from a terminal:
+      </p>
+
+      <pre><code>open ~/.work_tracker</code></pre>
+
+      <div class="note">
+        <p>
+          <strong>Copy that folder and you have copied everything:</strong> your
+          hours, your notes, your settings and every status you ever wrote.
+        </p>
+      </div>
+
+      <h2 id="files">What each file is</h2>
+
+      <div class="scroller">
+        <table class="table">
+          <thead>
+            <tr><th>File</th><th>What it holds</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>tracker.db</td>
+              <td>The tracked time itself: every recorded stretch, the daily totals, and the archive of saved statuses. This is the file that matters most.</td>
+            </tr>
+            <tr>
+              <td>config.yaml</td>
+              <td>The rules that turn windows into task names, and the timing defaults. Created on the first run and never touched by upgrades, so your edits survive.</td>
+            </tr>
+            <tr>
+              <td>profile.json</td>
+              <td>Everything you typed into Settings. It wins over config.yaml wherever the two overlap.</td>
+            </tr>
+            <tr>
+              <td>projects.json</td>
+              <td>Your projects, with their PeopleForce ids and rates.</td>
+            </tr>
+            <tr>
+              <td>settings.json</td>
+              <td>The small running state: which project is active, which toggles are on, the current infrastructure line.</td>
+            </tr>
+            <tr>
+              <td>tasks.json</td>
+              <td>What you logged under ✅ What I did today.</td>
+            </tr>
+            <tr>
+              <td>blockers.json</td>
+              <td>Your open blockers.</td>
+            </tr>
+            <tr>
+              <td>reminders.json</td>
+              <td>Your notes to self.</td>
+            </tr>
+            <tr>
+              <td>planner.json</td>
+              <td>The plan for today, including what rolled over.</td>
+            </tr>
+            <tr>
+              <td>alerts.json</td>
+              <td>Timed reminders: the text, the time, the weekdays.</td>
+            </tr>
+            <tr>
+              <td>history_export.md</td>
+              <td>Rewritten every time you open 📝 Status history. Safe to delete.</td>
+            </tr>
+            <tr>
+              <td>my_invoice_template.docx</td>
+              <td>Your own invoice template, once you connect one.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="rules">How a window becomes a task</h2>
+
+      <p>
+        Every five seconds Chronify notes the frontmost window as one string,
+        <code>app name — window title</code>, and runs your rules against it.
+        The first rule that matches wins, and its task name is what gets
+        recorded.
+      </p>
+
+      <p>The rules live at the bottom of <code>config.yaml</code>:</p>
+
+      <pre><code>rules:
+  - pattern: "(?i)(TASK-\\d+|[A-Z]+-\\d+)"
+    task: "Ticket {1}"
+
+  - pattern: "(?i)feature/([a-zA-Z0-9_-]+)"
+    task: "Feature: {1}"
+
+  - pattern: "(?i)jira|atlassian"
+    task: "Jira"
+
+  - pattern: "(?i)slack"
+    task: "Meetings &amp; Chat"
+
+  - pattern: "(?i)github\\.com|gitlab\\.com"
+    task: "Code Review / Git"</code></pre>
+
+      <p>
+        <code>pattern</code> is a regular expression and <code>(?i)</code> makes
+        it ignore case. Anything you capture in brackets is available in the
+        task name as <code>{1}</code>, <code>{2}</code> and so on, which is how
+        a tab called <code>TASK-482 · Fix the export dialog</code> ends up
+        recorded as <b>Ticket TASK-482</b> rather than as Chrome.
+      </p>
+
+      <p>
+        Order matters, because the first match wins. Put your specific rules
+        above the broad ones.
+      </p>
+
+      <p>
+        Anything that matches nothing is recorded under the app's own name, and
+        apps listed under <code>ignore_apps</code> are never recorded at all.
+      </p>
+
+      <p>
+        After editing, press <b>⏱ → 🔄 Reload rules</b>. There is no need to
+        restart. The change applies to what is recorded from then on; time
+        already logged keeps the names it was given.
+      </p>
+
+      <div class="note">
+        <p>
+          <strong>A good habit:</strong> open <b>📊 Where today went</b> after an
+          hour of work. If the breakdown reads like your day, your rules are
+          right. If everything is landing under one app name, a rule is missing.
+        </p>
+      </div>
+
+      <h2 id="idle">What counts as working</h2>
+
+      <p>
+        The same file holds the timing. These are the defaults, and they are
+        sensible enough that most people never touch them.
+      </p>
+
+      <div class="scroller">
+        <table class="table">
+          <thead>
+            <tr><th>Setting</th><th>Default</th><th>What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>poll_interval</td><td>5</td>
+              <td>Seconds between checks of the frontmost window.</td>
+            </tr>
+            <tr>
+              <td>min_segment_seconds</td><td>8</td>
+              <td>Shorter stretches are not stored, so flicking through tabs does not litter the log.</td>
+            </tr>
+            <tr>
+              <td>idle_threshold_seconds</td><td>1500</td>
+              <td>Time without keyboard or mouse before it stops counting. Twenty-five minutes by default.</td>
+            </tr>
+            <tr>
+              <td>treat_media_as_active</td><td>true</td>
+              <td>Counts a real call as work even with no typing. A video left in the foreground does not qualify.</td>
+            </tr>
+            <tr>
+              <td>call_apps</td><td>zoom, meet, teams</td>
+              <td>Apps that always count as an ongoing call.</td>
+            </tr>
+            <tr>
+              <td>call_apps_conditional</td><td>slack</td>
+              <td>Apps that count only when the window title says so, which is how a Slack huddle is told apart from Slack.</td>
+            </tr>
+            <tr>
+              <td>alert_sound</td><td>Glass</td>
+              <td>Sound for timed reminders. Any file from /System/Library/Sounds, or empty for silence.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="backup">Backups</h2>
+
+      <p>
+        There is nothing clever to do. Copy the folder:
+      </p>
+
+      <pre><code>cp -R ~/.work_tracker ~/Desktop/work_tracker-backup</code></pre>
+
+      <p>
+        If your home directory is already covered by Time Machine or a cloud
+        drive, so is this. Restoring is the same move in reverse, with Chronify
+        quit first.
+      </p>
+
+      <h2 id="move">Moving to another Mac</h2>
+
+      <ol>
+        <li>Install Chronify on the new machine and start it once, so the folder exists.</li>
+        <li>Quit it from <b>⏱ → Quit</b>.</li>
+        <li>Copy <code>~/.work_tracker</code> across, replacing what is there.</li>
+        <li>Start it again and grant Screen Recording on the new machine.</li>
+      </ol>
+
+      <p>
+        Your hours, projects, settings and statuses all come with you. The only
+        thing that does not travel is the macOS permission, because that belongs
+        to the machine.
+      </p>
+
+      <h2 id="update">Updating</h2>
+
+      <pre><code>brew update &amp;&amp; brew upgrade chronify</code></pre>
+
+      <p>Two things are worth knowing every time.</p>
+
+      <div class="note warn">
+        <p>
+          <strong>Screen Recording may need granting again.</strong> macOS ties
+          the permission to the exact binary, and a new version is a new binary.
+          Nothing warns you: the app keeps running and your task names quietly
+          become app names. Check <b>⚙️ Settings → Screen Recording</b> after an
+          upgrade.
+        </p>
+        <p>
+          <strong>Quit and start it again.</strong> Homebrew replaces the files
+          on disk, but the copy already running in memory is the old one until
+          you restart it.
+        </p>
+      </div>
+
+      <p>
+        Your data folder is not touched by any of this. <code>config.yaml</code>
+        keeps your edits, and <code>profile.json</code> keeps everything you
+        typed into Settings.
+      </p>
+
+      <h2 id="elsewhere">Keeping data somewhere else</h2>
+
+      <p>
+        Set <code>WORK_TRACKER_HOME</code> and Chronify uses that folder instead
+        of <code>~/.work_tracker</code>. Useful for a second set of data, or for
+        trying something out without touching the real one:
+      </p>
+
+      <pre><code>WORK_TRACKER_HOME=~/scratch-tracker chronify</code></pre>
+
+      <p>
+        Everything moves together. There is no way to end up with the database
+        in one place and the settings in another.
+      </p>
+
+      <h2 id="remove">Uninstalling</h2>
+
+      <pre><code>brew services stop chronify
+brew uninstall chronify</code></pre>
+
+      <p>
+        Your data folder stays where it is on purpose, so an uninstall can never
+        take your hours with it. Once you are sure you want it gone:
+      </p>
+
+      <pre><code>rm -rf ~/.work_tracker</code></pre>
+
+      <p>
+        That one is final. Take a copy first if there is any doubt.
+      </p>
+
+      <h2 id="privacy">What leaves the machine</h2>
+
+      <p>
+        Two things, both of which you ask for by name.
+      </p>
+
+      <ul>
+        <li>
+          <b>Hours and status text you push to PeopleForce</b>, when you press
+          <b>📤 Send hours to PeopleForce</b> or turn on the nightly auto-push.
+          Only projects that carry a PeopleForce id are ever sent.
+        </li>
+        <li>
+          <b>A model download</b>, once, if you choose Ollama as the writer of
+          your daily status. After that it runs on your machine and your notes
+          stay there.
+        </li>
+      </ul>
+
+      <p>
+        Window titles, tracked hours, notes, plans and statuses are never sent
+        anywhere else. There is no telemetry and no account, which is also why
+        there is nobody to ask for your data back.
+      </p>
+
+      <div class="next">
+        <a href="menu.html"><span>Every item explained</span><b>The menu →</b></a>
+        <a href="settings.html"><span>Every field</span><b>Settings →</b></a>
+        <a href="https://github.com/zepuff/Chronify"><span>GPL-3.0</span><b>The source →</b></a>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Chronify · GPL-3.0</span>
+    <a href="https://github.com/zepuff/Chronify">Source</a>
+    <span class="spacer"><a href="uk/data.html">Українською</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

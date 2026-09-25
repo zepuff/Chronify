@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ваші дані · Chronify</title>
+<meta name="description" content="Що і де зберігає Chronify, як працюють правила обліку, бекапи, оновлення і видалення.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="topbar">
+    <a class="brand" href="./">Chronify <span>⏱</span></a>
+    <nav class="topnav">
+      <a href="start.html">Швидкий старт</a>
+      <a href="menu.html">Меню</a>
+      <a href="settings.html">Налаштування</a>
+      <a href="data.html" aria-current="page">Ваші дані</a>
+      <a href="https://github.com/zepuff/Chronify">Код</a>
+      <span class="langs">
+        <a href="../data.html">EN</a><i>/</i><a href="data.html" aria-current="true">UK</a>
+      </span>
+    </nav>
+  </header>
+
+  <div class="page-title">
+    <p class="eyebrow">довідник</p>
+    <h1>Ваші дані і правила, які їх формують</h1>
+    <p>
+      Усе лежить в одній папці. Ця сторінка каже, що в ній, як працюють правила
+      обліку і що робити при оновленні, переїзді на інший комп'ютер або коли ви
+      вирішите піти.
+    </p>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="doc">
+
+    <nav class="toc" aria-label="Зміст">
+      <p>на цій сторінці</p>
+      <ul>
+        <li><a href="#folder">Та сама одна папка</a></li>
+        <li><a href="#files">Що за файли всередині</a></li>
+        <li><a href="#rules">Як вікно стає задачею</a></li>
+        <li><a href="#idle">Що вважається роботою</a></li>
+        <li><a href="#backup">Бекапи</a></li>
+        <li><a href="#move">Переїзд на інший Mac</a></li>
+        <li><a href="#update">Оновлення</a></li>
+        <li><a href="#elsewhere">Дані в іншому місці</a></li>
+        <li><a href="#remove">Видалення</a></li>
+        <li><a href="#privacy">Що залишає комп'ютер</a></li>
+      </ul>
+    </nav>
+
+    <div class="prose">
+
+      <h2 id="folder">Та сама одна папка</h2>
+
+      <p>
+        Усе, що Chronify зберігає, лежить у <code>~/.work_tracker</code>. Немає
+        ні сервера бази даних, ні хмари, ні акаунта. Відкрити її можна через
+        <b>⏱ → 📁 Show my data folder</b> або з термінала:
+      </p>
+
+      <pre><code>open ~/.work_tracker</code></pre>
+
+      <div class="note">
+        <p>
+          <strong>Скопіювали цю папку, значить скопіювали все:</strong> години,
+          нотатки, налаштування і кожен колись написаний статус.
+        </p>
+      </div>
+
+      <h2 id="files">Що за файли всередині</h2>
+
+      <div class="scroller">
+        <table class="table">
+          <thead>
+            <tr><th>Файл</th><th>Що в ньому</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>tracker.db</td>
+              <td>Сам відстежений час: кожен записаний проміжок, підсумки за днями та архів збережених статусів. Найважливіший файл.</td>
+            </tr>
+            <tr>
+              <td>config.yaml</td>
+              <td>Правила перетворення вікон на назви задач і налаштування часу. Створюється під час першого запуску, і оновлення його не чіпають, тож ваші правки живуть.</td>
+            </tr>
+            <tr>
+              <td>profile.json</td>
+              <td>Усе, що ви ввели в Settings. Перемагає config.yaml там, де вони перетинаються.</td>
+            </tr>
+            <tr>
+              <td>projects.json</td>
+              <td>Ваші проєкти з номерами PeopleForce і ставками.</td>
+            </tr>
+            <tr>
+              <td>settings.json</td>
+              <td>Дрібний робочий стан: який проєкт активний, які перемикачі увімкнені, поточний рядок про інфраструктуру.</td>
+            </tr>
+            <tr>
+              <td>tasks.json</td>
+              <td>Те, що ви записали в ✅ What I did today.</td>
+            </tr>
+            <tr>
+              <td>blockers.json</td>
+              <td>Ваші відкриті блокери.</td>
+            </tr>
+            <tr>
+              <td>reminders.json</td>
+              <td>Нотатки для себе.</td>
+            </tr>
+            <tr>
+              <td>planner.json</td>
+              <td>План на сьогодні, разом із тим, що переїхало з учора.</td>
+            </tr>
+            <tr>
+              <td>alerts.json</td>
+              <td>Нагадування за часом: текст, час, дні тижня.</td>
+            </tr>
+            <tr>
+              <td>history_export.md</td>
+              <td>Перезаписується щоразу, коли ви відкриваєте 📝 Status history. Можна спокійно видаляти.</td>
+            </tr>
+            <tr>
+              <td>my_invoice_template.docx</td>
+              <td>Ваш власний шаблон рахунку, щойно ви його підключите.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="rules">Як вікно стає задачею</h2>
+
+      <p>
+        Раз на п'ять секунд Chronify записує активне вікно одним рядком,
+        <code>назва застосунку — заголовок вікна</code>, і проганяє його через
+        ваші правила. Перемагає перше правило, яке збіглося, і його назва задачі
+        потрапляє в запис.
+      </p>
+
+      <p>Правила лежать унизу <code>config.yaml</code>:</p>
+
+      <pre><code>rules:
+  - pattern: "(?i)(TASK-\\d+|[A-Z]+-\\d+)"
+    task: "Ticket {1}"
+
+  - pattern: "(?i)feature/([a-zA-Z0-9_-]+)"
+    task: "Feature: {1}"
+
+  - pattern: "(?i)jira|atlassian"
+    task: "Jira"
+
+  - pattern: "(?i)slack"
+    task: "Meetings &amp; Chat"
+
+  - pattern: "(?i)github\\.com|gitlab\\.com"
+    task: "Code Review / Git"</code></pre>
+
+      <p>
+        <code>pattern</code> це регулярний вираз, а <code>(?i)</code> робить
+        його нечутливим до регістру. Усе, що ви захопили дужками, доступне в
+        назві задачі як <code>{1}</code>, <code>{2}</code> і так далі. Саме тому
+        вкладка з назвою <code>TASK-482 · Fix the export dialog</code>
+        записується як <b>Ticket TASK-482</b>, а не як Chrome.
+      </p>
+
+      <p>
+        Порядок має значення, бо перемагає перше збігання. Конкретні правила
+        ставте вище за загальні.
+      </p>
+
+      <p>
+        Те, що не збіглося ні з чим, записується під власною назвою застосунку,
+        а застосунки зі списку <code>ignore_apps</code> не записуються взагалі.
+      </p>
+
+      <p>
+        Після редагування натисніть <b>⏱ → 🔄 Reload rules</b>. Перезапускати
+        нічого не треба. Зміна діє на те, що записується далі, а вже записаний
+        час зберігає ті назви, які отримав.
+      </p>
+
+      <div class="note">
+        <p>
+          <strong>Корисна звичка:</strong> відкрийте <b>📊 Where today went</b>
+          після години роботи. Якщо розподіл читається як ваш день, правила в
+          порядку. Якщо все падає під одну назву застосунку, бракує правила.
+        </p>
+      </div>
+
+      <h2 id="idle">Що вважається роботою</h2>
+
+      <p>
+        У тому ж файлі лежать налаштування часу. Це значення за замовчуванням, і
+        вони достатньо розумні, щоб більшість людей їх ніколи не чіпала.
+      </p>
+
+      <div class="scroller">
+        <table class="table">
+          <thead>
+            <tr><th>Параметр</th><th>Типово</th><th>Що робить</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>poll_interval</td><td>5</td>
+              <td>Секунди між перевірками активного вікна.</td>
+            </tr>
+            <tr>
+              <td>min_segment_seconds</td><td>8</td>
+              <td>Коротші проміжки не зберігаються, щоб перемикання між вкладками не засмічувало облік.</td>
+            </tr>
+            <tr>
+              <td>idle_threshold_seconds</td><td>1500</td>
+              <td>Скільки часу без клавіатури і миші, перш ніж час перестане рахуватись. Типово двадцять п'ять хвилин.</td>
+            </tr>
+            <tr>
+              <td>treat_media_as_active</td><td>true</td>
+              <td>Вважає справжній дзвінок роботою навіть без набору тексту. Відео, залишене на передньому плані, під це не підпадає.</td>
+            </tr>
+            <tr>
+              <td>call_apps</td><td>zoom, meet, teams</td>
+              <td>Застосунки, які завжди вважаються дзвінком.</td>
+            </tr>
+            <tr>
+              <td>call_apps_conditional</td><td>slack</td>
+              <td>Застосунки, які вважаються дзвінком лише тоді, коли про це каже заголовок вікна. Так huddle у Slack відрізняється від просто Slack.</td>
+            </tr>
+            <tr>
+              <td>alert_sound</td><td>Glass</td>
+              <td>Звук для нагадувань. Будь-який файл із /System/Library/Sounds або порожньо для тиші.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="backup">Бекапи</h2>
+
+      <p>Нічого хитрого робити не треба. Скопіюйте папку:</p>
+
+      <pre><code>cp -R ~/.work_tracker ~/Desktop/work_tracker-backup</code></pre>
+
+      <p>
+        Якщо ваша домівка вже під Time Machine або в хмарному диску, то й це
+        теж. Відновлення це той самий рух у зворотний бік, тільки спершу
+        завершіть Chronify.
+      </p>
+
+      <h2 id="move">Переїзд на інший Mac</h2>
+
+      <ol>
+        <li>Встановіть Chronify на новому комп'ютері й запустіть один раз, щоб папка створилася.</li>
+        <li>Завершіть застосунок через <b>⏱ → Quit</b>.</li>
+        <li>Скопіюйте <code>~/.work_tracker</code>, замінивши те, що там є.</li>
+        <li>Запустіть знову і видайте дозвіл на запис екрана вже на новій машині.</li>
+      </ol>
+
+      <p>
+        Години, проєкти, налаштування і статуси переїжджають з вами. Єдине, що
+        не їде, це системний дозвіл, бо він належить конкретному комп'ютеру.
+      </p>
+
+      <h2 id="update">Оновлення</h2>
+
+      <pre><code>brew update &amp;&amp; brew upgrade chronify</code></pre>
+
+      <p>Щоразу варто пам'ятати дві речі.</p>
+
+      <div class="note warn">
+        <p>
+          <strong>Дозвіл на запис екрана може знадобитись видати знову.</strong>
+          macOS прив'язує його до конкретного виконуваного файлу, а нова версія
+          це новий файл. Попередження немає: застосунок працює далі, а назви
+          задач тихо перетворюються на назви застосунків. Перевірте
+          <b>⚙️ Settings → Screen Recording</b> після оновлення.
+        </p>
+        <p>
+          <strong>Завершіть і запустіть його знову.</strong> Homebrew замінює
+          файли на диску, але та копія, що вже працює в памʼяті, лишається
+          старою до перезапуску.
+        </p>
+      </div>
+
+      <p>
+        Папку з даними все це не чіпає. <code>config.yaml</code> зберігає ваші
+        правки, а <code>profile.json</code> зберігає все, що ви ввели в
+        налаштуваннях.
+      </p>
+
+      <h2 id="elsewhere">Дані в іншому місці</h2>
+
+      <p>
+        Задайте <code>WORK_TRACKER_HOME</code>, і Chronify працюватиме з тією
+        папкою замість <code>~/.work_tracker</code>. Зручно для другого набору
+        даних або щоб щось спробувати, не чіпаючи справжній:
+      </p>
+
+      <pre><code>WORK_TRACKER_HOME=~/scratch-tracker chronify</code></pre>
+
+      <p>
+        Переїжджає все разом. Немає способу отримати базу в одному місці, а
+        налаштування в іншому.
+      </p>
+
+      <h2 id="remove">Видалення</h2>
+
+      <pre><code>brew services stop chronify
+brew uninstall chronify</code></pre>
+
+      <p>
+        Папка з даними лишається на місці навмисно, щоб видалення застосунку
+        ніколи не забрало з собою ваші години. Коли будете певні, що вона більше
+        не потрібна:
+      </p>
+
+      <pre><code>rm -rf ~/.work_tracker</code></pre>
+
+      <p>
+        Оце вже остаточно. Якщо є хоч найменший сумнів, спершу зробіть копію.
+      </p>
+
+      <h2 id="privacy">Що залишає комп'ютер</h2>
+
+      <p>Дві речі, і обидві ви запускаєте самі.</p>
+
+      <ul>
+        <li>
+          <b>Години і текст статусу, які ви відправляєте в PeopleForce</b>, коли
+          натискаєте <b>📤 Send hours to PeopleForce</b> або вмикаєте нічну
+          автовідправку. Відправляються тільки проєкти, у яких є номер
+          PeopleForce.
+        </li>
+        <li>
+          <b>Завантаження моделі</b>, один раз, якщо ви обрали Ollama автором
+          щоденного статусу. Далі вона працює на вашому комп'ютері, і нотатки
+          лишаються там.
+        </li>
+      </ul>
+
+      <p>
+        Заголовки вікон, відстежені години, нотатки, плани і статуси не
+        відправляються більше нікуди. Тут немає ні телеметрії, ні акаунта, а
+        тому немає і в кого просити свої дані назад.
+      </p>
+
+      <div class="next">
+        <a href="menu.html"><span>кожен пункт</span><b>Меню →</b></a>
+        <a href="settings.html"><span>кожне поле</span><b>Налаштування →</b></a>
+        <a href="https://github.com/zepuff/Chronify"><span>GPL-3.0</span><b>Код →</b></a>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Chronify · GPL-3.0</span>
+    <a href="https://github.com/zepuff/Chronify">Код</a>
+    <span class="spacer"><a href="../data.html">In English</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
